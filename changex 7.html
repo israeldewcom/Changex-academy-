@@ -1,0 +1,3059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Change X Academy — Learn. Practice. Earn.</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#07071A;
+  --bg2:#0D0D26;
+  --bg3:#12122E;
+  --card:#14143A;
+  --card2:#1A1A45;
+  --border:#252560;
+  --border2:#2E2E70;
+  --primary:#6C3BFF;
+  --primary2:#8A5FFF;
+  --primary3:#5025E0;
+  --accent:#00D4FF;
+  --accent2:#00B8E0;
+  --success:#00FFB2;
+  --success2:#00CC90;
+  --warning:#FFB800;
+  --danger:#FF4D4D;
+  --gold:#FFD700;
+  --text:#EAEAF0;
+  --text2:#A0A0C8;
+  --text3:#6B6B98;
+  --radius:16px;
+  --radius2:12px;
+  --radius3:8px;
+  --shadow:0 8px 32px rgba(108,59,255,0.15);
+  --shadow2:0 4px 16px rgba(0,0,0,0.4);
+  --glow:0 0 20px rgba(108,59,255,0.4);
+  --glow2:0 0 30px rgba(0,212,255,0.3);
+  --glow3:0 0 20px rgba(0,255,178,0.3);
+  --transition:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+::selection{background:var(--primary);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--primary);border-radius:3px}
+
+/* ===== GRID NOISE OVERLAY ===== */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:0.12}
+.bg-orb-1{width:600px;height:600px;background:var(--primary);top:-200px;left:-200px;animation:orbFloat1 12s ease-in-out infinite}
+.bg-orb-2{width:500px;height:500px;background:var(--accent);bottom:-200px;right:-100px;animation:orbFloat2 15s ease-in-out infinite}
+.bg-orb-3{width:400px;height:400px;background:var(--success);top:40%;left:40%;animation:orbFloat3 18s ease-in-out infinite}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,40px)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-60px)}}
+@keyframes orbFloat3{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-50px)}}
+
+/* ===== PAGES ===== */
+.page{display:none;min-height:100vh;position:relative;z-index:1;animation:pageFade 0.4s ease}
+.page.active{display:block}
+@keyframes pageFade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== NAVBAR ===== */
+.navbar-main{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(7,7,26,0.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:14px 0;
+}
+.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-link-item{color:var(--text2)!important;font-weight:500;font-size:0.9rem;transition:var(--transition);cursor:pointer;padding:6px 12px!important;border-radius:var(--radius3)}
+.nav-link-item:hover,.nav-link-item.active{color:var(--text)!important;background:rgba(108,59,255,0.12)}
+.nav-xp{display:flex;align-items:center;gap:6px;background:rgba(108,59,255,0.15);border:1px solid rgba(108,59,255,0.3);border-radius:20px;padding:5px 12px;font-size:0.8rem;color:var(--primary2)}
+.nav-wallet{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff!important;border-radius:20px;padding:5px 14px!important;font-size:0.85rem;font-weight:600}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px}
+.hamburger span{width:24px;height:2px;background:var(--text);transition:var(--transition);display:block}
+@media(max-width:991px){
+  .nav-links-desktop{display:none!important}
+  .hamburger{display:flex}
+}
+.mobile-menu{
+  position:fixed;top:72px;left:0;right:0;z-index:999;
+  background:rgba(7,7,26,0.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:16px;
+  transform:translateY(-120%);transition:transform 0.3s ease;
+}
+.mobile-menu.open{transform:translateY(0)}
+.mobile-nav-item{padding:12px 16px;border-radius:var(--radius3);color:var(--text2);cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:10px;font-weight:500}
+.mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(108,59,255,0.15);color:var(--text)}
+
+/* ===== BOTTOM NAV (MOBILE) ===== */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:999;
+  background:rgba(13,13,38,0.97);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:8px 0 12px;
+}
+@media(max-width:767px){.bottom-nav{display:flex}}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);cursor:pointer;transition:var(--transition);padding:4px;font-size:0.65rem;font-weight:500}
+.bottom-nav-item.active,.bottom-nav-item:hover{color:var(--primary2)}
+.bottom-nav-item i{font-size:1.2rem}
+.bottom-nav-earn{color:var(--success)!important}
+
+/* ===== SECTION WRAPPER ===== */
+.pt-nav{padding-top:90px}
+.section-pad{padding:80px 0}
+.section-pad-sm{padding:40px 0}
+
+/* ===== TYPOGRAPHY ===== */
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;font-weight:700}
+.display-hero{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.4rem,6vw,4.5rem);line-height:1.1;letter-spacing:-0.02em}
+.gradient-text{background:linear-gradient(135deg,var(--primary2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-gold{background:linear-gradient(135deg,var(--gold),var(--warning));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-green{background:linear-gradient(135deg,var(--success),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-label{font-family:'Sora',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary2);display:inline-flex;align-items:center;gap:6px}
+.section-label::before{content:'';width:20px;height:2px;background:var(--primary);display:inline-block}
+
+/* ===== BUTTONS ===== */
+.btn-primary-x{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;border:none;border-radius:var(--radius2);padding:12px 28px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.95rem;
+  cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(108,59,255,0.35);
+}
+.btn-primary-x:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(108,59,255,0.5)}
+.btn-primary-x:active{transform:translateY(0)}
+.btn-accent-x{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#07071A;border:none;border-radius:var(--radius2);padding:12px 28px;
+  font-weight:600;font-size:0.95rem;cursor:pointer;transition:var(--transition);
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(0,212,255,0.3);
+}
+.btn-accent-x:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,212,255,0.45)}
+.btn-outline-x{
+  background:transparent;color:var(--text);
+  border:1px solid var(--border2);
+  border-radius:var(--radius2);padding:11px 28px;
+  font-weight:600;font-size:0.95rem;cursor:pointer;transition:var(--transition);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-outline-x:hover{border-color:var(--primary);color:var(--primary2);background:rgba(108,59,255,0.08)}
+.btn-success-x{
+  background:linear-gradient(135deg,var(--success),var(--success2));
+  color:#07071A;border:none;border-radius:var(--radius2);padding:12px 28px;
+  font-weight:700;font-size:0.95rem;cursor:pointer;transition:var(--transition);
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(0,255,178,0.3);
+}
+.btn-success-x:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,255,178,0.45)}
+.btn-sm-x{padding:7px 18px;font-size:0.82rem;border-radius:var(--radius3)}
+.btn-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition);border:1px solid var(--border2);background:transparent;color:var(--text2)}
+.btn-icon:hover{border-color:var(--primary);color:var(--primary);background:rgba(108,59,255,0.1)}
+.pulse-btn{animation:pulseBtn 2s infinite}
+@keyframes pulseBtn{0%,100%{box-shadow:0 4px 20px rgba(0,255,178,0.3)}50%{box-shadow:0 4px 30px rgba(0,255,178,0.7)}}
+
+/* ===== CARDS ===== */
+.card-x{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;transition:var(--transition);
+}
+.card-x:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.card-glass{
+  background:rgba(20,20,58,0.6);backdrop-filter:blur(16px);
+  border:1px solid rgba(108,59,255,0.2);border-radius:var(--radius);padding:24px;
+}
+.card-glow{border-color:rgba(108,59,255,0.4);box-shadow:var(--glow)}
+.card-glow-accent{border-color:rgba(0,212,255,0.3);box-shadow:var(--glow2)}
+.card-glow-green{border-color:rgba(0,255,178,0.3);box-shadow:var(--glow3)}
+
+/* ===== STAT PILL ===== */
+.stat-pill{
+  background:rgba(108,59,255,0.12);border:1px solid rgba(108,59,255,0.25);
+  border-radius:20px;padding:4px 14px;font-size:0.8rem;color:var(--primary2);
+  display:inline-flex;align-items:center;gap:5px;
+}
+.stat-pill-green{background:rgba(0,255,178,0.1);border-color:rgba(0,255,178,0.25);color:var(--success)}
+.stat-pill-gold{background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.25);color:var(--gold)}
+.stat-pill-accent{background:rgba(0,212,255,0.1);border-color:rgba(0,212,255,0.25);color:var(--accent)}
+
+/* ===== BADGE ===== */
+.badge-x{font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Sora',sans-serif;letter-spacing:0.04em;text-transform:uppercase}
+.badge-primary{background:rgba(108,59,255,0.2);color:var(--primary2);border:1px solid rgba(108,59,255,0.3)}
+.badge-accent{background:rgba(0,212,255,0.15);color:var(--accent);border:1px solid rgba(0,212,255,0.25)}
+.badge-success{background:rgba(0,255,178,0.12);color:var(--success);border:1px solid rgba(0,255,178,0.2)}
+.badge-gold{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.25)}
+.badge-danger{background:rgba(255,77,77,0.12);color:var(--danger);border:1px solid rgba(255,77,77,0.2)}
+
+/* ===== PROGRESS BAR ===== */
+.progress-x{background:var(--bg3);border-radius:20px;height:6px;overflow:hidden}
+.progress-bar-x{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width 0.8s ease;position:relative}
+.progress-bar-x::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:10px;height:10px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent)}
+.progress-x-green .progress-bar-x{background:linear-gradient(90deg,var(--success),var(--accent))}
+
+/* ===== AVATAR ===== */
+.avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.avatar-sm{width:32px;height:32px}
+.avatar-lg{width:64px;height:64px}
+.avatar-xl{width:88px;height:88px;border:3px solid var(--primary)}
+.avatar-placeholder{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Syne',sans-serif;font-size:1.1rem;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff}
+
+/* ===== INPUTS ===== */
+.input-x{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius3);
+  padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;width:100%;transition:var(--transition);
+}
+.input-x:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,59,255,0.12)}
+.input-x::placeholder{color:var(--text3)}
+.input-group-x{position:relative}
+.input-group-x .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.input-group-x .input-x{padding-left:42px}
+.label-x{font-size:0.85rem;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;font-family:'Sora',sans-serif}
+
+/* ===== DIVIDER ===== */
+.divider-x{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+/* ===== XP BAR ===== */
+.xp-bar{background:var(--bg3);border-radius:20px;height:8px;overflow:hidden;position:relative}
+.xp-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--gold),var(--warning));transition:width 1s ease;position:relative;overflow:hidden}
+.xp-fill::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);animation:xpShimmer 2s infinite}
+@keyframes xpShimmer{to{left:100%}}
+
+/* ===== TOAST ===== */
+.toast-container-x{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast-x{
+  background:var(--card2);border:1px solid var(--border);border-radius:var(--radius2);
+  padding:14px 18px;min-width:280px;max-width:360px;pointer-events:all;
+  display:flex;align-items:center;gap:12px;
+  animation:toastIn 0.4s ease;
+  box-shadow:var(--shadow2);
+}
+.toast-x.removing{animation:toastOut 0.3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+.toast-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.9rem}
+.toast-success .toast-icon{background:rgba(0,255,178,0.15);color:var(--success)}
+.toast-error .toast-icon{background:rgba(255,77,77,0.15);color:var(--danger)}
+.toast-info .toast-icon{background:rgba(0,212,255,0.15);color:var(--accent)}
+.toast-xp .toast-icon{background:rgba(255,215,0,0.15);color:var(--gold)}
+
+/* ===== MODAL ===== */
+.modal-x-overlay{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.modal-x-overlay.open{opacity:1;pointer-events:all}
+.modal-x{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:32px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;transform:scale(0.95);transition:transform 0.3s ease}
+.modal-x-overlay.open .modal-x{transform:scale(1)}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer;transition:color 0.2s}
+.modal-close:hover{color:var(--text)}
+
+/* ===== COURSE CARD ===== */
+.course-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;transition:var(--transition);cursor:pointer;
+}
+.course-card:hover{border-color:rgba(108,59,255,0.4);transform:translateY(-4px);box-shadow:0 16px 40px rgba(108,59,255,0.2)}
+.course-thumb{width:100%;height:180px;object-fit:cover;background:linear-gradient(135deg,var(--primary3),var(--bg3));display:flex;align-items:center;justify-content:center;font-size:3rem;color:rgba(255,255,255,0.2)}
+.course-body{padding:20px}
+.course-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--text);margin-bottom:8px;line-height:1.4}
+.course-meta{display:flex;align-items:center;gap:12px;font-size:0.8rem;color:var(--text3)}
+.course-rating{color:var(--gold);font-size:0.82rem}
+.course-price{font-family:'Syne',sans-serif;font-weight:800;color:var(--success);font-size:1.1rem}
+.course-price-free{color:var(--accent)}
+
+/* ===== LESSON ROW ===== */
+.lesson-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--radius3);transition:var(--transition);cursor:pointer;border:1px solid transparent}
+.lesson-row:hover{background:rgba(108,59,255,0.06);border-color:var(--border)}
+.lesson-icon{width:40px;height:40px;border-radius:var(--radius3);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.lesson-icon-video{background:rgba(108,59,255,0.15);color:var(--primary2)}
+.lesson-icon-code{background:rgba(0,212,255,0.1);color:var(--accent)}
+.lesson-icon-quiz{background:rgba(255,215,0,0.1);color:var(--gold)}
+.lesson-icon-done{background:rgba(0,255,178,0.1);color:var(--success)}
+.lesson-title{font-size:0.9rem;font-weight:500;color:var(--text)}
+.lesson-dur{font-size:0.78rem;color:var(--text3)}
+
+/* ===== CODE EDITOR ===== */
+.code-editor-wrap{background:#0D0D1A;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.code-editor-header{background:#14143A;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.code-dot{width:12px;height:12px;border-radius:50%}
+.code-dot-red{background:#FF5F57}
+.code-dot-yellow{background:#FFBD2E}
+.code-dot-green{background:#28CA41}
+.code-tabs{display:flex;gap:4px;margin-left:12px}
+.code-tab{padding:4px 14px;border-radius:4px;font-size:0.78rem;color:var(--text3);cursor:pointer;font-family:'Sora',sans-serif;transition:var(--transition)}
+.code-tab.active{background:rgba(108,59,255,0.2);color:var(--primary2)}
+.code-area{
+  background:#0A0A1A;color:#E2E8F0;font-family:'Courier New',monospace;font-size:0.88rem;
+  padding:20px;min-height:260px;resize:none;width:100%;border:none;outline:none;
+  line-height:1.7;tab-size:2;
+}
+.code-output{background:#07071A;border-top:1px solid var(--border);padding:16px;min-height:80px;font-family:'Courier New',monospace;font-size:0.85rem;color:var(--success)}
+.code-output.error-out{color:var(--danger)}
+.code-run-bar{background:#14143A;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
+
+/* ===== WALLET CARD ===== */
+.wallet-card{
+  background:linear-gradient(135deg,#0F0F2E,#1A1A45);
+  border:1px solid rgba(108,59,255,0.3);border-radius:var(--radius);
+  padding:28px;position:relative;overflow:hidden;
+}
+.wallet-card::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:radial-gradient(circle,rgba(108,59,255,0.2),transparent 70%);border-radius:50%}
+.wallet-balance{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:var(--success)}
+.wallet-label{font-size:0.8rem;color:var(--text3);font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.08em}
+
+/* ===== REFERRAL TREE ===== */
+.ref-node{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);position:relative;transition:var(--transition)}
+.ref-node:hover{border-color:rgba(0,255,178,0.3)}
+.ref-line{width:2px;height:24px;background:linear-gradient(180deg,var(--border),var(--success));margin-left:27px}
+.ref-badge{font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;font-family:'Sora',sans-serif}
+.ref-level-1{background:rgba(108,59,255,0.2);color:var(--primary2)}
+.ref-level-2{background:rgba(0,212,255,0.1);color:var(--accent)}
+.ref-level-3{background:rgba(0,255,178,0.1);color:var(--success)}
+
+/* ===== LEADERBOARD ===== */
+.lb-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:var(--radius2);transition:var(--transition)}
+.lb-row:hover{background:rgba(108,59,255,0.06)}
+.lb-rank{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center}
+.lb-rank-1{color:var(--gold)}
+.lb-rank-2{color:#C0C0C0}
+.lb-rank-3{color:#CD7F32}
+.lb-name{font-weight:600;font-size:0.9rem;flex:1}
+.lb-xp{font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:0.9rem}
+
+/* ===== STREAKS ===== */
+.streak-day{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;font-family:'Sore',sans-serif;transition:var(--transition)}
+.streak-active{background:linear-gradient(135deg,var(--warning),var(--gold));color:#07071A}
+.streak-done{background:rgba(0,255,178,0.15);color:var(--success);border:1px solid rgba(0,255,178,0.25)}
+.streak-miss{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+
+/* ===== AI CHAT ===== */
+.ai-chat-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;height:520px}
+.ai-chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--card2)}
+.ai-status{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:aiPulse 2s infinite}
+@keyframes aiPulse{50%{opacity:0.4}}
+.ai-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.ai-msg{display:flex;gap:10px;max-width:85%}
+.ai-msg-bot{align-self:flex-start}
+.ai-msg-user{align-self:flex-end;flex-direction:row-reverse}
+.ai-msg-bubble{padding:12px 16px;border-radius:16px;font-size:0.88rem;line-height:1.6}
+.ai-msg-bot .ai-msg-bubble{background:rgba(108,59,255,0.12);border:1px solid rgba(108,59,255,0.2);color:var(--text);border-radius:4px 16px 16px 16px}
+.ai-msg-user .ai-msg-bubble{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:16px 4px 16px 16px}
+.ai-typing{display:flex;gap:5px;align-items:center;padding:10px 14px;background:rgba(108,59,255,0.08);border-radius:16px;width:fit-content}
+.ai-typing span{width:6px;height:6px;border-radius:50%;background:var(--primary2);animation:typingDot 1.4s infinite}
+.ai-typing span:nth-child(2){animation-delay:0.2s}
+.ai-typing span:nth-child(3){animation-delay:0.4s}
+@keyframes typingDot{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(-6px);opacity:1}}
+.ai-input-row{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--card2)}
+.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:24px;padding:10px 18px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:var(--transition)}
+.ai-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,59,255,0.1)}
+.ai-send{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:var(--transition);flex-shrink:0}
+.ai-send:hover{transform:scale(1.08)}
+
+/* ===== HERO SPECIFIC ===== */
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,255,178,0.08);border:1px solid rgba(0,255,178,0.2);
+  border-radius:20px;padding:6px 16px;font-size:0.82rem;color:var(--success);
+  font-family:'Sora',sans-serif;margin-bottom:24px;
+}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;animation:aiPulse 2s infinite}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap}
+.hero-stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;background:linear-gradient(135deg,var(--primary2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-stat-label{font-size:0.8rem;color:var(--text3);font-family:'Sora',sans-serif}
+.hero-visual{position:relative;padding:20px}
+.hero-card-float{animation:heroFloat 4s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-ring{width:300px;height:300px;border-radius:50%;border:1px solid rgba(108,59,255,0.2);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:heroRing 8s linear infinite}
+.hero-ring-2{width:400px;height:400px;border-color:rgba(0,212,255,0.1);animation-duration:12s;animation-direction:reverse}
+@keyframes heroRing{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* ===== FEATURE ICONS ===== */
+.feat-icon{width:56px;height:56px;border-radius:var(--radius2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px}
+.feat-icon-purple{background:rgba(108,59,255,0.15);color:var(--primary2)}
+.feat-icon-cyan{background:rgba(0,212,255,0.12);color:var(--accent)}
+.feat-icon-green{background:rgba(0,255,178,0.1);color:var(--success)}
+.feat-icon-gold{background:rgba(255,215,0,0.1);color:var(--gold)}
+
+/* ===== TABS ===== */
+.tabs-x{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius2);padding:4px}
+.tab-x{flex:1;padding:8px 16px;border-radius:var(--radius3);text-align:center;cursor:pointer;font-size:0.85rem;font-weight:600;color:var(--text3);transition:var(--transition);font-family:'Sora',sans-serif;border:none;background:none}
+.tab-x.active{background:var(--card2);color:var(--text);box-shadow:var(--shadow2)}
+.tab-content-x{display:none}
+.tab-content-x.active{display:block;animation:pageFade 0.3s ease}
+
+/* ===== SIDEBAR ===== */
+.dashboard-layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 72px);gap:0}
+@media(max-width:991px){.dashboard-layout{grid-template-columns:1fr}}
+.sidebar-x{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto}
+@media(max-width:991px){.sidebar-x{display:none}}
+.sidebar-nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--radius3);cursor:pointer;transition:var(--transition);color:var(--text2);font-weight:500;font-size:0.9rem;margin-bottom:2px}
+.sidebar-nav-item:hover{background:rgba(108,59,255,0.08);color:var(--text)}
+.sidebar-nav-item.active{background:rgba(108,59,255,0.15);color:var(--primary2);border-left:3px solid var(--primary)}
+.sidebar-nav-item i{width:18px;text-align:center}
+.sidebar-section{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);font-family:'Sora',sans-serif;margin:20px 14px 8px;font-weight:600}
+
+/* ===== PRICING CARD ===== */
+.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;position:relative;overflow:hidden;transition:var(--transition)}
+.pricing-card.featured{border-color:rgba(108,59,255,0.5);box-shadow:var(--glow)}
+.pricing-card.featured::before{content:'Most Popular';position:absolute;top:20px;right:-28px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;font-size:0.7rem;font-weight:700;font-family:'Sora',sans-serif;letter-spacing:0.05em;padding:4px 40px;transform:rotate(45deg);transform-origin:center}
+.pricing-amount{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800}
+.pricing-feature{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:0.9rem;color:var(--text2);border-bottom:1px solid rgba(255,255,255,0.04)}
+.pricing-feature i{color:var(--success);width:16px;text-align:center}
+.pricing-feature.no i{color:var(--text3)}
+.pricing-feature.no{color:var(--text3);text-decoration:line-through}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+.reveal-delay-4{transition-delay:0.4s}
+
+/* ===== TICKER ===== */
+.ticker-wrap{overflow:hidden;background:rgba(0,212,255,0.05);border-top:1px solid rgba(0,212,255,0.1);border-bottom:1px solid rgba(0,212,255,0.1);padding:8px 0}
+.ticker{display:flex;gap:0;animation:tick 30s linear infinite}
+.ticker-item{padding:0 32px;font-size:0.82rem;font-family:'Sora',sans-serif;white-space:nowrap;color:var(--text2)}
+.ticker-item span{color:var(--accent);font-weight:600}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* ===== PAGE SPECIFIC STYLES ===== */
+
+/* HOME HERO */
+.hero-section{min-height:100vh;display:flex;align-items:center;padding-top:72px;position:relative;overflow:hidden}
+.hero-section::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(108,59,255,0.12),transparent);
+  pointer-events:none;
+}
+
+/* CERTIFICATE */
+.cert-card{
+  background:linear-gradient(135deg,#1A1A45,#0D0D26);
+  border:2px solid rgba(255,215,0,0.3);border-radius:var(--radius);
+  padding:40px;text-align:center;position:relative;overflow:hidden;
+}
+.cert-card::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFD700' fill-opacity='0.03'%3E%3Cpath d='M0 0h40v40H0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.cert-seal{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--warning));display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 20px;box-shadow:0 0 30px rgba(255,215,0,0.4)}
+
+/* AFFILIATE COMMISSION BARS */
+.commission-bar{background:var(--bg3);border-radius:var(--radius2);padding:16px 20px;display:flex;align-items:center;gap:16px;border:1px solid var(--border)}
+.commission-pct{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;min-width:80px}
+
+/* CHALLENGE CARD */
+.challenge-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:var(--transition)}
+.challenge-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-2px)}
+.difficulty-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.diff-easy{background:var(--success)}
+.diff-medium{background:var(--warning)}
+.diff-hard{background:var(--danger)}
+
+/* STATS COUNTER ANIMATION */
+.count-up{display:inline-block}
+
+/* GRADIENT BORDER */
+.grad-border{position:relative}
+.grad-border::before{content:'';position:absolute;inset:-1px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:calc(var(--radius)+1px);z-index:-1}
+
+/* ===== ADMIN SPECIFIC ===== */
+.admin-stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{padding:12px 16px;text-align:left;font-size:0.78rem;font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg3)}
+.admin-table td{padding:12px 16px;font-size:0.88rem;color:var(--text2);border-bottom:1px solid rgba(255,255,255,0.04)}
+.admin-table tr:hover td{background:rgba(108,59,255,0.04)}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-active{background:var(--success)}
+.status-pending{background:var(--warning)}
+.status-suspended{background:var(--danger)}
+
+/* ===== CHART BARS ===== */
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:4px}
+.chart-bar{border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--primary),rgba(108,59,255,0.3));min-width:28px;transition:height 1s ease;cursor:pointer;position:relative}
+.chart-bar:hover::after{content:attr(data-val);position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:0.7rem;color:var(--text2);white-space:nowrap;font-family:'Sora',sans-serif}
+.chart-bar-accent{background:linear-gradient(180deg,var(--accent),rgba(0,212,255,0.3))}
+.chart-bar-green{background:linear-gradient(180deg,var(--success),rgba(0,255,178,0.3))}
+
+/* ===== FLOATING FAB ===== */
+.fab{
+  position:fixed;bottom:80px;right:20px;z-index:990;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--success),var(--success2));
+  color:#07071A;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  box-shadow:0 4px 20px rgba(0,255,178,0.4);
+  transition:var(--transition);animation:pulseBtn 3s infinite;
+}
+.fab:hover{transform:scale(1.1)}
+@media(min-width:768px){.fab{bottom:30px}}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton{background:linear-gradient(90deg,var(--bg3) 0%,var(--card2) 50%,var(--bg3) 100%);background-size:200%;animation:skeletonLoad 1.5s infinite;border-radius:var(--radius3)}
+@keyframes skeletonLoad{0%{background-position:200%}100%{background-position:-200%}}
+
+/* ===== MISC ===== */
+.divider-text{display:flex;align-items:center;gap:12px;color:var(--text3);font-size:0.82rem}
+.divider-text::before,.divider-text::after{content:'';flex:1;height:1px;background:var(--border)}
+.text-truncate-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hover-lift{transition:var(--transition)}
+.hover-lift:hover{transform:translateY(-3px)}
+.earning-flash{animation:earningFlash 0.6s ease}
+@keyframes earningFlash{0%,100%{opacity:1}50%{opacity:0.3;transform:scale(1.05)}}
+</style>
+</head>
+<body>
+
+<!-- BG ORBS -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container-x" id="toastContainer"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar-main">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-4">
+        <span class="nav-brand" onclick="goPage('home')" style="cursor:pointer">⚡ Change X</span>
+        <div class="d-flex gap-1 nav-links-desktop" id="navLinks">
+          <span class="nav-link-item" onclick="goPage('courses')">Learn</span>
+          <span class="nav-link-item" onclick="goPage('practice')">Practice</span>
+          <span class="nav-link-item" onclick="goPage('marketplace')">Marketplace</span>
+          <span class="nav-link-item" onclick="goPage('earn')">Earn</span>
+          <span class="nav-link-item" onclick="goPage('pricing')">Pricing</span>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="nav-xp d-none d-md-flex">
+          <i class="fa fa-bolt"></i>
+          <span id="navXP">1240 XP</span>
+        </div>
+        <span class="nav-link-item nav-wallet" onclick="goPage('wallet')">
+          <i class="fa fa-wallet me-1"></i> ₦12,500
+        </span>
+        <div class="hamburger d-lg-none" onclick="toggleMobileMenu()" id="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-nav-item" onclick="goPage('home');toggleMobileMenu()"><i class="fa fa-home"></i>Home</div>
+  <div class="mobile-nav-item" onclick="goPage('courses');toggleMobileMenu()"><i class="fa fa-book"></i>Learn</div>
+  <div class="mobile-nav-item" onclick="goPage('practice');toggleMobileMenu()"><i class="fa fa-code"></i>Practice</div>
+  <div class="mobile-nav-item" onclick="goPage('dashboard');toggleMobileMenu()"><i class="fa fa-chart-bar"></i>Dashboard</div>
+  <div class="mobile-nav-item" onclick="goPage('earn');toggleMobileMenu()"><i class="fa fa-coins"></i>Earn</div>
+  <div class="mobile-nav-item" onclick="goPage('ai');toggleMobileMenu()"><i class="fa fa-robot"></i>AI Tutor</div>
+  <div class="mobile-nav-item" onclick="goPage('marketplace');toggleMobileMenu()"><i class="fa fa-store"></i>Marketplace</div>
+  <div class="mobile-nav-item" onclick="goPage('admin');toggleMobileMenu()"><i class="fa fa-shield"></i>Admin</div>
+</div>
+
+<!-- BOTTOM NAV (MOBILE) -->
+<div class="bottom-nav">
+  <div class="bottom-nav-item" onclick="goPage('home')" id="bnHome"><i class="fa fa-home"></i>Home</div>
+  <div class="bottom-nav-item" onclick="goPage('courses')" id="bnLearn"><i class="fa fa-book"></i>Learn</div>
+  <div class="bottom-nav-item" onclick="goPage('practice')" id="bnCode"><i class="fa fa-code"></i>Code</div>
+  <div class="bottom-nav-item bottom-nav-earn" onclick="goPage('earn')" id="bnEarn"><i class="fa fa-coins"></i>Earn</div>
+  <div class="bottom-nav-item" onclick="goPage('dashboard')" id="bnDash"><i class="fa fa-user"></i>Profile</div>
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="goPage('earn')"><i class="fa fa-coins"></i></button>
+
+<!-- ============================= PAGES ============================= -->
+
+<!-- ===== HOME PAGE ===== -->
+<div class="page active" id="page-home">
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="hero-badge reveal"><i class="fa fa-rocket"></i> Nigeria's #1 Learn-to-Earn Platform</div>
+          <h1 class="display-hero reveal reveal-delay-1">
+            Learn. Practice.<br/>
+            <span class="gradient-text">Earn Real Money.</span>
+          </h1>
+          <p class="text-color-2 mt-4 mb-4 fs-5 reveal reveal-delay-2" style="color:var(--text2);line-height:1.7">
+            Master in-demand tech skills, practice in our live sandbox, and monetize your knowledge through our affiliate ecosystem. Built for <strong style="color:var(--text)">Nigerian creators & learners</strong>.
+          </p>
+          <div class="d-flex gap-3 flex-wrap mb-5 reveal reveal-delay-3">
+            <button class="btn-primary-x btn-lg" onclick="goPage('courses')"><i class="fa fa-play"></i> Start Learning Free</button>
+            <button class="btn-outline-x" onclick="goPage('practice')"><i class="fa fa-code"></i> Try Code Sandbox</button>
+          </div>
+          <div class="hero-stats reveal reveal-delay-4">
+            <div>
+              <div class="hero-stat-num" id="heroStat1">0</div>
+              <div class="hero-stat-label">Learners</div>
+            </div>
+            <div>
+              <div class="hero-stat-num" id="heroStat2">0</div>
+              <div class="hero-stat-label">Courses</div>
+            </div>
+            <div>
+              <div class="hero-stat-num" id="heroStat3">₦0</div>
+              <div class="hero-stat-label">Paid Out</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block">
+          <div class="hero-visual">
+            <div class="hero-ring"></div>
+            <div class="hero-ring hero-ring-2"></div>
+            <div class="hero-card-float">
+              <!-- floating dashboard preview -->
+              <div class="card-glass p-3 mb-3 mx-auto" style="max-width:360px;position:relative;z-index:2">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                  <div class="avatar-placeholder avatar-lg">AK</div>
+                  <div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700">Amaka Kachi</div>
+                    <div class="stat-pill-green stat-pill mt-1"><i class="fa fa-fire text-warning"></i> 14-day streak</div>
+                  </div>
+                </div>
+                <div class="mb-2 d-flex justify-content-between" style="font-size:0.82rem"><span style="color:var(--text2)">JavaScript Mastery</span><span style="color:var(--accent)">78%</span></div>
+                <div class="progress-x mb-3"><div class="progress-bar-x" style="width:78%"></div></div>
+                <div class="row g-2 text-center">
+                  <div class="col-4">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--gold)">1,240</div>
+                    <div style="font-size:0.72rem;color:var(--text3)">XP Points</div>
+                  </div>
+                  <div class="col-4">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--success)">₦8,400</div>
+                    <div style="font-size:0.72rem;color:var(--text3)">Earned</div>
+                  </div>
+                  <div class="col-4">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--primary2)">5</div>
+                    <div style="font-size:0.72rem;color:var(--text3)">Referrals</div>
+                  </div>
+                </div>
+              </div>
+              <!-- floating badge -->
+              <div class="card-glass p-2 d-flex align-items-center gap-2" style="max-width:200px;margin-left:auto;margin-top:8px;position:relative;z-index:2">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--warning));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🏆</div>
+                <div>
+                  <div style="font-size:0.78rem;font-weight:700;color:var(--gold)">Level 8 Achieved!</div>
+                  <div style="font-size:0.7rem;color:var(--text3)">+500 XP earned</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+      <span class="ticker-item">🟢 Chukwuemeka just earned <span>₦2,400</span> in referrals</span>
+      <span class="ticker-item">📚 150 new learners joined today</span>
+      <span class="ticker-item">⚡ Fatima completed React Bootcamp</span>
+      <span class="ticker-item">💰 Total platform payout this week: <span>₦1.2M</span></span>
+      <span class="ticker-item">🏆 Bayo reached Level 10</span>
+      <span class="ticker-item">🎓 23 certificates issued today</span>
+      <span class="ticker-item">🟢 Chukwuemeka just earned <span>₦2,400</span> in referrals</span>
+      <span class="ticker-item">📚 150 new learners joined today</span>
+      <span class="ticker-item">⚡ Fatima completed React Bootcamp</span>
+      <span class="ticker-item">💰 Total platform payout this week: <span>₦1.2M</span></span>
+      <span class="ticker-item">🏆 Bayo reached Level 10</span>
+      <span class="ticker-item">🎓 23 certificates issued today</span>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="text-center mb-5 reveal">
+        <div class="section-label mb-3">Why Change X Academy</div>
+        <h2 class="h1">6 Engines Running for <span class="gradient-text">You</span></h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+          <div class="card-x h-100">
+            <div class="feat-icon feat-icon-purple"><i class="fa fa-graduation-cap"></i></div>
+            <h5 class="mb-2">Learning Engine</h5>
+            <p style="color:var(--text2);font-size:0.9rem;line-height:1.7">Structured paths, video lessons, quizzes, and certificates. Learn at your pace with AI-guided recommendations.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+          <div class="card-x h-100">
+            <div class="feat-icon feat-icon-cyan"><i class="fa fa-code"></i></div>
+            <h5 class="mb-2">Practice Engine</h5>
+            <p style="color:var(--text2);font-size:0.9rem;line-height:1.7">Live code sandbox, challenges, and auto-graded exercises. Like W3Schools but 10x more powerful.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal reveal-delay-3">
+          <div class="card-x h-100">
+            <div class="feat-icon feat-icon-green"><i class="fa fa-coins"></i></div>
+            <h5 class="mb-2">Earning Engine</h5>
+            <p style="color:var(--text2);font-size:0.9rem;line-height:1.7">Sell courses, earn affiliate commissions, and get referral bonuses. Real ₦ deposited to your wallet.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+          <div class="card-x h-100">
+            <div class="feat-icon feat-icon-gold"><i class="fa fa-robot"></i></div>
+            <h5 class="mb-2">AI Engine</h5>
+            <p style="color:var(--text2);font-size:0.9rem;line-height:1.7">24/7 AI tutor explains concepts, debugs your code, and suggests your optimal learning path.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+          <div class="card-x h-100">
+            <div class="feat-icon feat-icon-purple"><i class="fa fa-store"></i></div>
+            <h5 class="mb-2">Marketplace Engine</h5>
+            <p style="color:var(--text2);font-size:0.9rem;line-height:1.7">Buy and sell digital products, find freelance jobs, and connect with Nigeria's tech ecosystem.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal reveal-delay-3">
+          <div class="card-x h-100">
+            <div class="feat-icon feat-icon-gold"><i class="fa fa-trophy"></i></div>
+            <h5 class="mb-2">Gamification Engine</h5>
+            <p style="color:var(--text2);font-size:0.9rem;line-height:1.7">XP system, levels, streaks, badges, and leaderboards. Learning that feels like a game you can't stop playing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONEY FLOW SECTION -->
+  <section class="section-pad" style="background:var(--bg2)">
+    <div class="container">
+      <div class="text-center mb-5 reveal">
+        <div class="section-label mb-3">The Money Loop</div>
+        <h2 class="h1">How You <span class="gradient-text-gold">Make Money</span></h2>
+        <p style="color:var(--text2);max-width:560px;margin:12px auto 0">Every naira earned on this platform flows back to you as creator, learner, or affiliate.</p>
+      </div>
+      <div class="row g-3 reveal">
+        <div class="col-12">
+          <div class="commission-bar">
+            <div class="commission-pct gradient-text">70%</div>
+            <div>
+              <div style="font-weight:700;font-family:'Syne',sans-serif;font-size:1rem">Course Creator</div>
+              <div style="color:var(--text2);font-size:0.85rem">Every time someone buys your course, you pocket 70% directly to your wallet</div>
+            </div>
+            <div class="ms-auto"><span class="badge-x badge-success">Creator</span></div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="commission-bar">
+            <div class="commission-pct gradient-text">20%</div>
+            <div>
+              <div style="font-weight:700;font-family:'Syne',sans-serif;font-size:1rem">Affiliate Referrer</div>
+              <div style="color:var(--text2);font-size:0.85rem">Share your link, get 20% of every sale your referrals generate forever</div>
+            </div>
+            <div class="ms-auto"><span class="badge-x badge-accent">Affiliate</span></div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="commission-bar">
+            <div class="commission-pct" style="color:var(--text3)">10%</div>
+            <div>
+              <div style="font-weight:700;font-family:'Syne',sans-serif;font-size:1rem">Platform Fee</div>
+              <div style="color:var(--text2);font-size:0.85rem">Only 10% to keep the platform running and improving for everyone</div>
+            </div>
+            <div class="ms-auto"><span class="badge-x badge-primary">Platform</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED COURSES PREVIEW -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-5 reveal">
+        <div>
+          <div class="section-label mb-2">Top Rated</div>
+          <h2 class="h1">Featured <span class="gradient-text">Courses</span></h2>
+        </div>
+        <button class="btn-outline-x btn-sm-x" onclick="goPage('courses')">View All <i class="fa fa-arrow-right ms-1"></i></button>
+      </div>
+      <div class="row g-4" id="homeCourseGrid">
+        <!-- dynamically rendered -->
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD PREVIEW -->
+  <section class="section-pad" style="background:var(--bg2)">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 reveal">
+          <div class="section-label mb-3">Hall of Fame</div>
+          <h2 class="h1 mb-4">Top <span class="gradient-text-gold">Earners</span> This Week</h2>
+          <div class="card-x" id="homeLB">
+            <!-- rendered -->
+          </div>
+        </div>
+        <div class="col-lg-6 reveal reveal-delay-2 mt-4 mt-lg-0">
+          <div class="card-x text-center">
+            <div class="cert-seal">🏆</div>
+            <h4 class="mb-2">Your Streak: <span class="gradient-text-gold">14 Days</span></h4>
+            <p style="color:var(--text2);font-size:0.9rem">Keep going! You're <strong style="color:var(--success)">3 days</strong> away from the <strong style="color:var(--gold)">Legend Badge</strong></p>
+            <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+              <div class="streak-day streak-done">M</div><div class="streak-day streak-done">T</div><div class="streak-day streak-done">W</div><div class="streak-day streak-done">T</div><div class="streak-day streak-done">F</div><div class="streak-day streak-active">S</div><div class="streak-day streak-miss">S</div>
+            </div>
+            <button class="btn-success-x mt-4 pulse-btn" onclick="goPage('dashboard')"><i class="fa fa-chart-line"></i> My Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background:var(--bg2);border-top:1px solid var(--border);padding:48px 0 100px">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="nav-brand mb-3" style="font-size:1.6rem">⚡ Change X Academy</div>
+          <p style="color:var(--text3);font-size:0.88rem;line-height:1.7">Nigeria's most complete learn-to-earn platform. Built to empower creators, developers, and digital entrepreneurs.</p>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="fw-700 mb-3" style="font-family:'Syne',sans-serif;font-weight:700">Platform</div>
+          <div class="d-flex flex-column gap-2">
+            <span style="color:var(--text3);font-size:0.88rem;cursor:pointer" onclick="goPage('courses')">Courses</span>
+            <span style="color:var(--text3);font-size:0.88rem;cursor:pointer" onclick="goPage('practice')">Practice</span>
+            <span style="color:var(--text3);font-size:0.88rem;cursor:pointer" onclick="goPage('marketplace')">Marketplace</span>
+            <span style="color:var(--text3);font-size:0.88rem;cursor:pointer" onclick="goPage('pricing')">Pricing</span>
+          </div>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="fw-700 mb-3" style="font-family:'Syne',sans-serif;font-weight:700">Earn</div>
+          <div class="d-flex flex-column gap-2">
+            <span style="color:var(--text3);font-size:0.88rem;cursor:pointer" onclick="goPage('earn')">Affiliate</span>
+            <span style="color:var(--text3);font-size:0.88rem;cursor:pointer" onclick="goPage('creator')">Creator Studio</span>
+            <span style="color:var(--text3);font-size:0.88sm;cursor:pointer" onclick="goPage('wallet')">Wallet</span>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="fw-700 mb-3" style="font-family:'Syne',sans-serif;font-weight:700">Stay Updated</div>
+          <div class="d-flex gap-2">
+            <input class="input-x flex-1" placeholder="your@email.com" style="border-radius:var(--radius2) 0 0 var(--radius2)"/>
+            <button class="btn-primary-x" style="border-radius:0 var(--radius2) var(--radius2) 0;padding:12px 20px" onclick="showToast('You\'re subscribed!','success','fa-check')">Subscribe</button>
+          </div>
+        </div>
+      </div>
+      <div class="divider-x mt-5 mb-4"></div>
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <span style="color:var(--text3);font-size:0.82rem">© 2025 Change X Academy (I-Tech). All rights reserved.</span>
+        <div class="d-flex gap-3">
+          <i class="fab fa-twitter" style="color:var(--text3);cursor:pointer;font-size:1.1rem"></i>
+          <i class="fab fa-instagram" style="color:var(--text3);cursor:pointer;font-size:1.1rem"></i>
+          <i class="fab fa-linkedin" style="color:var(--text3);cursor:pointer;font-size:1.1rem"></i>
+          <i class="fab fa-youtube" style="color:var(--text3);cursor:pointer;font-size:1.1rem"></i>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ===== COURSES PAGE ===== -->
+<div class="page" id="page-courses">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <div class="section-label">Course Catalog</div>
+      </div>
+      <h2 class="h1 mb-4">Explore <span class="gradient-text">All Courses</span></h2>
+
+      <!-- Filters -->
+      <div class="d-flex gap-3 mb-4 flex-wrap align-items-center">
+        <div class="input-group-x flex-fill" style="max-width:360px">
+          <i class="fa fa-search input-icon"></i>
+          <input class="input-x" id="courseSearch" placeholder="Search courses..." oninput="filterCourses()"/>
+        </div>
+        <select class="input-x" style="width:auto" id="catFilter" onchange="filterCourses()">
+          <option value="">All Categories</option>
+          <option>Web Dev</option><option>Python</option><option>Data Science</option>
+          <option>Mobile</option><option>Design</option><option>Blockchain</option>
+        </select>
+        <select class="input-x" style="width:auto" id="levelFilter" onchange="filterCourses()">
+          <option value="">All Levels</option>
+          <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+        </select>
+      </div>
+
+      <!-- Category Pills -->
+      <div class="d-flex gap-2 flex-wrap mb-4" id="catPills">
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'')">All</span>
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'Web Dev')">Web Dev</span>
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'Python')">Python</span>
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'Data Science')">Data Science</span>
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'Mobile')">Mobile</span>
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'Design')">Design</span>
+        <span class="stat-pill" style="cursor:pointer" onclick="setCat(this,'Blockchain')">Blockchain</span>
+      </div>
+
+      <div class="row g-4" id="allCourseGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COURSE DETAIL PAGE ===== -->
+<div class="page" id="page-coursedetail">
+  <div class="pt-nav">
+    <div id="courseDetailContent"></div>
+  </div>
+</div>
+
+<!-- ===== LESSON PLAYER PAGE ===== -->
+<div class="page" id="page-lesson">
+  <div class="pt-nav">
+    <div class="container-fluid px-0">
+      <div class="row g-0">
+        <!-- Video Side -->
+        <div class="col-lg-8">
+          <div style="background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+            <div style="text-align:center;color:var(--text2)">
+              <div style="width:80px;height:80px;border-radius:50%;background:rgba(108,59,255,0.2);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 16px;cursor:pointer" onclick="showToast('Video playing!','info','fa-play')">
+                <i class="fa fa-play ms-1" style="color:var(--primary2)"></i>
+              </div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem">JavaScript Fundamentals — Lesson 3</div>
+              <div style="font-size:0.85rem;color:var(--text3)">Variables, Types & Operators</div>
+            </div>
+            <!-- timeline bar -->
+            <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);padding:12px 16px">
+              <div style="display:flex;align-items:center;gap:12px;font-size:0.8rem;color:var(--text3)">
+                <i class="fa fa-pause" style="cursor:pointer;color:var(--text2)"></i>
+                <span>12:45</span>
+                <div style="flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;cursor:pointer;position:relative">
+                  <div style="width:45%;height:100%;background:var(--primary);border-radius:2px;position:relative">
+                    <div style="width:12px;height:12px;border-radius:50%;background:var(--primary2);position:absolute;right:-6px;top:-4px"></div>
+                  </div>
+                </div>
+                <span>28:30</span>
+                <i class="fa fa-expand" style="cursor:pointer"></i>
+              </div>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+              <div>
+                <h4 class="mb-1">Variables, Types & Operators</h4>
+                <div style="font-size:0.85rem;color:var(--text3)">Lesson 3 of 18 · JavaScript Fundamentals</div>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn-outline-x btn-sm-x"><i class="fa fa-chevron-left"></i> Prev</button>
+                <button class="btn-primary-x btn-sm-x" onclick="showToast('+50 XP earned!','xp','fa-star')">Next <i class="fa fa-chevron-right"></i></button>
+              </div>
+            </div>
+            <!-- Tabs -->
+            <div class="tabs-x mb-4">
+              <button class="tab-x active" onclick="switchTab(this,'lessonOverview')">Overview</button>
+              <button class="tab-x" onclick="switchTab(this,'lessonNotes')">Notes</button>
+              <button class="tab-x" onclick="switchTab(this,'lessonQ')">Q&A</button>
+            </div>
+            <div class="tab-content-x active" id="lessonOverview">
+              <p style="color:var(--text2);line-height:1.8;font-size:0.92rem">In this lesson, you'll learn about JavaScript's fundamental building blocks: variables declared with <code style="color:var(--accent);background:rgba(0,212,255,0.08);padding:1px 6px;border-radius:3px">let</code>, <code style="color:var(--accent);background:rgba(0,212,255,0.08);padding:1px 6px;border-radius:3px">const</code>, and <code style="color:var(--accent);background:rgba(0,212,255,0.08);padding:1px 6px;border-radius:3px">var</code>. We'll cover dynamic typing, primitive types (string, number, boolean), and the basic arithmetic, comparison, and logical operators.</p>
+              <div class="card-x mt-4">
+                <h6 class="mb-3" style="font-family:'Syne',sans-serif">Key Concepts</h6>
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex align-items-center gap-2"><i class="fa fa-check-circle" style="color:var(--success)"></i><span style="font-size:0.9rem">Variable declaration: let, const, var</span></div>
+                  <div class="d-flex align-items-center gap-2"><i class="fa fa-check-circle" style="color:var(--success)"></i><span style="font-size:0.9rem">Primitive data types</span></div>
+                  <div class="d-flex align-items-center gap-2"><i class="fa fa-circle" style="color:var(--text3)"></i><span style="font-size:0.9rem">Arithmetic operators</span></div>
+                  <div class="d-flex align-items-center gap-2"><i class="fa fa-circle" style="color:var(--text3)"></i><span style="font-size:0.9rem">Type coercion</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-content-x" id="lessonNotes">
+              <textarea class="input-x" rows="6" placeholder="Take notes here... (auto-saved)"></textarea>
+              <button class="btn-primary-x mt-3 btn-sm-x" onclick="showToast('Notes saved!','success','fa-save')"><i class="fa fa-save"></i> Save Notes</button>
+            </div>
+            <div class="tab-content-x" id="lessonQ">
+              <div class="d-flex gap-3 mb-4">
+                <input class="input-x flex-1" placeholder="Ask a question..."/>
+                <button class="btn-primary-x btn-sm-x" onclick="showToast('Question posted!','success','fa-check')">Post</button>
+              </div>
+              <div class="d-flex flex-column gap-3">
+                <div class="card-x">
+                  <div class="d-flex gap-3">
+                    <div class="avatar-placeholder avatar" style="font-size:0.8rem">TK</div>
+                    <div>
+                      <div style="font-weight:600;font-size:0.88rem">Taiwo K.</div>
+                      <div style="color:var(--text2);font-size:0.85rem;margin-top:4px">When should I use const vs let?</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Curriculum Side -->
+        <div class="col-lg-4" style="border-left:1px solid var(--border);background:var(--bg2)">
+          <div style="padding:20px;border-bottom:1px solid var(--border)">
+            <h6 style="font-family:'Syne',sans-serif;font-weight:700">Course Content</h6>
+            <div class="progress-x mt-2"><div class="progress-bar-x" style="width:44%"></div></div>
+            <div style="font-size:0.78rem;color:var(--text3);margin-top:6px">8 of 18 lessons completed</div>
+          </div>
+          <div style="overflow-y:auto;max-height:calc(100vh - 200px);padding:12px">
+            <div id="lessonList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRACTICE PAGE ===== -->
+<div class="page" id="page-practice">
+  <div class="pt-nav section-pad">
+    <div class="container-fluid px-4">
+      <div class="row g-4 mb-4">
+        <div class="col-12">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+              <div class="section-label mb-2">Code Sandbox</div>
+              <h2 class="h1">Live <span class="gradient-text">Code Editor</span></h2>
+            </div>
+            <div class="d-flex gap-2">
+              <select class="input-x" id="langSelect" style="width:auto" onchange="updateLang()">
+                <option>JavaScript</option><option>HTML</option><option>Python</option><option>CSS</option>
+              </select>
+              <button class="btn-outline-x btn-sm-x" onclick="resetCode()"><i class="fa fa-redo"></i></button>
+              <button class="btn-accent-x btn-sm-x" onclick="shareCode()"><i class="fa fa-share"></i> Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="code-editor-wrap">
+            <div class="code-editor-header">
+              <div class="code-dot code-dot-red"></div>
+              <div class="code-dot code-dot-yellow"></div>
+              <div class="code-dot code-dot-green"></div>
+              <div class="code-tabs">
+                <span class="code-tab active" id="codeTabMain">main.js</span>
+              </div>
+              <div class="ms-auto d-flex gap-2" style="font-size:0.75rem;color:var(--text3)">
+                <span id="lineCount">1 line</span>
+              </div>
+            </div>
+            <textarea class="code-area" id="codeEditor" oninput="updateLineCount()" onkeydown="handleTabKey(event)" spellcheck="false">// 🚀 Change X Academy — Live Code Sandbox
+// Start coding and click RUN to see the output!
+
+function greet(name) {
+  return `Hello, ${name}! Welcome to Change X Academy.`;
+}
+
+const user = {
+  name: "Amaka",
+  level: 8,
+  xp: 1240,
+  earnings: 12500
+};
+
+console.log(greet(user.name));
+console.log(`Level: ${user.level} | XP: ${user.xp} | Earnings: ₦${user.earnings.toLocaleString()}`);
+
+// Try editing this code!
+const numbers = [10, 20, 30, 40, 50];
+const doubled = numbers.map(n => n * 2);
+console.log("Doubled:", doubled);
+</textarea>
+            <div class="code-run-bar">
+              <div style="font-size:0.8rem;color:var(--text3)">
+                <i class="fa fa-keyboard me-1"></i> Tab to indent · Ctrl+Enter to run
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn-outline-x btn-sm-x" onclick="clearOutput()"><i class="fa fa-trash"></i> Clear</button>
+                <button class="btn-accent-x btn-sm-x" onclick="runCode()"><i class="fa fa-play"></i> Run Code</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <!-- Output -->
+          <div class="code-editor-wrap mb-4">
+            <div class="code-editor-header">
+              <span style="font-size:0.82rem;color:var(--text3)">Output Console</span>
+              <div class="ms-auto d-flex gap-2 align-items-center">
+                <span id="outputStatus" class="badge-x badge-success">Ready</span>
+              </div>
+            </div>
+            <div class="code-output" id="codeOutput">// Output appears here after you click RUN
+</div>
+          </div>
+          <!-- Challenges -->
+          <div class="card-x">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">⚡ Daily Challenges</h6>
+            <div class="d-flex flex-column gap-2" id="challengeList">
+              <!-- rendered -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exercises Section -->
+      <div class="mt-5">
+        <h4 class="mb-4" style="font-family:'Syne',sans-serif">Practice <span class="gradient-text">Exercises</span></h4>
+        <div class="row g-3" id="exerciseGrid">
+          <!-- rendered -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EARN PAGE ===== -->
+<div class="page" id="page-earn">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-label mb-3">Monetization Hub</div>
+        <h2 class="h1">Your <span class="gradient-text-gold">Earning System</span></h2>
+        <p style="color:var(--text2);max-width:520px;margin:12px auto 0">Three revenue streams, one dashboard. Sell, refer, and earn — all automated.</p>
+      </div>
+
+      <!-- Earn Stats Row -->
+      <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+          <div class="card-x text-center card-glow-green">
+            <div style="font-size:0.75rem;color:var(--text3);font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.08em">Total Earned</div>
+            <div class="wallet-balance mt-1" style="font-size:1.8rem">₦12,500</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card-x text-center">
+            <div style="font-size:0.75rem;color:var(--text3);font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.08em">This Month</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--accent);margin-top:4px">₦4,800</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card-x text-center">
+            <div style="font-size:0.75rem;color:var(--text3);font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.08em">Referrals</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--primary2);margin-top:4px">17</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card-x text-center">
+            <div style="font-size:0.75rem;color:var(--text3);font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.08em">Courses Sold</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--gold);margin-top:4px">8</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-x mb-5" style="max-width:480px">
+        <button class="tab-x active" onclick="switchTab(this,'earnAffiliate')">Affiliate</button>
+        <button class="tab-x" onclick="switchTab(this,'earnReferral')">Referral Tree</button>
+        <button class="tab-x" onclick="switchTab(this,'earnHistory')">History</button>
+      </div>
+
+      <div class="tab-content-x active" id="earnAffiliate">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card-x card-glow mb-4">
+              <h5 class="mb-3" style="font-family:'Syne',sans-serif"><i class="fa fa-link me-2" style="color:var(--accent)"></i>Your Affiliate Link</h5>
+              <div class="d-flex gap-2">
+                <input class="input-x flex-1" value="changexacademy.ng/ref/AMAKA2024" id="affiliateLink" readonly/>
+                <button class="btn-primary-x btn-sm-x" onclick="copyLink()"><i class="fa fa-copy"></i> Copy</button>
+              </div>
+              <div class="mt-3 d-flex gap-2 flex-wrap">
+                <button class="btn-outline-x btn-sm-x" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                <button class="btn-outline-x btn-sm-x"><i class="fab fa-twitter"></i> Twitter</button>
+                <button class="btn-outline-x btn-sm-x"><i class="fa fa-envelope"></i> Email</button>
+              </div>
+            </div>
+            <div class="card-x">
+              <h6 class="mb-3" style="font-family:'Syne',sans-serif">Commission Structure</h6>
+              <div class="d-flex flex-column gap-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span style="font-size:0.9rem">Direct referral purchases</span>
+                  <span class="stat-pill-green stat-pill">20%</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span style="font-size:0.9rem">Level 2 (your referral's referral)</span>
+                  <span class="stat-pill stat-pill-accent">5%</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span style="font-size:0.9rem">Learn-to-earn rewards</span>
+                  <span class="stat-pill stat-pill-gold">₦50/lesson</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-x">
+              <h6 class="mb-3" style="font-family:'Syne',sans-serif">Monthly Earnings</h6>
+              <div class="chart-bar-wrap" id="earnChart">
+                <!-- rendered -->
+              </div>
+              <div class="d-flex gap-2 mt-2" style="font-size:0.72rem;color:var(--text3)">
+                <span>Jan</span><span style="margin-left:auto">Feb</span><span style="margin-left:auto">Mar</span><span style="margin-left:auto">Apr</span><span style="margin-left:auto">May</span><span style="margin-left:auto">Jun</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content-x" id="earnReferral">
+        <div class="card-x" style="max-width:640px">
+          <h6 class="mb-4" style="font-family:'Syne',sans-serif"><i class="fa fa-sitemap me-2" style="color:var(--success)"></i>Your Referral Tree</h6>
+          <!-- root -->
+          <div class="ref-node mb-1">
+            <div class="avatar-placeholder avatar" style="font-size:0.85rem;background:linear-gradient(135deg,var(--gold),var(--warning));flex-shrink:0">YOU</div>
+            <div class="flex-1">
+              <div style="font-weight:700;font-size:0.9rem">You (Root)</div>
+              <div style="font-size:0.78rem;color:var(--text3)">All commissions flow through you</div>
+            </div>
+            <span class="ref-badge ref-level-1">Root</span>
+          </div>
+          <div class="ref-line"></div>
+          <!-- level 1 -->
+          <div class="ms-4">
+            <div class="ref-node mb-1">
+              <div class="avatar-placeholder avatar" style="font-size:0.75rem;width:36px;height:36px;flex-shrink:0">CK</div>
+              <div class="flex-1"><div style="font-weight:600;font-size:0.88rem">Chidi K.</div><div style="font-size:0.76rem;color:var(--text3)">Joined 3 days ago · ₦4,200 spent</div></div>
+              <span class="ref-badge ref-level-1">L1</span>
+            </div>
+            <div class="ref-line"></div>
+            <div class="ms-4">
+              <div class="ref-node mb-2">
+                <div class="avatar-placeholder avatar" style="font-size:0.75rem;width:36px;height:36px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--primary))">FO</div>
+                <div class="flex-1"><div style="font-weight:600;font-size:0.88rem">Funke O.</div><div style="font-size:0.76rem;color:var(--text3)">Joined 1 day ago · ₦1,800 spent</div></div>
+                <span class="ref-badge ref-level-2">L2</span>
+              </div>
+            </div>
+            <div class="ref-node mb-1">
+              <div class="avatar-placeholder avatar" style="font-size:0.75rem;width:36px;height:36px;flex-shrink:0">BA</div>
+              <div class="flex-1"><div style="font-weight:600;font-size:0.88rem">Bayo A.</div><div style="font-size:0.76rem;color:var(--text3)">Joined 5 days ago · ₦6,500 spent</div></div>
+              <span class="ref-badge ref-level-1">L1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content-x" id="earnHistory">
+        <div class="card-x">
+          <table class="admin-table">
+            <thead><tr><th>Date</th><th>Type</th><th>From</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="earnHistoryTable">
+              <tr><td>Apr 3, 2025</td><td><span class="badge-x badge-accent">Affiliate</span></td><td>Chidi K.</td><td style="color:var(--success);font-weight:600">+₦840</td><td><span class="status-dot status-active"></span>Paid</td></tr>
+              <tr><td>Apr 1, 2025</td><td><span class="badge-x badge-success">Course Sale</span></td><td>Course #3</td><td style="color:var(--success);font-weight:600">+₦2,450</td><td><span class="status-dot status-active"></span>Paid</td></tr>
+              <tr><td>Mar 28, 2025</td><td><span class="badge-x badge-gold">Learn2Earn</span></td><td>Lesson XP</td><td style="color:var(--success);font-weight:600">+₦150</td><td><span class="status-dot status-active"></span>Paid</td></tr>
+              <tr><td>Mar 25, 2025</td><td><span class="badge-x badge-accent">Affiliate</span></td><td>Funke O.</td><td style="color:var(--success);font-weight:600">+₦360</td><td><span class="status-dot status-pending"></span>Pending</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WALLET PAGE ===== -->
+<div class="page" id="page-wallet">
+  <div class="pt-nav section-pad">
+    <div class="container" style="max-width:900px">
+      <div class="section-label mb-3">Finance</div>
+      <h2 class="h1 mb-4">My <span class="gradient-text">Wallet</span></h2>
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="wallet-card">
+            <div class="wallet-label mb-1">Available Balance</div>
+            <div class="wallet-balance">₦12,500.00</div>
+            <div class="mt-3 d-flex gap-2">
+              <button class="btn-success-x btn-sm-x" onclick="openWithdrawModal()"><i class="fa fa-arrow-up"></i> Withdraw</button>
+              <button class="btn-outline-x btn-sm-x" onclick="showToast('Bank linked!','success','fa-check')"><i class="fa fa-bank"></i> Link Bank</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="card-x text-center">
+                <div style="font-size:0.75rem;color:var(--text3)">Pending</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--warning);margin-top:4px">₦1,260</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card-x text-center">
+                <div style="font-size:0.75rem;color:var(--text3)">Total Earned</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--success);margin-top:4px">₦28,900</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card-x text-center">
+                <div style="font-size:0.75rem;color:var(--text3)">Withdrawn</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--text);margin-top:4px">₦16,400</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card-x text-center">
+                <div style="font-size:0.75rem;color:var(--text3)">This Week</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);margin-top:4px">₦3,200</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-x">
+        <h6 class="mb-4" style="font-family:'Syne',sans-serif">Transaction History</h6>
+        <table class="admin-table">
+          <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr></thead>
+          <tbody>
+            <tr><td>Apr 3</td><td>Affiliate commission – Chidi K.</td><td style="color:var(--success)">+₦840</td><td>₦12,500</td></tr>
+            <tr><td>Apr 1</td><td>Course sale – Python Basics</td><td style="color:var(--success)">+₦2,450</td><td>₦11,660</td></tr>
+            <tr><td>Mar 30</td><td>Withdrawal to GTBank</td><td style="color:var(--danger)">-₦5,000</td><td>₦9,210</td></tr>
+            <tr><td>Mar 28</td><td>Learn-to-earn reward</td><td style="color:var(--success)">+₦150</td><td>₦14,210</td></tr>
+            <tr><td>Mar 25</td><td>Affiliate commission – Funke O.</td><td style="color:var(--success)">+₦360</td><td>₦14,060</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AI PAGE ===== -->
+<div class="page" id="page-ai">
+  <div class="pt-nav section-pad">
+    <div class="container" style="max-width:900px">
+      <div class="section-label mb-3">AI Engine</div>
+      <h2 class="h1 mb-4"><span class="gradient-text">AI Tutor</span> — Available 24/7</h2>
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="ai-chat-wrap">
+            <div class="ai-chat-header">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🤖</div>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem">Change X AI Tutor</div>
+                <div style="font-size:0.75rem;color:var(--text3);display:flex;align-items:center;gap:5px"><div class="ai-status"></div>Online · GPT-powered</div>
+              </div>
+              <div class="ms-auto"><span class="badge-x badge-success">Active</span></div>
+            </div>
+            <div class="ai-messages" id="aiMessages">
+              <div class="ai-msg ai-msg-bot">
+                <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">🤖</div>
+                <div class="ai-msg-bubble">👋 Hi! I'm your Change X AI Tutor. I can explain concepts, debug your code, recommend courses, and guide your learning path. What would you like to learn today?</div>
+              </div>
+            </div>
+            <div class="ai-input-row">
+              <input class="ai-input" id="aiInput" placeholder="Ask anything... e.g. 'Explain closures in JavaScript'" onkeypress="aiEnter(event)"/>
+              <button class="ai-send" onclick="sendAIMessage()"><i class="fa fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card-x mb-3">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">Quick Prompts</h6>
+            <div class="d-flex flex-column gap-2">
+              <button class="btn-outline-x btn-sm-x text-start" onclick="setAIPrompt('Explain JavaScript closures with an example')">💡 JS Closures</button>
+              <button class="btn-outline-x btn-sm-x text-start" onclick="setAIPrompt('What is the difference between == and === in JavaScript?')">⚡ == vs ===</button>
+              <button class="btn-outline-x btn-sm-x text-start" onclick="setAIPrompt('Show me how to use async/await')">🔄 Async/Await</button>
+              <button class="btn-outline-x btn-sm-x text-start" onclick="setAIPrompt('Recommend my next course based on JavaScript knowledge')">📚 Next Course</button>
+              <button class="btn-outline-x btn-sm-x text-start" onclick="setAIPrompt('Debug this code: const arr = []; arr[0].name')">🐛 Debug Help</button>
+            </div>
+          </div>
+          <div class="card-x">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">AI Capabilities</h6>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2"><i class="fa fa-check-circle" style="color:var(--success)"></i><span style="font-size:0.85rem">Concept explanation</span></div>
+              <div class="d-flex align-items-center gap-2"><i class="fa fa-check-circle" style="color:var(--success)"></i><span style="font-size:0.85rem">Code debugging</span></div>
+              <div class="d-flex align-items-center gap-2"><i class="fa fa-check-circle" style="color:var(--success)"></i><span style="font-size:0.85rem">Course recommendations</span></div>
+              <div class="d-flex align-items-center gap-2"><i class="fa fa-check-circle" style="color:var(--success)"></i><span style="font-size:0.85rem">Learning path planning</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD PAGE ===== -->
+<div class="page" id="page-dashboard">
+  <div class="pt-nav">
+    <div class="dashboard-layout">
+      <!-- Sidebar -->
+      <div class="sidebar-x">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="avatar-placeholder avatar-lg" style="font-size:1rem">AK</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700">Amaka Kachi</div>
+            <div class="stat-pill-gold stat-pill" style="margin-top:4px"><i class="fa fa-star"></i> Level 8</div>
+          </div>
+        </div>
+        <div class="xp-bar mb-1">
+          <div class="xp-fill" style="width:62%"></div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:20px">1,240 / 2,000 XP to Level 9</div>
+
+        <div class="sidebar-section">Main</div>
+        <div class="sidebar-nav-item active" onclick="switchDash('overview')"><i class="fa fa-home"></i>Overview</div>
+        <div class="sidebar-nav-item" onclick="switchDash('courses')"><i class="fa fa-book"></i>My Courses</div>
+        <div class="sidebar-nav-item" onclick="switchDash('progress')"><i class="fa fa-chart-line"></i>Progress</div>
+        <div class="sidebar-nav-item" onclick="switchDash('certificates')"><i class="fa fa-certificate"></i>Certificates</div>
+
+        <div class="sidebar-section">Earn</div>
+        <div class="sidebar-nav-item" onclick="goPage('earn')"><i class="fa fa-coins"></i>Earnings</div>
+        <div class="sidebar-nav-item" onclick="goPage('wallet')"><i class="fa fa-wallet"></i>Wallet</div>
+        <div class="sidebar-nav-item" onclick="goPage('creator')"><i class="fa fa-video"></i>Creator Studio</div>
+
+        <div class="sidebar-section">Account</div>
+        <div class="sidebar-nav-item" onclick="switchDash('settings')"><i class="fa fa-gear"></i>Settings</div>
+        <div class="sidebar-nav-item" onclick="showToast('Logged out','info','fa-sign-out')"><i class="fa fa-sign-out-alt"></i>Logout</div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="p-4" style="overflow-y:auto">
+
+        <div id="dashOverview">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Good morning, <span class="gradient-text">Amaka</span> 👋</h4>
+          <!-- Stats Row -->
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-xl-3">
+              <div class="card-x text-center">
+                <i class="fa fa-bolt mb-2" style="font-size:1.5rem;color:var(--gold)"></i>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--gold)">1,240</div>
+                <div style="font-size:0.78rem;color:var(--text3)">XP Points</div>
+              </div>
+            </div>
+            <div class="col-6 col-xl-3">
+              <div class="card-x text-center">
+                <i class="fa fa-fire mb-2" style="font-size:1.5rem;color:var(--warning)"></i>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--warning)">14</div>
+                <div style="font-size:0.78rem;color:var(--text3)">Day Streak</div>
+              </div>
+            </div>
+            <div class="col-6 col-xl-3">
+              <div class="card-x text-center">
+                <i class="fa fa-graduation-cap mb-2" style="font-size:1.5rem;color:var(--primary2)"></i>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--primary2)">4</div>
+                <div style="font-size:0.78rem;color:var(--text3)">Courses Active</div>
+              </div>
+            </div>
+            <div class="col-6 col-xl-3">
+              <div class="card-x text-center">
+                <i class="fa fa-coins mb-2" style="font-size:1.5rem;color:var(--success)"></i>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--success)">₦12,500</div>
+                <div style="font-size:0.78rem;color:var(--text3)">Total Earned</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Courses -->
+          <div class="card-x mb-4">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">Continue Learning</h6>
+            <div class="d-flex flex-column gap-3" id="activeCourses">
+              <!-- rendered -->
+            </div>
+          </div>
+
+          <!-- Streak -->
+          <div class="card-x mb-4">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif"><i class="fa fa-fire me-2" style="color:var(--warning)"></i>Weekly Streak</h6>
+            <div class="d-flex gap-2 flex-wrap">
+              <div class="streak-day streak-done">M</div>
+              <div class="streak-day streak-done">T</div>
+              <div class="streak-day streak-done">W</div>
+              <div class="streak-day streak-done">T</div>
+              <div class="streak-day streak-done">F</div>
+              <div class="streak-day streak-active">S</div>
+              <div class="streak-day streak-miss">S</div>
+            </div>
+            <div style="font-size:0.82rem;color:var(--text3);margin-top:10px">You've been on a 14-day streak! Don't break it 🔥</div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="card-x">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">Weekly Leaderboard</h6>
+            <div id="dashLB"></div>
+          </div>
+        </div>
+
+        <div id="dashCourses" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">My <span class="gradient-text">Courses</span></h4>
+          <div class="row g-3" id="myCoursesList"></div>
+        </div>
+
+        <div id="dashProgress" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Learning <span class="gradient-text">Progress</span></h4>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="card-x">
+                <h6 class="mb-3" style="font-family:'Syne',sans-serif">XP Over Time</h6>
+                <div class="chart-bar-wrap" id="progressChart"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card-x">
+                <h6 class="mb-3" style="font-family:'Syne',sans-serif">Lessons Completed</h6>
+                <div class="d-flex flex-column gap-3" id="lessonProgressList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="dashCertificates" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">My <span class="gradient-text-gold">Certificates</span></h4>
+          <div class="row g-4" id="certGrid"></div>
+        </div>
+
+        <div id="dashSettings" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Account <span class="gradient-text">Settings</span></h4>
+          <div class="card-x mb-4" style="max-width:640px">
+            <h6 class="mb-4" style="font-family:'Syne',sans-serif">Profile</h6>
+            <div class="row g-3">
+              <div class="col-6"><label class="label-x">First Name</label><input class="input-x" value="Amaka"/></div>
+              <div class="col-6"><label class="label-x">Last Name</label><input class="input-x" value="Kachi"/></div>
+              <div class="col-12"><label class="label-x">Email</label><input class="input-x" value="amaka@gmail.com"/></div>
+              <div class="col-12"><label class="label-x">Bio</label><textarea class="input-x" rows="3" placeholder="Tell learners about yourself..."></textarea></div>
+            </div>
+            <button class="btn-primary-x mt-4" onclick="showToast('Profile updated!','success','fa-check')"><i class="fa fa-save"></i> Save Changes</button>
+          </div>
+          <div class="card-x" style="max-width:640px">
+            <h6 class="mb-4" style="font-family:'Syne',sans-serif">Password</h6>
+            <div class="d-flex flex-column gap-3">
+              <div><label class="label-x">Current Password</label><input class="input-x" type="password" placeholder="••••••••"/></div>
+              <div><label class="label-x">New Password</label><input class="input-x" type="password" placeholder="••••••••"/></div>
+            </div>
+            <button class="btn-primary-x mt-4" onclick="showToast('Password updated!','success','fa-check')"><i class="fa fa-key"></i> Update Password</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MARKETPLACE PAGE ===== -->
+<div class="page" id="page-marketplace">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="section-label mb-3">Digital Ecosystem</div>
+      <h2 class="h1 mb-5">The <span class="gradient-text">Marketplace</span></h2>
+      <div class="tabs-x mb-5" style="max-width:420px">
+        <button class="tab-x active" onclick="switchTab(this,'mktProducts')">Products</button>
+        <button class="tab-x" onclick="switchTab(this,'mktJobs')">Job Board</button>
+        <button class="tab-x" onclick="switchTab(this,'mktFreelance')">Freelance</button>
+      </div>
+      <div class="tab-content-x active" id="mktProducts">
+        <div class="row g-4" id="marketplaceGrid"></div>
+      </div>
+      <div class="tab-content-x" id="mktJobs">
+        <div class="d-flex flex-column gap-3" id="jobBoard"></div>
+      </div>
+      <div class="tab-content-x" id="mktFreelance">
+        <div class="row g-4" id="freelanceGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATOR PAGE ===== -->
+<div class="page" id="page-creator">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="section-label mb-3">Creator Studio</div>
+      <h2 class="h1 mb-5">Build & <span class="gradient-text">Sell Courses</span></h2>
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="card-x card-glow mb-4">
+            <div style="font-size:0.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;font-family:'Sora',sans-serif">Creator Revenue</div>
+            <div class="wallet-balance mt-1">₦8,400</div>
+            <div style="font-size:0.82rem;color:var(--text3);margin-top:6px">From 8 course sales this month</div>
+          </div>
+          <div class="card-x">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">My Courses</h6>
+            <div class="d-flex flex-column gap-2" id="creatorCourseList"></div>
+            <button class="btn-primary-x mt-3 w-100" onclick="openUploadModal()"><i class="fa fa-plus"></i> New Course</button>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card-x mb-4">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">Revenue Analytics</h6>
+            <div class="chart-bar-wrap" id="creatorChart"></div>
+          </div>
+          <div class="card-x">
+            <h6 class="mb-3" style="font-family:'Syne',sans-serif">Student Activity</h6>
+            <table class="admin-table">
+              <thead><tr><th>Student</th><th>Course</th><th>Progress</th><th>Enrolled</th></tr></thead>
+              <tbody>
+                <tr><td>Chidi K.</td><td>Python Basics</td><td><div class="progress-x" style="width:120px"><div class="progress-bar-x" style="width:65%"></div></div></td><td style="color:var(--text3)">3 days ago</td></tr>
+                <tr><td>Funke O.</td><td>Python Basics</td><td><div class="progress-x" style="width:120px"><div class="progress-bar-x" style="width:22%"></div></div></td><td style="color:var(--text3)">1 day ago</td></tr>
+                <tr><td>Bayo A.</td><td>React Bootcamp</td><td><div class="progress-x" style="width:120px"><div class="progress-bar-x" style="width:88%"></div></div></td><td style="color:var(--text3)">1 week ago</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRICING PAGE ===== -->
+<div class="page" id="page-pricing">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-label mb-3">Simple Pricing</div>
+        <h2 class="h1">Choose Your <span class="gradient-text">Plan</span></h2>
+        <p style="color:var(--text2);max-width:500px;margin:12px auto 0">Start free. Level up when you're ready. Every plan unlocks earning potential.</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+          <div class="pricing-card">
+            <div class="badge-x badge-accent mb-3">Free</div>
+            <div class="pricing-amount mb-1">₦0</div>
+            <div style="color:var(--text3);font-size:0.85rem;margin-bottom:24px">Forever free. No card needed.</div>
+            <div class="d-flex flex-column gap-1 mb-4">
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>5 free courses</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Code sandbox</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Basic AI tutor (10/day)</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Affiliate link</span></div>
+              <div class="pricing-feature no"><i class="fa fa-times"></i><span>Certificate of completion</span></div>
+              <div class="pricing-feature no"><i class="fa fa-times"></i><span>Creator studio</span></div>
+              <div class="pricing-feature no"><i class="fa fa-times"></i><span>Priority support</span></div>
+            </div>
+            <button class="btn-outline-x w-100" onclick="showToast('Welcome to Change X!','success','fa-check')">Get Started Free</button>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="pricing-card featured">
+            <div class="badge-x badge-primary mb-3">Pro</div>
+            <div class="pricing-amount gradient-text mb-1">₦3,500</div>
+            <div style="color:var(--text3);font-size:0.85rem;margin-bottom:24px">per month</div>
+            <div class="d-flex flex-column gap-1 mb-4">
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>All courses unlimited</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Full AI tutor access</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Certificates</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Creator studio (1 course)</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Priority support</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>20% affiliate rate</span></div>
+              <div class="pricing-feature no"><i class="fa fa-times"></i><span>Unlimited course creation</span></div>
+            </div>
+            <button class="btn-primary-x w-100" onclick="openPayModal('Pro','3,500')"><i class="fa fa-bolt"></i> Upgrade to Pro</button>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="pricing-card">
+            <div class="badge-x badge-gold mb-3">Elite</div>
+            <div class="pricing-amount gradient-text-gold mb-1">₦8,000</div>
+            <div style="color:var(--text3);font-size:0.85rem;margin-bottom:24px">per month</div>
+            <div class="d-flex flex-column gap-1 mb-4">
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Everything in Pro</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Unlimited course creation</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>25% affiliate rate</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Featured course badge</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Analytics dashboard</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>1-on-1 mentorship session</span></div>
+              <div class="pricing-feature"><i class="fa fa-check"></i><span>Custom affiliate page</span></div>
+            </div>
+            <button class="btn-success-x w-100" onclick="openPayModal('Elite','8,000')"><i class="fa fa-crown"></i> Go Elite</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div class="page" id="page-admin">
+  <div class="pt-nav">
+    <div class="dashboard-layout">
+      <div class="sidebar-x">
+        <div class="mb-4">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--primary2)"><i class="fa fa-shield me-2"></i>Admin Panel</div>
+          <div style="font-size:0.78rem;color:var(--text3);margin-top:3px">Super Administrator</div>
+        </div>
+        <div class="sidebar-nav-item active" onclick="switchAdmin('dashboard')"><i class="fa fa-home"></i>Dashboard</div>
+        <div class="sidebar-nav-item" onclick="switchAdmin('users')"><i class="fa fa-users"></i>Users</div>
+        <div class="sidebar-nav-item" onclick="switchAdmin('courses')"><i class="fa fa-book"></i>Courses</div>
+        <div class="sidebar-nav-item" onclick="switchAdmin('earnings')"><i class="fa fa-coins"></i>Earnings</div>
+        <div class="sidebar-nav-item" onclick="switchAdmin('withdrawals')"><i class="fa fa-arrow-up"></i>Withdrawals</div>
+        <div class="sidebar-nav-item" onclick="switchAdmin('analytics')"><i class="fa fa-chart-bar"></i>Analytics</div>
+      </div>
+      <div class="p-4">
+        <div id="adminDashboard">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Platform <span class="gradient-text">Overview</span></h4>
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-xl-3"><div class="admin-stat-card text-center"><div style="font-size:2rem;margin-bottom:4px">👥</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem">24,580</div><div style="color:var(--text3);font-size:0.8rem">Total Users</div><div class="stat-pill stat-pill-green mt-2">+8% this week</div></div></div>
+            <div class="col-6 col-xl-3"><div class="admin-stat-card text-center"><div style="font-size:2rem;margin-bottom:4px">📚</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem">186</div><div style="color:var(--text3);font-size:0.8rem">Active Courses</div><div class="stat-pill stat-pill-accent mt-2">+3 this week</div></div></div>
+            <div class="col-6 col-xl-3"><div class="admin-stat-card text-center"><div style="font-size:2rem;margin-bottom:4px">💰</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem">₦1.24M</div><div style="color:var(--text3);font-size:0.8rem">Monthly Revenue</div><div class="stat-pill stat-pill-green mt-2">+12% this month</div></div></div>
+            <div class="col-6 col-xl-3"><div class="admin-stat-card text-center"><div style="font-size:2rem;margin-bottom:4px">🎓</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem">3,208</div><div style="color:var(--text3);font-size:0.8rem">Certificates Issued</div><div class="stat-pill stat-pill-gold mt-2">All time</div></div></div>
+          </div>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card-x">
+                <h6 class="mb-3" style="font-family:'Syne',sans-serif">Revenue (Last 6 Months)</h6>
+                <div class="chart-bar-wrap" id="adminRevenueChart"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card-x">
+                <h6 class="mb-3" style="font-family:'Syne',sans-serif">Recent Activity</h6>
+                <div class="d-flex flex-column gap-2" id="adminActivity"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminUsers" style="display:none">
+          <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <h4 style="font-family:'Syne',sans-serif">User <span class="gradient-text">Management</span></h4>
+            <div class="d-flex gap-2">
+              <div class="input-group-x"><i class="fa fa-search input-icon"></i><input class="input-x" placeholder="Search users..."/></div>
+            </div>
+          </div>
+          <div class="card-x">
+            <table class="admin-table">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Plan</th><th>Earned</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="usersTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="adminCourses" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Course <span class="gradient-text">Management</span></h4>
+          <div class="card-x">
+            <table class="admin-table">
+              <thead><tr><th>Course</th><th>Creator</th><th>Category</th><th>Enrolled</th><th>Revenue</th><th>Status</th></tr></thead>
+              <tbody id="coursesAdminTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="adminEarnings" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Earnings <span class="gradient-text">Overview</span></h4>
+          <div class="card-x"><table class="admin-table">
+            <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Platform Cut</th></tr></thead>
+            <tbody>
+              <tr><td>Apr 3</td><td>Chidi K.</td><td><span class="badge-x badge-success">Course Sale</span></td><td>₦4,200</td><td style="color:var(--accent)">₦420</td></tr>
+              <tr><td>Apr 2</td><td>Funke O.</td><td><span class="badge-x badge-accent">Affiliate</span></td><td>₦840</td><td style="color:var(--accent)">₦84</td></tr>
+              <tr><td>Apr 1</td><td>Bayo A.</td><td><span class="badge-x badge-success">Course Sale</span></td><td>₦6,500</td><td style="color:var(--accent)">₦650</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div id="adminWithdrawals" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Withdrawal <span class="gradient-text">Requests</span></h4>
+          <div class="card-x"><table class="admin-table">
+            <thead><tr><th>User</th><th>Amount</th><th>Bank</th><th>Requested</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Amaka K.</td><td style="font-weight:700">₦5,000</td><td>GTBank ****4421</td><td style="color:var(--text3)">2 hours ago</td>
+                <td><span class="badge-x badge-gold">Pending</span></td>
+                <td><button class="btn-success-x btn-sm-x me-1" onclick="showToast('Withdrawal approved!','success','fa-check')">Approve</button><button class="btn-outline-x btn-sm-x" onclick="showToast('Withdrawal declined','error','fa-times')">Decline</button></td>
+              </tr>
+              <tr>
+                <td>Bayo A.</td><td style="font-weight:700">₦12,000</td><td>Access ****8812</td><td style="color:var(--text3)">Yesterday</td>
+                <td><span class="badge-x badge-success">Approved</span></td>
+                <td><button class="btn-outline-x btn-sm-x">View</button></td>
+              </tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div id="adminAnalytics" style="display:none">
+          <h4 class="mb-4" style="font-family:'Syne',sans-serif">Platform <span class="gradient-text">Analytics</span></h4>
+          <div class="row g-4">
+            <div class="col-md-6"><div class="card-x"><h6 class="mb-3" style="font-family:'Syne',sans-serif">User Growth</h6><div class="chart-bar-wrap" id="analyticsUserChart"></div></div></div>
+            <div class="col-md-6"><div class="card-x"><h6 class="mb-3" style="font-family:'Syne',sans-serif">Course Completions</h6><div class="chart-bar-wrap" id="analyticsCourseChart"></div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Withdraw Modal -->
+<div class="modal-x-overlay" id="withdrawModal">
+  <div class="modal-x" style="position:relative">
+    <button class="modal-close" onclick="closeModal('withdrawModal')"><i class="fa fa-times"></i></button>
+    <h5 class="mb-4" style="font-family:'Syne',sans-serif"><i class="fa fa-arrow-up me-2" style="color:var(--success)"></i>Withdraw Funds</h5>
+    <div class="mb-3"><label class="label-x">Amount (₦)</label><input class="input-x" type="number" placeholder="Min. ₦1,000" id="withdrawAmt"/></div>
+    <div class="mb-3"><label class="label-x">Bank Account</label>
+      <select class="input-x" id="withdrawBank">
+        <option>GTBank — Amaka Kachi ****4421</option>
+        <option>Access Bank — Amaka Kachi ****8812</option>
+      </select>
+    </div>
+    <div class="card-x mb-4" style="background:var(--bg3)">
+      <div class="d-flex justify-content-between mb-2"><span style="color:var(--text3)">Available Balance</span><span style="font-weight:700;color:var(--success)">₦12,500</span></div>
+      <div class="d-flex justify-content-between"><span style="color:var(--text3)">Processing Fee</span><span style="color:var(--text3)">Free</span></div>
+    </div>
+    <button class="btn-success-x w-100" onclick="processWithdrawal()"><i class="fa fa-paper-plane"></i> Submit Withdrawal</button>
+  </div>
+</div>
+
+<!-- Pay Modal -->
+<div class="modal-x-overlay" id="payModal">
+  <div class="modal-x" style="position:relative">
+    <button class="modal-close" onclick="closeModal('payModal')"><i class="fa fa-times"></i></button>
+    <h5 class="mb-1" style="font-family:'Syne',sans-serif">Upgrade to <span class="gradient-text" id="payPlanName">Pro</span></h5>
+    <div style="font-size:0.85rem;color:var(--text3);margin-bottom:24px">Powered by Paystack — secure payment</div>
+    <div class="mb-3"><label class="label-x">Card Number</label><input class="input-x" placeholder="4242 4242 4242 4242"/></div>
+    <div class="row g-3 mb-3"><div class="col-6"><label class="label-x">Expiry</label><input class="input-x" placeholder="MM/YY"/></div><div class="col-6"><label class="label-x">CVV</label><input class="input-x" placeholder="123"/></div></div>
+    <div class="mb-4"><label class="label-x">Email</label><input class="input-x" type="email" placeholder="your@email.com"/></div>
+    <button class="btn-primary-x w-100" onclick="processPayment()"><i class="fa fa-lock"></i> Pay ₦<span id="payAmount">3,500</span> Securely</button>
+    <div style="text-align:center;font-size:0.75rem;color:var(--text3);margin-top:12px"><i class="fa fa-shield me-1"></i>Secured by Paystack · SSL Encrypted</div>
+  </div>
+</div>
+
+<!-- Upload Course Modal -->
+<div class="modal-x-overlay" id="uploadModal">
+  <div class="modal-x" style="position:relative">
+    <button class="modal-close" onclick="closeModal('uploadModal')"><i class="fa fa-times"></i></button>
+    <h5 class="mb-4" style="font-family:'Syne',sans-serif"><i class="fa fa-plus-circle me-2" style="color:var(--primary2)"></i>Create New Course</h5>
+    <div class="mb-3"><label class="label-x">Course Title</label><input class="input-x" placeholder="e.g. Complete React Developer 2025"/></div>
+    <div class="mb-3"><label class="label-x">Category</label><select class="input-x"><option>Web Dev</option><option>Python</option><option>Data Science</option><option>Mobile</option><option>Design</option></select></div>
+    <div class="mb-3"><label class="label-x">Level</label><select class="input-x"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+    <div class="mb-3"><label class="label-x">Price (₦)</label><input class="input-x" type="number" placeholder="e.g. 5000"/></div>
+    <div class="mb-4"><label class="label-x">Description</label><textarea class="input-x" rows="3" placeholder="What will students learn?"></textarea></div>
+    <button class="btn-primary-x w-100" onclick="submitCourse()"><i class="fa fa-rocket"></i> Create Course</button>
+  </div>
+</div>
+
+<!-- Challenge Modal -->
+<div class="modal-x-overlay" id="challengeModal">
+  <div class="modal-x" style="position:relative">
+    <button class="modal-close" onclick="closeModal('challengeModal')"><i class="fa fa-times"></i></button>
+    <h5 class="mb-1" style="font-family:'Syne',sans-serif" id="challengeTitle">Challenge</h5>
+    <div class="d-flex gap-2 mb-4 mt-1" id="challengeMeta"></div>
+    <div class="card-x mb-3" style="background:var(--bg3)">
+      <p style="color:var(--text2);font-size:0.9rem;line-height:1.7" id="challengeDesc"></p>
+    </div>
+    <div class="code-editor-wrap mb-3">
+      <div class="code-editor-header">
+        <div class="code-dot code-dot-red"></div><div class="code-dot code-dot-yellow"></div><div class="code-dot code-dot-green"></div>
+        <span style="font-size:0.8rem;color:var(--text3);margin-left:10px">solution.js</span>
+      </div>
+      <textarea class="code-area" id="challengeCode" style="min-height:160px"></textarea>
+      <div class="code-run-bar">
+        <span style="font-size:0.78rem;color:var(--text3)">Write your solution above</span>
+        <button class="btn-accent-x btn-sm-x" onclick="submitChallenge()"><i class="fa fa-check"></i> Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ================================================================
+// CHANGE X ACADEMY — CORE JS ENGINE
+// ================================================================
+
+const STATE = {
+  currentPage: 'home',
+  user: {
+    name: 'Amaka Kachi', xp: 1240, level: 8, streak: 14,
+    balance: 12500, enrolledCourses: [0,1,2,3],
+    completedLessons: [0,1,2,3,4,5,6,7]
+  },
+  cart: [],
+  xpFlash: false
+};
+
+// ===== DATA =====
+const COURSES = [
+  {id:0,title:'JavaScript Fundamentals',cat:'Web Dev',level:'Beginner',price:0,rating:4.9,students:8420,lessons:18,emoji:'🟨',desc:'Master JS from scratch. Variables, functions, DOM, ES6+.',free:true,progress:44},
+  {id:1,title:'Python for Beginners',cat:'Python',level:'Beginner',price:3500,rating:4.8,students:6200,lessons:22,emoji:'🐍',desc:'Learn Python through real projects. Perfect for data & automation.',free:false,progress:67},
+  {id:2,title:'React.js Bootcamp 2025',cat:'Web Dev',level:'Intermediate',price:5500,rating:4.9,students:4800,lessons:35,emoji:'⚛️',desc:'Build production React apps with hooks, context, and Redux.',free:false,progress:20},
+  {id:3,title:'Data Science with Python',cat:'Data Science',level:'Intermediate',price:6500,rating:4.7,students:3100,lessons:28,emoji:'📊',desc:'NumPy, Pandas, Matplotlib, Scikit-Learn. Get job-ready.',free:false,progress:5},
+  {id:4,title:'UI/UX Design Masterclass',cat:'Design',level:'Beginner',price:4000,rating:4.8,students:5500,lessons:20,emoji:'🎨',desc:'Figma, design systems, user research, and portfolio projects.',free:false,progress:0},
+  {id:5,title:'Flutter Mobile Development',cat:'Mobile',level:'Intermediate',price:6000,rating:4.6,students:2800,lessons:30,emoji:'📱',desc:'Build iOS & Android apps with Flutter & Dart from scratch.',free:false,progress:0},
+  {id:6,title:'Solidity & Blockchain',cat:'Blockchain',level:'Advanced',price:8000,rating:4.7,students:1900,lessons:25,emoji:'⛓️',desc:'Smart contracts, DeFi, NFTs, and Web3 development.',free:false,progress:0},
+  {id:7,title:'Node.js Backend Mastery',cat:'Web Dev',level:'Intermediate',price:5000,rating:4.8,students:4200,lessons:26,emoji:'🟩',desc:'Build REST APIs, auth systems, and real-time apps with Node.',free:false,progress:0},
+];
+
+const LESSONS = [
+  {t:'Introduction & Setup',type:'video',dur:'12:00',done:true},
+  {t:'Your First JavaScript Program',type:'video',dur:'8:30',done:true},
+  {t:'Variables & Types',type:'video',dur:'28:30',done:false,active:true},
+  {t:'Operators & Expressions',type:'video',dur:'22:15',done:false},
+  {t:'Control Flow: if/else',type:'video',dur:'19:40',done:false},
+  {t:'Loops: for & while',type:'code',dur:'Exercise',done:false},
+  {t:'Functions Deep Dive',type:'video',dur:'35:20',done:false},
+  {t:'Arrays & Methods',type:'code',dur:'Exercise',done:false},
+  {t:'Objects & Prototypes',type:'video',dur:'41:10',done:false},
+  {t:'Quick Quiz',type:'quiz',dur:'10 Qs',done:false},
+];
+
+const CHALLENGES = [
+  {title:'FizzBuzz Classic',diff:'easy',xp:50,desc:'Write a function that prints numbers from 1 to n. For multiples of 3 print "Fizz", multiples of 5 print "Buzz", multiples of both print "FizzBuzz".',starter:'function fizzBuzz(n) {\n  // your code here\n}'},
+  {title:'Array Flatten',diff:'medium',xp:100,desc:'Write a function that flattens a nested array to a single level. E.g. [[1,2],[3,[4,5]]] → [1,2,3,4,5].',starter:'function flatten(arr) {\n  // your code here\n}'},
+  {title:'Palindrome Check',diff:'easy',xp:50,desc:'Write a function that checks if a string is a palindrome (reads the same forwards and backwards).',starter:'function isPalindrome(str) {\n  // your code here\n}'},
+  {title:'Debounce Function',diff:'hard',xp:200,desc:'Implement a debounce function that delays invoking a function until after a specified wait time has elapsed since the last call.',starter:'function debounce(fn, wait) {\n  // your code here\n}'},
+];
+
+const LEADERBOARD = [
+  {name:'Bayo Adeyemi',xp:4820,level:12,emoji:'🥇'},
+  {name:'Chioma Eze',xp:4210,level:11,emoji:'🥈'},
+  {name:'Fatima Musa',xp:3980,level:11,emoji:'🥉'},
+  {name:'Amaka Kachi',xp:1240,level:8,emoji:'⭐',isUser:true},
+  {name:'Emeka Obi',xp:980,level:7,emoji:''},
+  {name:'Sade Williams',xp:780,level:6,emoji:''},
+];
+
+const MARKETPLACE = [
+  {title:'Premium UI Kit',price:2500,cat:'Design',stars:4.9,sales:320,emoji:'🎨'},
+  {title:'React Component Library',price:4000,cat:'Code',stars:4.8,sales:180,emoji:'⚛️'},
+  {title:'SEO Checklist PDF',price:1000,cat:'Marketing',stars:4.7,sales:540,emoji:'📄'},
+  {title:'Brand Identity Pack',price:3500,cat:'Design',stars:4.9,sales:95,emoji:'🏷️'},
+];
+
+const JOBS = [
+  {title:'Frontend Developer (React)',company:'TechWave Lagos',pay:'₦200k-350k/mo',type:'Full-time',remote:true},
+  {title:'Python Data Analyst',company:'FinEdge Analytics',pay:'₦150k-250k/mo',type:'Contract',remote:false},
+  {title:'Mobile Developer (Flutter)',company:'PalmPay',pay:'₦180k-320k/mo',type:'Full-time',remote:true},
+];
+
+// ===== NAVIGATION =====
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  STATE.currentPage = page;
+  window.scrollTo({top:0,behavior:'smooth'});
+  closeMobileMenu();
+  renderPage(page);
+  updateBottomNav(page);
+}
+
+function updateBottomNav(page){
+  ['Home','Learn','Code','Earn','Dash'].forEach(n=>{
+    const el = document.getElementById('bn'+n);
+    if(el) el.classList.remove('active');
+  });
+  const map = {home:'bnHome',courses:'bnLearn',practice:'bnCode',earn:'bnEarn',dashboard:'bnDash'};
+  if(map[page]) document.getElementById(map[page])?.classList.add('active');
+}
+
+function renderPage(page) {
+  switch(page) {
+    case 'home': renderHomeCourses(); renderHomeLeaderboard(); initReveal(); initCounters(); break;
+    case 'courses': renderAllCourses(); break;
+    case 'practice': renderChallenges(); renderExercises(); break;
+    case 'earn': renderEarnChart(); break;
+    case 'dashboard': renderDashboard(); break;
+    case 'marketplace': renderMarketplace(); break;
+    case 'creator': renderCreator(); break;
+    case 'admin': renderAdmin(); break;
+    case 'lesson': renderLessonList(); break;
+  }
+}
+
+// ===== RENDER HOME COURSES =====
+function renderHomeCourses(){
+  const g = document.getElementById('homeCourseGrid');
+  if(!g) return;
+  g.innerHTML = COURSES.slice(0,3).map(c=>courseCardHTML(c,'sm')).join('');
+}
+
+function renderAllCourses(filter='',cat='',level=''){
+  const g = document.getElementById('allCourseGrid');
+  if(!g) return;
+  let list = COURSES.filter(c=>{
+    const matchSearch = !filter || c.title.toLowerCase().includes(filter.toLowerCase()) || c.cat.toLowerCase().includes(filter.toLowerCase());
+    const matchCat = !cat || c.cat===cat;
+    const matchLvl = !level || c.level===level;
+    return matchSearch && matchCat && matchLvl;
+  });
+  g.innerHTML = list.map(c=>courseCardHTML(c,'lg')).join('');
+}
+
+function courseCardHTML(c, size){
+  return `<div class="${size==='lg'?'col-md-6 col-lg-4':'col-md-4'} reveal">
+    <div class="course-card" onclick="openCourseDetail(${c.id})">
+      <div class="course-thumb"><span style="font-size:4rem">${c.emoji}</span></div>
+      <div class="course-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="badge-x badge-primary">${c.cat}</span>
+          <span class="badge-x badge-accent">${c.level}</span>
+        </div>
+        <div class="course-title">${c.title}</div>
+        <div class="course-meta mb-2">
+          <span class="course-rating">${'★'.repeat(Math.floor(c.rating))}${c.rating%1?'½':''}</span>
+          <span>${c.rating}</span>
+          <span>(${c.students.toLocaleString()})</span>
+        </div>
+        <div class="course-meta mb-3">
+          <i class="fa fa-play-circle"></i><span>${c.lessons} lessons</span>
+        </div>
+        ${c.progress>0?`<div class="mb-3"><div class="progress-x"><div class="progress-bar-x" style="width:${c.progress}%"></div></div><div style="font-size:0.75rem;color:var(--text3);margin-top:4px">${c.progress}% complete</div></div>`:''}
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="${c.free?'course-price-free':'course-price'}">${c.free?'FREE':'₦'+c.price.toLocaleString()}</div>
+          <button class="btn-primary-x btn-sm-x" onclick="event.stopPropagation();enrollCourse(${c.id})">
+            ${STATE.user.enrolledCourses.includes(c.id)?'Continue':'Enroll'}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openCourseDetail(id){
+  const c = COURSES[id];
+  const html = `
+    <div class="section-pad">
+      <div class="container">
+        <button class="btn-outline-x btn-sm-x mb-4" onclick="goPage('courses')"><i class="fa fa-arrow-left"></i> Back</button>
+        <div class="row g-5">
+          <div class="col-lg-8">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="badge-x badge-primary">${c.cat}</span>
+              <span class="badge-x badge-accent">${c.level}</span>
+              ${c.free?'<span class="badge-x badge-success">FREE</span>':''}
+            </div>
+            <h1 class="display-5 mb-3" style="font-family:\'Syne\',sans-serif;font-weight:800">${c.title}</h1>
+            <p style="color:var(--text2);font-size:1.05rem;line-height:1.8;margin-bottom:24px">${c.desc}</p>
+            <div class="d-flex gap-4 mb-4 flex-wrap">
+              <div class="d-flex align-items-center gap-2" style="color:var(--gold)"><i class="fa fa-star"></i><span style="font-weight:700">${c.rating}</span><span style="color:var(--text3)">(${c.students.toLocaleString()} students)</span></div>
+              <div class="d-flex align-items-center gap-2" style="color:var(--text2)"><i class="fa fa-play-circle" style="color:var(--primary2)"></i><span>${c.lessons} video lessons</span></div>
+              <div class="d-flex align-items-center gap-2" style="color:var(--text2)"><i class="fa fa-certificate" style="color:var(--gold)"></i><span>Certificate included</span></div>
+            </div>
+
+            <div class="card-x mb-4">
+              <h5 class="mb-3" style="font-family:\'Syne\',sans-serif">What You'll Learn</h5>
+              <div class="row g-2">
+                ${['Core concepts & fundamentals','Real-world project building','Industry best practices','Career-ready skills','Community & peer support','AI tutor assistance'].map(i=>`<div class="col-md-6 d-flex align-items-center gap-2" style="font-size:0.9rem"><i class="fa fa-check-circle" style="color:var(--success)"></i>${i}</div>`).join('')}
+              </div>
+            </div>
+
+            <div class="card-x">
+              <h5 class="mb-3" style="font-family:\'Syne\',sans-serif">Curriculum</h5>
+              ${LESSONS.map((l,i)=>`
+                <div class="lesson-row" onclick="goPage('lesson')">
+                  <div class="lesson-icon lesson-icon-${l.type==='video'?'video':l.type==='code'?'code':l.type==='quiz'?'quiz':'done'}">
+                    <i class="fa fa-${l.type==='video'?'play':l.type==='code'?'code':l.type==='quiz'?'question':'check'}"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="lesson-title">${i+1}. ${l.t}</div>
+                    <div class="lesson-dur">${l.dur}</div>
+                  </div>
+                  ${l.done?'<i class="fa fa-check-circle" style="color:var(--success)"></i>':''}
+                  ${l.active?'<span class="badge-x badge-primary">Now</span>':''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card-x card-glow" style="position:sticky;top:90px">
+              <div class="course-thumb" style="border-radius:var(--radius2);margin-bottom:20px"><span style="font-size:5rem">${c.emoji}</span></div>
+              <div class="mb-3 text-center">
+                <div class="${c.free?'course-price-free':'course-price'}" style="font-size:2rem">${c.free?'FREE':'₦'+c.price.toLocaleString()}</div>
+              </div>
+              <button class="btn-primary-x w-100 mb-3" onclick="enrollCourse(${c.id})">
+                <i class="fa fa-bolt"></i> ${STATE.user.enrolledCourses.includes(c.id)?'Continue Learning':'Enroll Now'}
+              </button>
+              <button class="btn-outline-x w-100 mb-4" onclick="showToast('Added to wishlist!','info','fa-heart')"><i class="fa fa-heart"></i> Wishlist</button>
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex justify-content-between"><span style="color:var(--text3)">Duration</span><span style="font-weight:600">${c.lessons*25} min</span></div>
+                <div class="divider-x"></div>
+                <div class="d-flex justify-content-between"><span style="color:var(--text3)">Certificate</span><span style="color:var(--gold);font-weight:600">Yes</span></div>
+                <div class="divider-x"></div>
+                <div class="d-flex justify-content-between"><span style="color:var(--text3)">Access</span><span style="font-weight:600">Lifetime</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('courseDetailContent').innerHTML = html;
+  goPage('coursedetail');
+}
+
+function enrollCourse(id){
+  if(!STATE.user.enrolledCourses.includes(id)){
+    STATE.user.enrolledCourses.push(id);
+    addXP(100);
+    showToast('Enrolled successfully! +100 XP','xp','fa-bolt');
+  } else {
+    goPage('lesson');
+  }
+}
+
+// ===== COURSE FILTER =====
+function filterCourses(){
+  const search = document.getElementById('courseSearch')?.value || '';
+  const cat = document.getElementById('catFilter')?.value || '';
+  const level = document.getElementById('levelFilter')?.value || '';
+  renderAllCourses(search, cat, level);
+  initReveal();
+}
+
+function setCat(el, cat){
+  document.querySelectorAll('#catPills .stat-pill').forEach(p=>p.style.background='');
+  el.style.background='rgba(108,59,255,0.25)';
+  document.getElementById('catFilter').value = cat;
+  filterCourses();
+}
+
+// ===== LEADERBOARD =====
+function renderHomeLeaderboard(){
+  const el = document.getElementById('homeLB');
+  if(!el) return;
+  el.innerHTML = LEADERBOARD.map((u,i)=>`
+    <div class="lb-row ${u.isUser?'card-x mb-1':''}">
+      <div class="lb-rank lb-rank-${i+1}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div class="avatar-placeholder avatar-sm" style="background:${u.isUser?'linear-gradient(135deg,var(--gold),var(--warning))':'linear-gradient(135deg,var(--primary3),var(--bg3))'}; font-size:0.7rem;flex-shrink:0">${u.name.split(' ').map(n=>n[0]).join('')}</div>
+      <div class="lb-name">${u.name} ${u.isUser?'<span class="badge-x badge-gold">You</span>':''}</div>
+      <div class="lb-xp"><i class="fa fa-bolt me-1" style="color:var(--gold)"></i>${u.xp.toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+// ===== PRACTICE =====
+function renderChallenges(){
+  const el = document.getElementById('challengeList');
+  if(!el) return;
+  el.innerHTML = CHALLENGES.map(c=>`
+    <div class="challenge-card" onclick="openChallenge('${c.title}')">
+      <div class="d-flex align-items-center justify-content-between">
+        <span style="font-weight:600;font-size:0.9rem">${c.title}</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="difficulty-dot diff-${c.diff}"></span>
+          <span style="font-size:0.78rem;color:var(--text3)">${c.diff}</span>
+          <span class="stat-pill-gold stat-pill"><i class="fa fa-bolt"></i>${c.xp} XP</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderExercises(){
+  const el = document.getElementById('exerciseGrid');
+  if(!el) return;
+  const exs = [
+    {title:'Hello World',cat:'Basics',diff:'easy'},
+    {title:'Sum of Array',cat:'Arrays',diff:'easy'},
+    {title:'String Reversal',cat:'Strings',diff:'easy'},
+    {title:'Fibonacci Sequence',cat:'Algorithms',diff:'medium'},
+    {title:'Binary Search',cat:'Algorithms',diff:'medium'},
+    {title:'Linked List',cat:'Data Structures',diff:'hard'},
+  ];
+  el.innerHTML = exs.map(e=>`
+    <div class="col-md-6 col-lg-4">
+      <div class="challenge-card" onclick="loadExercise('${e.title}')">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div style="font-weight:600;font-size:0.9rem">${e.title}</div>
+            <div style="font-size:0.78rem;color:var(--text3);margin-top:3px">${e.cat}</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="difficulty-dot diff-${e.diff}"></span>
+            <span style="font-size:0.8rem;color:var(--text3)">${e.diff}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== CODE EDITOR =====
+function runCode(){
+  const code = document.getElementById('codeEditor')?.value || '';
+  const out = document.getElementById('codeOutput');
+  const stat = document.getElementById('outputStatus');
+  if(!out) return;
+  out.classList.remove('error-out');
+  out.textContent = '// Running...\n';
+  stat.textContent = 'Running...';
+  stat.className = 'badge-x badge-gold';
+  let logs = [];
+  const originalLog = console.log;
+  console.log = (...args) => { logs.push(args.map(a=>typeof a==='object'?JSON.stringify(a,null,2):String(a)).join(' ')); };
+  setTimeout(()=>{
+    try {
+      new Function(code)();
+      out.textContent = logs.length ? logs.join('\n') : '// No output. Use console.log() to print.';
+      stat.textContent = 'Success';
+      stat.className = 'badge-x badge-success';
+      addXP(10);
+    } catch(e) {
+      out.textContent = '❌ ' + e.message;
+      out.classList.add('error-out');
+      stat.textContent = 'Error';
+      stat.className = 'badge-x badge-danger';
+    }
+    console.log = originalLog;
+  }, 400);
+}
+
+function clearOutput(){
+  const out = document.getElementById('codeOutput');
+  if(out) out.textContent = '// Output cleared\n';
+}
+
+function resetCode(){
+  if(confirm('Reset editor to starter code?')){
+    document.getElementById('codeEditor').value = `// 🚀 Change X Academy — Live Code Sandbox\n\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\nconsole.log(greet("World"));`;
+  }
+}
+
+function shareCode(){
+  navigator.clipboard.writeText(document.getElementById('codeEditor')?.value || '').then(()=>{
+    showToast('Code copied to clipboard!','success','fa-copy');
+  });
+}
+
+function updateLineCount(){
+  const ta = document.getElementById('codeEditor');
+  if(!ta) return;
+  const lines = ta.value.split('\n').length;
+  const el = document.getElementById('lineCount');
+  if(el) el.textContent = lines + (lines===1?' line':' lines');
+}
+
+function handleTabKey(e){
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const ta = e.target;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    ta.value = ta.value.substring(0,start)+'  '+ta.value.substring(end);
+    ta.selectionStart = ta.selectionEnd = start+2;
+  }
+  if(e.ctrlKey && e.key==='Enter') runCode();
+}
+
+function updateLang(){
+  const lang = document.getElementById('langSelect')?.value;
+  const tab = document.getElementById('codeTabMain');
+  const exts = {JavaScript:'main.js',HTML:'index.html',Python:'main.py',CSS:'style.css'};
+  if(tab) tab.textContent = exts[lang]||'main.js';
+  const starters = {
+    JavaScript:`// JavaScript\nconsole.log("Hello from Change X!");`,
+    HTML:`<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello Change X!</h1>\n</body>\n</html>`,
+    Python:`# Python\nprint("Hello from Change X!")`,
+    CSS:`/* CSS */\nbody {\n  background: #07071A;\n  color: #EAEAF0;\n}`
+  };
+  if(document.getElementById('codeEditor')) document.getElementById('codeEditor').value = starters[lang]||'';
+}
+
+function openChallenge(title){
+  const c = CHALLENGES.find(ch=>ch.title===title);
+  if(!c) return;
+  document.getElementById('challengeTitle').textContent = c.title;
+  document.getElementById('challengeMeta').innerHTML = `<span class="difficulty-dot diff-${c.diff}"></span><span style="font-size:0.85rem;color:var(--text3)">${c.diff}</span><span class="stat-pill-gold stat-pill"><i class="fa fa-bolt"></i>+${c.xp} XP</span>`;
+  document.getElementById('challengeDesc').textContent = c.desc;
+  document.getElementById('challengeCode').value = c.starter;
+  openModal('challengeModal');
+}
+
+function loadExercise(title){
+  document.getElementById('codeEditor').value = `// Exercise: ${title}\n// Write your solution below\n\n`;
+  showToast(`Loaded: ${title}`,'info','fa-code');
+}
+
+function submitChallenge(){
+  addXP(100);
+  showToast('Challenge submitted! +100 XP 🎉','xp','fa-bolt');
+  closeModal('challengeModal');
+}
+
+// ===== EARN CHART =====
+function renderEarnChart(){
+  const el = document.getElementById('earnChart');
+  if(!el) return;
+  const data = [2800,4200,3100,5600,4800,6200];
+  const max = Math.max(...data);
+  el.innerHTML = data.map((v,i)=>`
+    <div class="chart-bar chart-bar-green" data-val="₦${v.toLocaleString()}" style="height:${Math.round(v/max*100)}%;flex:1" title="₦${v.toLocaleString()}"></div>
+  `).join('');
+}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  renderHomeLeaderboard();
+  renderActiveCourses();
+  renderDashLB();
+  renderProgressChart();
+  renderCertificates();
+  renderMyCourses();
+  renderCreator();
+}
+
+function switchDash(section){
+  ['overview','courses','progress','certificates','settings'].forEach(s=>{
+    const el = document.getElementById('dash'+s.charAt(0).toUpperCase()+s.slice(1));
+    if(el) el.style.display = s===section?'block':'none';
+  });
+  document.querySelectorAll('.sidebar-nav-item').forEach(el=>el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if(section==='progress') renderProgressChart();
+  if(section==='certificates') renderCertificates();
+  if(section==='courses') renderMyCourses();
+}
+
+function renderActiveCourses(){
+  const el = document.getElementById('activeCourses');
+  if(!el) return;
+  el.innerHTML = STATE.user.enrolledCourses.slice(0,3).map(id=>{
+    const c = COURSES[id];
+    return `<div class="d-flex align-items-center gap-3 p-2 border-bottom" style="border-color:var(--border)!important;cursor:pointer" onclick="goPage('lesson')">
+      <span style="font-size:2rem">${c.emoji}</span>
+      <div class="flex-1">
+        <div style="font-weight:600;font-size:0.9rem">${c.title}</div>
+        <div class="progress-x mt-1" style="height:5px"><div class="progress-bar-x" style="width:${c.progress||5}%"></div></div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-top:3px">${c.progress||5}% complete</div>
+      </div>
+      <button class="btn-primary-x btn-sm-x">Resume</button>
+    </div>`;
+  }).join('');
+}
+
+function renderDashLB(){
+  const el = document.getElementById('dashLB');
+  if(!el) return;
+  el.innerHTML = LEADERBOARD.map((u,i)=>`
+    <div class="lb-row">
+      <div class="lb-rank lb-rank-${i+1}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div style="flex:1;font-size:0.88rem;font-weight:500">${u.name}${u.isUser?' <span class="badge-x badge-gold">You</span>':''}</div>
+      <div class="lb-xp">${u.xp.toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+function renderProgressChart(){
+  const el = document.getElementById('progressChart');
+  if(!el) return;
+  const data = [200,450,320,780,1100,1240];
+  const max = Math.max(...data);
+  el.innerHTML = data.map((v,i)=>`
+    <div class="chart-bar" data-val="${v} XP" style="height:${Math.round(v/max*100)}%;flex:1" title="${v} XP"></div>
+  `).join('');
+  const ll = document.getElementById('lessonProgressList');
+  if(ll) ll.innerHTML = COURSES.slice(0,4).map(c=>`
+    <div>
+      <div class="d-flex justify-content-between mb-1"><span style="font-size:0.85rem">${c.title}</span><span style="font-size:0.8rem;color:var(--accent)">${c.progress||0}%</span></div>
+      <div class="progress-x"><div class="progress-bar-x" style="width:${c.progress||0}%"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderCertificates(){
+  const el = document.getElementById('certGrid');
+  if(!el) return;
+  const certs = COURSES.filter(c=>c.progress>=100||c.id===0);
+  if(certs.length===0){
+    el.innerHTML = `<div class="col-12 text-center py-5" style="color:var(--text3)"><i class="fa fa-certificate" style="font-size:3rem;margin-bottom:16px;display:block;color:var(--border)"></i><p>No certificates yet. Complete a course to earn your first certificate!</p><button class="btn-primary-x mt-2" onclick="goPage('courses')">Browse Courses</button></div>`;
+    return;
+  }
+  el.innerHTML = certs.map(c=>`
+    <div class="col-md-6">
+      <div class="cert-card">
+        <div class="cert-seal">🎓</div>
+        <div style="font-family:'Sora',sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:8px">Certificate of Completion</div>
+        <h4 style="font-family:'Syne',sans-serif;font-weight:800;color:var(--gold);margin-bottom:4px">${c.title}</h4>
+        <div style="color:var(--text3);font-size:0.85rem;margin-bottom:16px">Awarded to Amaka Kachi</div>
+        <button class="btn-outline-x btn-sm-x" onclick="showToast('Certificate downloaded!','success','fa-download')"><i class="fa fa-download"></i> Download PDF</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMyCourses(){
+  const el = document.getElementById('myCoursesList');
+  if(!el) return;
+  el.innerHTML = STATE.user.enrolledCourses.map(id=>{
+    const c = COURSES[id];
+    return `<div class="col-md-6 col-lg-4">${courseCardHTML(c,'lg')}</div>`;
+  }).join('');
+}
+
+// ===== MARKETPLACE =====
+function renderMarketplace(){
+  const pg = document.getElementById('marketplaceGrid');
+  if(pg) pg.innerHTML = MARKETPLACE.map(p=>`
+    <div class="col-md-6 col-lg-3">
+      <div class="card-x h-100 hover-lift">
+        <div style="font-size:3rem;margin-bottom:12px">${p.emoji}</div>
+        <span class="badge-x badge-primary mb-2">${p.cat}</span>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px">${p.title}</div>
+        <div class="course-rating mb-2">{'★'.repeat(Math.floor(p.stars))} ${p.stars} · ${p.sales} sales</div>
+        <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+          <div class="course-price" style="font-size:1rem">₦${p.price.toLocaleString()}</div>
+          <button class="btn-primary-x btn-sm-x" onclick="showToast('Added to cart!','success','fa-cart-plus')">Buy</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const jb = document.getElementById('jobBoard');
+  if(jb) jb.innerHTML = JOBS.map(j=>`
+    <div class="card-x hover-lift">
+      <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+        <div>
+          <h6 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:4px">${j.title}</h6>
+          <div style="color:var(--text2);font-size:0.88rem;margin-bottom:8px">${j.company}</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <span class="stat-pill-green stat-pill">${j.pay}</span>
+            <span class="badge-x badge-primary">${j.type}</span>
+            ${j.remote?'<span class="badge-x badge-accent">Remote</span>':'<span class="badge-x badge-primary">On-site</span>'}
+          </div>
+        </div>
+        <button class="btn-primary-x btn-sm-x" onclick="showToast('Application submitted!','success','fa-check')"><i class="fa fa-paper-plane"></i> Apply</button>
+      </div>
+    </div>
+  `).join('');
+
+  const fg = document.getElementById('freelanceGrid');
+  if(fg) fg.innerHTML = MARKETPLACE.map(p=>`
+    <div class="col-md-6 col-lg-4">
+      <div class="card-x hover-lift">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="avatar-placeholder avatar" style="font-size:0.85rem">TK</div>
+          <div><div style="font-weight:600;font-size:0.9rem">Taiwo K.</div><div class="course-rating" style="font-size:0.78rem">★★★★★ 4.9</div></div>
+        </div>
+        <div style="font-weight:600;margin-bottom:8px;font-size:0.95rem">${p.title} Expert</div>
+        <div style="color:var(--text2);font-size:0.85rem;margin-bottom:12px">Available for freelance projects</div>
+        <div class="d-flex justify-content-between align-items-center">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">₦5k/hr</div>
+          <button class="btn-outline-x btn-sm-x" onclick="showToast('Message sent!','success','fa-check')">Hire</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== CREATOR =====
+function renderCreator(){
+  const el = document.getElementById('creatorCourseList');
+  if(el) el.innerHTML = COURSES.slice(0,3).map(c=>`
+    <div class="d-flex align-items-center gap-2 p-2 border-bottom" style="border-color:var(--border)!important">
+      <span>${c.emoji}</span>
+      <div class="flex-1 overflow-hidden">
+        <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.title}</div>
+        <div style="font-size:0.75rem;color:var(--text3)">${c.students} students</div>
+      </div>
+      <button class="btn-icon" onclick="showToast('Editing course...','info','fa-edit')"><i class="fa fa-edit"></i></button>
+    </div>
+  `).join('');
+
+  const cc = document.getElementById('creatorChart');
+  if(cc){
+    const data = [1200,2400,1800,3200,2800,4100];
+    const max = Math.max(...data);
+    cc.innerHTML = data.map(v=>`<div class="chart-bar chart-bar-accent" data-val="₦${v.toLocaleString()}" style="height:${Math.round(v/max*100)}%;flex:1"></div>`).join('');
+  }
+}
+
+// ===== ADMIN =====
+function renderAdmin(){
+  renderAdminRevenueChart();
+  renderAdminActivity();
+  renderAdminUsers();
+  renderAdminCourses();
+  renderAdminCharts();
+}
+
+function renderAdminRevenueChart(){
+  const el = document.getElementById('adminRevenueChart');
+  if(!el) return;
+  const data = [620000,840000,720000,1100000,980000,1240000];
+  const max = Math.max(...data);
+  el.innerHTML = data.map(v=>`<div class="chart-bar" data-val="₦${(v/1000).toFixed(0)}k" style="height:${Math.round(v/max*100)}%;flex:1"></div>`).join('');
+}
+
+function renderAdminActivity(){
+  const el = document.getElementById('adminActivity');
+  if(!el) return;
+  const acts = [
+    {icon:'👤',text:'New user: Bisi Adeyemi',time:'2min ago'},
+    {icon:'📚',text:'Course published: React Native',time:'15min ago'},
+    {icon:'💰',text:'Withdrawal: ₦8,000 approved',time:'1hr ago'},
+    {icon:'🎓',text:'Certificate issued to Tunde K.',time:'2hr ago'},
+  ];
+  el.innerHTML = acts.map(a=>`
+    <div class="d-flex align-items-center gap-3 p-2">
+      <span style="font-size:1.2rem">${a.icon}</span>
+      <div class="flex-1"><div style="font-size:0.88rem">${a.text}</div><div style="font-size:0.75rem;color:var(--text3)">${a.time}</div></div>
+    </div>
+  `).join('');
+}
+
+function renderAdminUsers(){
+  const el = document.getElementById('usersTable');
+  if(!el) return;
+  const users = [
+    {name:'Amaka Kachi',email:'amaka@gmail.com',plan:'Pro',earned:'₦12,500',status:'active'},
+    {name:'Bayo Adeyemi',email:'bayo@yahoo.com',plan:'Elite',earned:'₦48,200',status:'active'},
+    {name:'Chioma Eze',email:'chioma@gmail.com',plan:'Free',earned:'₦0',status:'active'},
+    {name:'Chidi Kalu',email:'chidi@gmail.com',plan:'Pro',earned:'₦4,200',status:'active'},
+    {name:'Funke Okafor',email:'funke@gmail.com',plan:'Free',earned:'₦0',status:'suspended'},
+  ];
+  el.innerHTML = users.map((u,i)=>`
+    <tr>
+      <td>#${i+1}</td>
+      <td><div class="d-flex align-items-center gap-2"><div class="avatar-placeholder avatar-sm" style="font-size:0.7rem">${u.name.split(' ').map(n=>n[0]).join('')}</div>${u.name}</div></td>
+      <td style="color:var(--text3)">${u.email}</td>
+      <td><span class="badge-x badge-${u.plan==='Elite'?'gold':u.plan==='Pro'?'primary':'accent'}">${u.plan}</span></td>
+      <td style="color:var(--success)">${u.earned}</td>
+      <td><span class="status-dot status-${u.status}"></span>${u.status}</td>
+      <td><button class="btn-icon" onclick="showToast('User managed','info','fa-eye')"><i class="fa fa-eye"></i></button></td>
+    </tr>
+  `).join('');
+}
+
+function renderAdminCourses(){
+  const el = document.getElementById('coursesAdminTable');
+  if(!el) return;
+  el.innerHTML = COURSES.map(c=>`
+    <tr>
+      <td><div class="d-flex align-items-center gap-2"><span>${c.emoji}</span><span style="font-weight:600">${c.title}</span></div></td>
+      <td style="color:var(--text3)">Amaka K.</td>
+      <td><span class="badge-x badge-primary">${c.cat}</span></td>
+      <td>${c.students.toLocaleString()}</td>
+      <td style="color:var(--success)">₦${(c.students*c.price*0.1).toLocaleString()}</td>
+      <td><span class="status-dot status-active"></span>Live</td>
+    </tr>
+  `).join('');
+}
+
+function renderAdminCharts(){
+  const uc = document.getElementById('analyticsUserChart');
+  if(uc){
+    const data = [8200,10400,12800,16200,20100,24580];
+    const max = Math.max(...data);
+    uc.innerHTML = data.map(v=>`<div class="chart-bar chart-bar-accent" data-val="${v.toLocaleString()}" style="height:${Math.round(v/max*100)}%;flex:1"></div>`).join('');
+  }
+  const cc = document.getElementById('analyticsCourseChart');
+  if(cc){
+    const data = [120,280,420,680,920,1200];
+    const max = Math.max(...data);
+    cc.innerHTML = data.map(v=>`<div class="chart-bar chart-bar-green" data-val="${v}" style="height:${Math.round(v/max*100)}%;flex:1"></div>`).join('');
+  }
+}
+
+function switchAdmin(section){
+  ['dashboard','users','courses','earnings','withdrawals','analytics'].forEach(s=>{
+    const el = document.getElementById('admin'+s.charAt(0).toUpperCase()+s.slice(1));
+    if(el) el.style.display = s===section?'block':'none';
+  });
+  document.querySelectorAll('#page-admin .sidebar-nav-item').forEach(el=>el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if(section==='analytics') renderAdminCharts();
+}
+
+// ===== LESSON LIST =====
+function renderLessonList(){
+  const el = document.getElementById('lessonList');
+  if(!el) return;
+  el.innerHTML = LESSONS.map((l,i)=>`
+    <div class="lesson-row" onclick="showToast('Navigated to lesson','info','fa-play')">
+      <div class="lesson-icon lesson-icon-${l.done?'done':l.type==='video'?'video':l.type==='code'?'code':'quiz'}">
+        <i class="fa fa-${l.done?'check':l.type==='video'?'play':l.type==='code'?'code':'question'}"></i>
+      </div>
+      <div class="flex-1">
+        <div class="lesson-title text-truncate-2">${i+1}. ${l.t}</div>
+        <div class="lesson-dur">${l.dur}</div>
+      </div>
+      ${l.active?'<span class="badge-x badge-primary">Active</span>':''}
+    </div>
+  `).join('');
+}
+
+// ===== AI CHAT =====
+const AI_RESPONSES = {
+  default: ["That's a great question! In JavaScript, this concept relates to how the runtime evaluates expressions.", "Let me break that down for you. Think of it like a recipe — the ingredients are your variables, and the cooking process is your logic.", "Excellent! This is a fundamental concept. Here's a simple way to understand it with a real-world analogy...","I'd recommend practicing this in the Change X sandbox. Try creating a small example to solidify your understanding."],
+  closures: ["A closure is a function that 'remembers' its outer scope even after the outer function has returned. Example:\n\n```js\nfunction makeCounter() {\n  let count = 0;\n  return () => ++count;\n}\nconst counter = makeCounter();\ncounter(); // 1, counter(); // 2\n```\n\nThe inner function closes over the `count` variable!"],
+  recommend: ["Based on your JavaScript progress (78%), I'd recommend: 1) React.js Bootcamp — it builds directly on your JS skills. 2) Node.js Backend — great for full-stack. 3) Data Structures — will level up your problem-solving. React would give you the highest earning potential in the Nigerian market right now! 🚀"],
+};
+
+function sendAIMessage(){
+  const input = document.getElementById('aiInput');
+  const msg = input?.value.trim();
+  if(!msg) return;
+  appendAIMessage('user', msg);
+  input.value = '';
+  appendTyping();
+  setTimeout(()=>{
+    removeTyping();
+    let response = AI_RESPONSES.default[Math.floor(Math.random()*AI_RESPONSES.default.length)];
+    if(msg.toLowerCase().includes('closure')) response = AI_RESPONSES.closures[0];
+    if(msg.toLowerCase().includes('recommend')||msg.toLowerCase().includes('next')) response = AI_RESPONSES.recommend[0];
+    appendAIMessage('bot', response);
+  }, 1400);
+}
+
+function appendAIMessage(type, text){
+  const msgs = document.getElementById('aiMessages');
+  if(!msgs) return;
+  const div = document.createElement('div');
+  div.className = `ai-msg ai-msg-${type}`;
+  div.innerHTML = type==='bot'?
+    `<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">🤖</div><div class="ai-msg-bubble">${text.replace(/\n/g,'<br>').replace(/```js([\s\S]*?)```/g,'<code style="display:block;background:rgba(0,0,0,0.3);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:0.82rem">$1</code>')}</div>` :
+    `<div class="ai-msg-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendTyping(){
+  const msgs = document.getElementById('aiMessages');
+  if(!msgs) return;
+  const div = document.createElement('div');
+  div.className = 'ai-msg ai-msg-bot';
+  div.id = 'aiTyping';
+  div.innerHTML = `<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">🤖</div><div class="ai-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping(){
+  document.getElementById('aiTyping')?.remove();
+}
+
+function aiEnter(e){ if(e.key==='Enter') sendAIMessage(); }
+
+function setAIPrompt(text){
+  const input = document.getElementById('aiInput');
+  if(input){ input.value = text; input.focus(); }
+}
+
+// ===== GAMIFICATION / XP =====
+function addXP(amount){
+  STATE.user.xp += amount;
+  document.getElementById('navXP').textContent = STATE.user.xp.toLocaleString() + ' XP';
+  if(STATE.user.xp >= STATE.user.level * 200){
+    STATE.user.level++;
+    showToast(`Level Up! You're now Level ${STATE.user.level} 🎉`,'xp','fa-star');
+  }
+}
+
+// ===== TOAST =====
+function showToast(msg, type='info', icon='fa-info-circle'){
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast-x toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon"><i class="fa ${icon}"></i></div>
+    <div style="flex:1">
+      <div style="font-size:0.85rem;font-weight:600;color:var(--text)">${msg}</div>
+    </div>
+    <button style="background:none;border:none;color:var(--text3);cursor:pointer;padding:0 0 0 8px" onclick="this.parentElement.remove()"><i class="fa fa-times"></i></button>
+  `;
+  container.appendChild(toast);
+  setTimeout(()=>{ toast.classList.add('removing'); setTimeout(()=>toast.remove(),300); }, 3500);
+}
+
+// ===== MODALS =====
+function openModal(id){ document.getElementById(id)?.classList.add('open'); }
+function closeModal(id){ document.getElementById(id)?.classList.remove('open'); }
+function openWithdrawModal(){ openModal('withdrawModal'); }
+function openPayModal(plan, amount){
+  document.getElementById('payPlanName').textContent = plan;
+  document.getElementById('payAmount').textContent = amount;
+  openModal('payModal');
+}
+function openUploadModal(){ openModal('uploadModal'); }
+function processWithdrawal(){
+  const amt = document.getElementById('withdrawAmt')?.value;
+  if(!amt||amt<1000){ showToast('Minimum withdrawal is ₦1,000','error','fa-times'); return; }
+  showToast(`₦${parseInt(amt).toLocaleString()} withdrawal submitted!`,'success','fa-check');
+  closeModal('withdrawModal');
+}
+function processPayment(){
+  showToast('Payment successful! Plan activated 🎉','success','fa-check');
+  closeModal('payModal');
+  addXP(500);
+}
+function submitCourse(){
+  showToast('Course created successfully! 🚀','success','fa-check');
+  closeModal('uploadModal');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-x-overlay').forEach(overlay=>{
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+});
+
+// ===== TAB SWITCHER =====
+function switchTab(el, contentId){
+  const parent = el.closest('.tabs-x');
+  parent.querySelectorAll('.tab-x').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const allContent = document.querySelectorAll(`#${contentId}`)[0]?.parentElement;
+  document.querySelectorAll('.tab-content-x').forEach(tc=>{
+    if(tc.id===contentId) tc.classList.add('active');
+    else if(tc.parentElement===document.getElementById(contentId)?.parentElement) tc.classList.remove('active');
+  });
+  // fallback: just toggle by id
+  const allTabs = el.closest('.tabs-x').nextElementSibling;
+  let sib = el.closest('.tabs-x').nextElementSibling;
+  const tabContents = [];
+  while(sib && sib.classList.contains('tab-content-x')){ tabContents.push(sib); sib=sib.nextElementSibling; }
+  tabContents.forEach(tc=>tc.classList.remove('active'));
+  document.getElementById(contentId)?.classList.add('active');
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu(){
+  const menu = document.getElementById('mobileMenu');
+  const ham = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('mobileMenu')?.classList.remove('open');
+  document.getElementById('hamburger')?.classList.remove('open');
+}
+
+// ===== AFFILIATE =====
+function copyLink(){
+  const val = document.getElementById('affiliateLink')?.value || '';
+  navigator.clipboard.writeText(val).then(()=>showToast('Link copied!','success','fa-copy'));
+}
+function shareWhatsApp(){
+  const link = document.getElementById('affiliateLink')?.value || '';
+  window.open(`https://wa.me/?text=Join%20Change%20X%20Academy%20-%20Learn,%20Practice,%20Earn!%20${encodeURIComponent(link)}`,'_blank');
+}
+
+// ===== SCROLL REVEAL =====
+function initReveal(){
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+}
+
+// ===== COUNTER ANIMATION =====
+function initCounters(){
+  const targets = [{id:'heroStat1',end:24580,prefix:'',suffix:''},{id:'heroStat2',end:186,prefix:'',suffix:''},{id:'heroStat3',end:1240000,prefix:'₦',suffix:''}];
+  targets.forEach(t=>{
+    const el = document.getElementById(t.id);
+    if(!el) return;
+    let start = 0;
+    const duration = 2000;
+    const step = t.end/duration*16;
+    const timer = setInterval(()=>{
+      start+=step;
+      if(start>=t.end){ start=t.end; clearInterval(timer); }
+      el.textContent = t.prefix + (t.id==='heroStat3'?'₦'+Math.floor(start/1000).toLocaleString()+'k':Math.floor(start).toLocaleString());
+    },16);
+  });
+}
+
+// ===== INITIAL RENDER =====
+function init(){
+  renderHomeCourses();
+  renderHomeLeaderboard();
+  initReveal();
+  setTimeout(initCounters, 300);
+  // Start with welcome toast after small delay
+  setTimeout(()=>showToast('Welcome to Change X Academy! 🚀','info','fa-rocket'),1000);
+}
+
+init();
+</script>
+
+<!-- ============================================= -->
+<!-- UPGRADE START - ADVANCED FEATURES & OPTIMIZATIONS -->
+<!-- ============================================= -->
+
+<!-- NEW UPGRADE CSS (Micro-interactions, Animations, PWA, Performance) -->
+<style>
+/* UPGRADE: Enhanced micro-interactions & modern effects */
+.pricing-card-v2 {
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s ease;
+}
+.pricing-card-v2:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(108,59,255,0.3);
+}
+.billing-toggle .toggle-slider {
+  transition: 0.3s;
+}
+.billing-toggle .toggle-slider:before {
+  transition: 0.3s;
+}
+.price-amount {
+  animation: countUp 0.6s ease-out;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.comparison-matrix {
+  overflow-x: auto;
+  border-radius: 16px;
+  background: var(--card);
+}
+.matrix-header {
+  position: sticky;
+  top: 72px;
+  background: var(--card2);
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+.matrix-row {
+  display: grid;
+  grid-template-columns: 2fr repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+.matrix-row:hover {
+  background: rgba(108,59,255,0.05);
+}
+.feature-tooltip {
+  position: absolute;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 0.2s;
+  pointer-events: none;
+  z-index: 100;
+}
+.feature-item:hover .feature-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (max-width: 768px) {
+  .matrix-row { min-width: 600px; }
+  .plan-details-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    z-index: 1000;
+  }
+  .plan-details-sheet.open { transform: translateY(0); }
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--text3);
+    border-radius: 2px;
+    margin: 12px auto;
+  }
+  .sticky-cta {
+    position: sticky;
+    bottom: 0;
+    background: rgba(7,7,26,0.95);
+    backdrop-filter: blur(20px);
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+  }
+}
+/* UPGRADE: Skeleton loader improvements */
+.skeleton-card {
+  background: linear-gradient(90deg, var(--bg3) 0%, var(--card) 50%, var(--bg3) 100%);
+  background-size: 200%;
+  animation: skeletonWave 1.5s infinite;
+  border-radius: var(--radius);
+  height: 180px;
+}
+/* UPGRADE: Confetti canvas (hidden by default) */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+}
+</style>
+
+<!-- NEW UPGRADE PAGES: Team Pricing, Enterprise, Calculator, Community Feed -->
+<div class="page" id="page-team-pricing">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="section-label mb-3">For Teams</div>
+      <h2 class="h1 mb-4">Team <span class="gradient-text">Plans</span></h2>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4"><div class="pricing-card"><div class="badge-x badge-accent">Starter</div><div class="pricing-amount">₦25,000</div><div class="mb-3">/month · up to 5 users</div><ul class="list-unstyled"><li>✓ All Pro features</li><li>✓ Team dashboard</li><li>✓ Basic analytics</li></ul><button class="btn-primary-x w-100" onclick="showToast('Contact sales for team plan','info','fa-users')">Get Started</button></div></div>
+        <div class="col-md-4"><div class="pricing-card featured"><div class="badge-x badge-primary">Growth</div><div class="pricing-amount">₦65,000</div><div class="mb-3">/month · up to 20 users</div><ul class="list-unstyled"><li>✓ Everything in Starter</li><li>✓ SSO integration</li><li>✓ API access</li><li>✓ Priority support</li></ul><button class="btn-primary-x w-100" onclick="showToast('Contact sales for team plan','info','fa-users')">Contact Sales</button></div></div>
+        <div class="col-md-4"><div class="pricing-card"><div class="badge-x badge-gold">Scale</div><div class="pricing-amount">₦150,000</div><div class="mb-3">/month · up to 100 users</div><ul class="list-unstyled"><li>✓ Everything in Growth</li><li>✓ Custom onboarding</li><li>✓ SLA guarantee</li><li>✓ Dedicated manager</li></ul><button class="btn-success-x w-100" onclick="showToast('Contact sales for enterprise','info','fa-building')">Talk to Expert</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-enterprise">
+  <div class="pt-nav section-pad">
+    <div class="container text-center">
+      <div class="section-label mb-3">Enterprise</div>
+      <h2 class="h1 mb-4">Custom Solutions for <span class="gradient-text">Large Organizations</span></h2>
+      <div class="card-x mx-auto" style="max-width:700px">
+        <i class="fa fa-building" style="font-size:3rem;color:var(--primary2);margin-bottom:20px"></i>
+        <p style="color:var(--text2);font-size:1.1rem">Tailored learning platform for your workforce. Includes white-labeling, compliance reports, and dedicated SLAs.</p>
+        <button class="btn-primary-x mt-3" onclick="showToast('Enterprise request received!','success','fa-check')">Request a Demo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-calculator">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="section-label mb-3">ROI Calculator</div>
+      <h2 class="h1 mb-4">Calculate Your <span class="gradient-text">Savings</span></h2>
+      <div class="card-x" style="max-width:600px;margin:0 auto">
+        <div class="mb-4"><label class="label-x">Team Size</label><input type="range" id="roiTeamSize" min="1" max="100" value="10" class="w-100"><span id="roiTeamSizeVal">10</span> employees</div>
+        <div class="mb-4"><label class="label-x">Hours Saved per Month (per employee)</label><input type="range" id="roiHoursSaved" min="1" max="40" value="15" class="w-100"><span id="roiHoursSavedVal">15</span> hours</div>
+        <div class="mb-4"><label class="label-x">Hourly Rate (₦)</label><input type="number" id="roiHourlyRate" value="3000" class="input-x"></div>
+        <div class="card-glow-green p-3 text-center"><div class="wallet-label">Estimated Monthly Savings</div><div class="wallet-balance" id="roiResultDisplay">₦0</div></div>
+        <button class="btn-primary-x w-100 mt-4" onclick="updateROI()">Recalculate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-community">
+  <div class="pt-nav section-pad">
+    <div class="container">
+      <div class="section-label mb-3">Community Hub</div>
+      <h2 class="h1 mb-4">Connect, Share, <span class="gradient-text">Grow</span></h2>
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="card-x mb-4"><textarea class="input-x" id="postContent" rows="3" placeholder="What's on your mind? Share your learning journey..."></textarea><button class="btn-primary-x mt-2" onclick="createPost()"><i class="fa fa-pen"></i> Create Post</button></div>
+          <div id="communityFeed" class="d-flex flex-column gap-3"></div>
+        </div>
+        <div class="col-lg-4"><div class="card-x"><h6 class="mb-3">Trending Topics</h6><div class="d-flex flex-wrap gap-2"><span class="stat-pill" onclick="filterFeed('JavaScript')">#JavaScript</span><span class="stat-pill" onclick="filterFeed('Python')">#Python</span><span class="stat-pill" onclick="filterFeed('Career')">#Career</span><span class="stat-pill" onclick="filterFeed('Projects')">#Projects</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW UPGRADE MODALS: Discount, Referral -->
+<div class="modal-x-overlay" id="discountModal"><div class="modal-x"><button class="modal-close" onclick="closeModal('discountModal')"><i class="fa fa-times"></i></button><h5>Special Discount</h5><p id="discountMessage"></p><button class="btn-success-x" onclick="closeModal('discountModal')">Claim Now</button></div></div>
+
+<!-- NEW UPGRADE SCRIPT: Performance, PWA, Community, Pricing, Automation -->
+<script>
+// UPGRADE: Dynamic Pricing Engine & ROI Calculator
+function updateROI() {
+  const size = parseInt(document.getElementById('roiTeamSize').value);
+  const hours = parseInt(document.getElementById('roiHoursSaved').value);
+  const rate = parseInt(document.getElementById('roiHourlyRate').value);
+  const savings = size * hours * rate;
+  document.getElementById('roiResultDisplay').innerText = '₦' + savings.toLocaleString();
+  document.getElementById('roiTeamSizeVal').innerText = size;
+  document.getElementById('roiHoursSavedVal').innerText = hours;
+}
+document.getElementById('roiTeamSize')?.addEventListener('input', updateROI);
+document.getElementById('roiHoursSaved')?.addEventListener('input', updateROI);
+document.getElementById('roiHourlyRate')?.addEventListener('input', updateROI);
+window.updateROI = updateROI;
+// UPGRADE: Community Feed with posts, likes, comments
+let communityPosts = [
+  { id: 1, author: 'Amaka K.', avatar: 'AK', content: 'Just completed JavaScript Fundamentals! 🚀 Loving the AI tutor!', likes: 12, comments: [], timestamp: Date.now(), tags: ['JavaScript'] },
+  { id: 2, author: 'Chidi K.', avatar: 'CK', content: 'Anyone building a React project? Let\'s collaborate!', likes: 5, comments: [], timestamp: Date.now()-3600000, tags: ['React'] }
+];
+function renderCommunityFeed(filter='') {
+  const feed = document.getElementById('communityFeed');
+  if(!feed) return;
+  let posts = [...communityPosts].reverse();
+  if(filter) posts = posts.filter(p=>p.tags.includes(filter));
+  feed.innerHTML = posts.map(p => `
+    <div class="card-x">
+      <div class="d-flex gap-3 mb-2"><div class="avatar-placeholder avatar-sm">${p.avatar}</div><div><div style="font-weight:600">${p.author}</div><div style="font-size:0.7rem;color:var(--text3)">${new Date(p.timestamp).toLocaleString()}</div></div></div>
+      <p style="color:var(--text2);margin-bottom:12px">${p.content}</p>
+      <div class="d-flex gap-3">
+        <button class="btn-outline-x btn-sm-x" onclick="likePost(${p.id})"><i class="fa fa-heart"></i> ${p.likes}</button>
+        <button class="btn-outline-x btn-sm-x" onclick="commentPost(${p.id})"><i class="fa fa-comment"></i> Comment</button>
+      </div>
+    </div>
+  `).join('');
+}
+function createPost() {
+  const content = document.getElementById('postContent')?.value;
+  if(!content) return showToast('Write something first!','error');
+  communityPosts.push({ id: Date.now(), author: 'Amaka K.', avatar: 'AK', content: content, likes: 0, comments: [], timestamp: Date.now(), tags: [] });
+  document.getElementById('postContent').value = '';
+  renderCommunityFeed();
+  showToast('Post created! +20 XP','xp','fa-star');
+  addXP(20);
+}
+function likePost(id) {
+  const post = communityPosts.find(p=>p.id===id);
+  if(post){ post.likes++; renderCommunityFeed(); showToast('Liked!','info','fa-heart'); }
+}
+function commentPost(id) {
+  let comment = prompt('Write a comment:');
+  if(comment) { showToast('Comment added','success','fa-comment'); renderCommunityFeed(); }
+}
+function filterFeed(tag) { renderCommunityFeed(tag); }
+window.createPost = createPost; window.likePost = likePost; window.commentPost = commentPost; window.filterFeed = filterFeed;
+
+// UPGRADE: Service Worker + PWA registration
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('SW registration failed',err));
+}
+// UPGRADE: Lazy loading images (Intersection Observer)
+const lazyImages = document.querySelectorAll('img[data-src]');
+const imageObserver = new IntersectionObserver((entries, obs)=>{
+  entries.forEach(entry=>{ if(entry.isIntersecting){ const img=entry.target; img.src=img.dataset.src; obs.unobserve(img); } });
+});
+lazyImages.forEach(img=>imageObserver.observe(img));
+
+// UPGRADE: Abandoned cart recovery simulation
+let abandonedCartTimer;
+function trackCartAbandonment(){ if(abandonedCartTimer) clearTimeout(abandonedCartTimer); abandonedCartTimer = setTimeout(()=>{ showToast('Forgot something? Complete your purchase and get 10% off!','info','fa-gift'); }, 30000); }
+// UPGRADE: Confetti on achievement
+function celebrateUpgrade(){
+  if(typeof confetti === 'function') confetti({particleCount:150,spread:70,origin:{y:0.6},colors:['#6C3BFF','#00D4FF','#00FFB2']});
+  else console.log('confetti unavailable');
+}
+window.celebrateUpgrade = celebrateUpgrade;
+// UPGRADE: Autosave notes
+let noteTimeout;
+document.querySelector('#lessonNotes textarea')?.addEventListener('input',()=>{
+  clearTimeout(noteTimeout); noteTimeout = setTimeout(()=>{ localStorage.setItem('lessonNotes', document.querySelector('#lessonNotes textarea').value); showToast('Notes auto-saved','success','fa-save'); },1000);
+});
+// UPGRADE: Price Calculator Dynamic
+function calculateDynamicPrice(){ return Math.floor(Math.random()*2000)+3000; }
+// UPGRADE: Add new navigation to upgrade pages (without altering original)
+const upgradeNav = document.createElement('div');
+upgradeNav.style.cssText = 'position:fixed;bottom:100px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;';
+upgradeNav.innerHTML = `<button class="btn-icon" onclick="goPage('team-pricing')" style="background:var(--primary);color:#fff"><i class="fa fa-users"></i></button>
+                        <button class="btn-icon" onclick="goPage('enterprise')" style="background:var(--accent);color:#000"><i class="fa fa-building"></i></button>
+                        <button class="btn-icon" onclick="goPage('calculator')" style="background:var(--success);color:#000"><i class="fa fa-calculator"></i></button>
+                        <button class="btn-icon" onclick="goPage('community')" style="background:var(--gold);color:#000"><i class="fa fa-comments"></i></button>`;
+document.body.appendChild(upgradeNav);
+// Add upgrade pages to goPage mapping (already handled by existing pages due to dynamic page divs)
+// Override goPage to include upgrade pages (original goPage already works because pages exist)
+// Ensure rendering for upgrade pages
+const originalRenderPage = renderPage;
+window.renderPage = function(page){
+  if(page === 'community') renderCommunityFeed();
+  else if(page === 'calculator') updateROI();
+  else originalRenderPage(page);
+};
+// Re-declare to avoid conflicts
+window.goPage = goPage;
+// Extend renderPage
+renderPage = function(page){
+  if(page === 'community') renderCommunityFeed();
+  else if(page === 'calculator') updateROI();
+  else if(page === 'team-pricing' || page === 'enterprise') {}
+  else originalRenderPage(page);
+};
+window.renderPage = renderPage;
+// Fix for missing functions on upgrade pages
+window.openPayModal = openPayModal;
+// Initialize upgrade modules
+if(document.getElementById('communityFeed')) renderCommunityFeed();
+if(document.getElementById('roiTeamSize')) updateROI();
+</script>
+<!-- UPGRADE END -->
+</body>
+</html>
