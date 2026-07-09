@@ -5521,7 +5521,7 @@
             font-size: .55rem;
         }
 
-        /* ─── Sponsorship & Campaign Styles ──────────────────────────── */
+        /* ─── SPONSORSHIP & CAMPAIGN STYLES ──────────────────────────── */
         .sponsor-tab {
             display: none;
         }
@@ -5684,7 +5684,7 @@
     <!-- ============================================================ -->
     <!-- MODALS -->
     <!-- ============================================================ -->
-    <div class="modal-ov hidden" id="withdrawModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">💸 Withdraw Earnings</h5><button class="btn-icon-sm" onclick="closeModal('withdrawModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.14);border-radius:var(--radius-sm);padding:.85rem;margin-bottom:1rem;text-align:center"><div style="font-size:.7rem;color:var(--text3);font-family:var(--font-mono);text-transform:uppercase">AVAILABLE BALANCE</div><div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--lime)" id="withdrawBal">₦0</div></div><div id="withdrawBankWarning" style="display:none;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:1rem;font-size:.79rem;color:var(--orange)"><i class="fas fa-exclamation-triangle" style="margin-right:.35rem"></i><strong>No bank account linked!</strong> Please add your bank details in <a style="color:var(--primary);cursor:pointer;text-decoration:underline" onclick="closeModal('withdrawModal');setDP('settings');setTimeout(()=>switchSet('ss-payout',null),100)">Settings → Payouts</a> before withdrawing.</div><div class="form-group"><label class="flabel">Amount (₦)</label><input type="number" class="finput" id="withdrawAmt" placeholder="Min ₦2,000"/></div><div class="form-group"><label class="flabel">Bank Account</label><select class="finput" id="withdrawBank"><option>Loading...</option></select></div><div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:var(--radius-sm);padding:.65rem;font-size:.76rem;color:var(--gold)"><i class="fas fa-info-circle" style="margin-right:.3rem"></i>Processing takes 1–3 business days. <strong>10% fee</strong> applied.</div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('withdrawModal')">Cancel</button><button class="btn btn-primary" id="withdrawSubmitBtn" onclick="processWithdraw()"><i class="fas fa-paper-plane"></i>Submit</button></div></div></div>
+    <div class="modal-ov hidden" id="withdrawModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">💸 Withdraw Earnings</h5><button class="btn-icon-sm" onclick="closeModal('withdrawModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.14);border-radius:var(--radius-sm);padding:.85rem;margin-bottom:1rem;text-align:center"><div style="font-size:.7rem;color:var(--text3);font-family:var(--font-mono);text-transform:uppercase">AVAILABLE BALANCE</div><div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--lime)" id="withdrawBal">₦0</div></div><div id="withdrawBankWarning" style="display:none;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:1rem;font-size:.79rem;color:var(--orange)"><i class="fas fa-exclamation-triangle" style="margin-right:.35rem"></i><strong>No bank account linked!</strong> Please add your bank details in <a style="color:var(--primary);cursor:pointer;text-decoration:underline" onclick="closeModal('withdrawModal');setDP('settings');setTimeout(()=>switchSet('ss-payout',null),100)">Settings → Payouts</a> before withdrawing.</div><div class="form-group"><label class="flabel">Amount (₦)</label><input type="number" class="finput" id="withdrawAmt" placeholder="Min ₦5,000" min="5000"/></div><div class="form-group"><label class="flabel">Bank Account</label><select class="finput" id="withdrawBank"><option>Loading...</option></select></div><div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:var(--radius-sm);padding:.65rem;font-size:.76rem;color:var(--gold)"><i class="fas fa-info-circle" style="margin-right:.3rem"></i>Processing takes 1–3 business days. <strong>10% fee</strong> applied. Minimum withdrawal: <strong>₦5,000</strong>.</div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('withdrawModal')">Cancel</button><button class="btn btn-primary" id="withdrawSubmitBtn" onclick="processWithdraw()"><i class="fas fa-paper-plane"></i>Submit</button></div></div></div>
 
     <div class="modal-ov hidden" id="buyCourseModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">🛒 Purchase</h5><button class="btn-icon-sm" onclick="closeModal('buyCourseModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div id="buyCourseInfo" style="margin-bottom:1rem"></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem"><h6 style="margin-bottom:.75rem">Order Summary</h6><div id="buyCourseSummary"></div><div class="payment-method-tabs mt-3"><div class="payment-method-tab active" onclick="toggleBuyPaymentMethod('card',this)">💳 Card Payment</div><div class="payment-method-tab" onclick="toggleBuyPaymentMethod('manual',this)">🏦 Bank Transfer</div></div><div id="buyCardSection"><div class="form-group mt-3"><label class="flabel">Referral Code (optional)</label><input type="text" class="finput" id="buyRefCode" placeholder="Enter referral code" oninput="applyBuyCode(this.value)"/></div><div id="buyCodeStatus" style="font-size:.76rem;margin:.25rem 0;min-height:1em"></div><button class="paystack-btn" onclick="processPayment()"><i class="fas fa-lock"></i><span id="paystackBtnText">Pay with Paystack</span></button></div><div id="buyManualSection" style="display:none"><div class="bank-details-box" id="buyBankDetailsBox"></div><div class="form-group mt-3"><label class="flabel">Referral Code (optional)</label><input type="text" class="finput" id="buyManualRefCode" placeholder="Enter referral code" oninput="applyBuyManualCode(this.value)"/></div><div id="buyManualCodeStatus" style="font-size:.76rem;margin:.25rem 0;min-height:1em"></div><div class="form-group"><label class="flabel">Transaction Reference</label><input type="text" class="finput" id="manualRef" placeholder="e.g. TRX123456789"><small style="font-size:.7rem;color:var(--text3)">Enter the reference from your bank transfer</small></div><div id="manualRefError" style="font-size:.72rem;margin-top:.2rem;min-height:1.2em"></div><div class="form-group"><label class="flabel">Amount Paid (₦)</label><input type="number" class="finput" id="manualAmount" placeholder="e.g. 5000"></div><div class="form-group"><label class="flabel">Payment Date</label><input type="date" class="finput" id="manualDate"></div><div class="form-group"><label class="flabel">Upload Receipt/Screenshot</label><div class="upload-zone" style="padding:1rem"><input type="file" id="manualReceipt" accept="image/*,application/pdf" onchange="previewReceipt(this)"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:.8rem;color:var(--text2)">Upload bank transfer receipt or screenshot</div></div><div id="receiptPreview" style="margin-top:.5rem;display:none"><img id="receiptPreviewImg" style="max-width:100%;max-height:150px;border-radius:var(--radius-sm)"></div><div id="manualReceiptProgress" class="book-upload-progress" style="display:none;">Uploading receipt... 0%</div></div><button class="btn btn-primary w-full" onclick="submitManualPayment()">Submit for Verification</button><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i><strong>How it works:</strong> Transfer the exact amount to the bank details above, then submit your reference and receipt. Our system will automatically verify your payment if all details match. If verification fails, an admin will review within 24 hours.</div></div></div></div></div></div>
 
@@ -5844,7 +5844,7 @@
                     <div id="dash-book-detail" class="dash-sub"><div class="page-hd"><button class="btn btn-ghost btn-sm" onclick="setDP('books')"><i class="fas fa-arrow-left"></i> Back to Library</button></div><div id="bookPageAdContainerDetail" class="ad-container"></div><div id="bookDetailContent"></div><div id="bookSponsorAdContainerDetail" class="ad-container"></div></div>
 
                     <!-- UPLOAD BOOK (Premium Only) – COMPLETE FORM WITH ALL FIELDS -->
-                    <div id="dash-create-book" class="dash-sub premium-only"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
+                    <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
 
                     <!-- SOCIAL EARNINGS -->
                     <div id="dash-social-earnings" class="dash-sub"><div class="page-hd"><h2 class="page-title">🌱 Social Earnings</h2><p class="page-sub">Earn from engagement on your posts</p></div><div class="card card-p mb-3"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;"><div><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;">Total Earned</div><div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--lime);" id="socialTotalEarnings">₦0</div></div><div style="display:flex;gap:1rem;"><div><span style="color:var(--text3);font-size:.7rem;">Posts</span><br><strong id="socialPostCount">0</strong></div><div><span style="color:var(--text3);font-size:.7rem;">Avg per Post</span><br><strong id="socialAvgPerPost">₦0</strong></div></div></div></div><div id="socialPostsList" class="social-posts-grid"></div></div>
@@ -5868,7 +5868,7 @@
                     <div id="dash-sponsorship" class="dash-sub"><div class="page-hd"><h2 class="page-title">🤝 Partner with ChangeX</h2><p class="page-sub">Sponsor, donate, or collaborate with us</p></div><div class="tabs mb-4"><button class="tab-btn active" onclick="switchSponsorTab('overview',this)">Overview</button><button class="tab-btn" onclick="switchSponsorTab('campaigns',this)">📢 Ad Campaigns</button><button class="tab-btn" onclick="switchSponsorTab('sponsorships',this)">🤝 Sponsorships</button><button class="tab-btn" onclick="switchSponsorTab('dashboard',this)">📊 Analytics</button></div><div id="sponsor-overview" class="sponsor-tab active"><div class="row mb-4"><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">📢</div><h4>Ad Campaigns</h4><p style="color:var(--text3)">Reach thousands of learners with targeted ads</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('campaigns')">Get Started</button></div></div><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">🤝</div><h4>Sponsor Us</h4><p style="color:var(--text3)">Donate, partner, or collaborate with us</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('sponsorships')">Support Us</button></div></div></div><div class="card card-p"><h6>Why Partner With Us?</h6><div class="row mt-3"><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">🎯</div><div style="font-weight:700">Targeted Audience</div><div style="font-size:.75rem;color:var(--text3)">Reach tech students &amp; professionals</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">📊</div><div style="font-weight:700">Real Analytics</div><div style="font-size:.75rem;color:var(--text3)">Track impressions, clicks, conversions</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">💰</div><div style="font-weight:700">Flexible Pricing</div><div style="font-size:.75rem;color:var(--text3)">Pay per impression or click</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">✅</div><div style="font-weight:700">Admin Approved</div><div style="font-size:.75rem;color:var(--text3)">Quality control for your brand</div></div></div></div></div></div><div id="sponsor-campaigns" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>📢 Your Ad Campaigns</h4><button class="btn btn-primary btn-sm" onclick="openModal('campaignModal')"><i class="fas fa-plus"></i> Create Campaign</button></div><div id="campaignsList"></div></div><div id="sponsor-sponsorships" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>🤝 Your Sponsorships</h4><button class="btn btn-primary btn-sm" onclick="openModal('sponsorshipModal')"><i class="fas fa-plus"></i> Sponsor Us</button></div><div id="sponsorshipsList"></div></div><div id="sponsor-dashboard" class="sponsor-tab" style="display:none;"><h4>📊 Campaign Analytics</h4><div id="campaignAnalyticsContainer"></div></div></div>
 
                     <!-- ADMIN -->
-                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span></div><div id="adminContent"></div></div></div></div>
+                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span></div><div id="adminContent"></div></div></div></div>
                 </div></div></div></div>
 
     <!-- FAB -->
@@ -6660,7 +6660,6 @@
                         setDP('home');
                         return;
                     }
-                    // Ensure the container is visible
                     const container = document.getElementById('dash-create-book');
                     if (container) {
                         container.style.display = 'block';
@@ -6689,14 +6688,6 @@
             checkPlanExpiry();
             updatePremiumUI();
             updateSocialBadge();
-            // Ensure create-book is shown if we're on that page and premium
-            if (S.dp === 'create-book' && S.isPremium) {
-                const container = document.getElementById('dash-create-book');
-                if (container) {
-                    container.style.display = 'block';
-                    container.classList.add('active');
-                }
-            }
         }
 
         function openSidebar() { document.getElementById('sidebar')?.classList.add('open');
@@ -7282,7 +7273,6 @@
             if (navCreateBook) navCreateBook.style.display = isPremium ? '' : 'none';
             const navPremUpload = document.getElementById('nav-premium-upload');
             if (navPremUpload) navPremUpload.style.display = isPremium ? '' : 'none';
-            // Ensure create-book dash-sub is visible for premium users
             if (isPremium && S.dp === 'create-book') {
                 const container = document.getElementById('dash-create-book');
                 if (container) {
@@ -7296,7 +7286,6 @@
                 el.textContent = isPremium ? '✅ Premium' : '🔓 Free';
                 el.className = `badge ${isPremium ? 'badge-premium' : 'badge-dark'}`;
             });
-            // Hide all ad containers for premium users
             document.querySelectorAll('.ad-container').forEach(container => {
                 container.style.display = isPremium ? 'none' : '';
             });
@@ -9878,7 +9867,8 @@
                 return;
             }
             const amt = Number(document.getElementById('withdrawAmt')?.value);
-            if (!amt || amt < 2000) { toast('Minimum withdrawal is ₦2,000', 'error'); return; }
+            // Minimum withdrawal is ₦5,000
+            if (!amt || amt < 5000) { toast('Minimum withdrawal is ₦5,000', 'error'); return; }
             if (amt > S.walletBal) { toast('Insufficient balance', 'error'); return; }
             closeModal('withdrawModal');
             showLoading('Processing...');
@@ -11971,7 +11961,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL – FULL WITH BOOKS, ADS, CHALLENGES, SOCIAL EARNINGS, CAMPAIGNS
+        // ADMIN PANEL – FULL WITH BOOKS, ADS, CHALLENGES, SOCIAL EARNINGS, CAMPAIGNS, SPONSORSHIPS
         // ================================================================
         function renderAdm(sec) { switchAdm(sec, null); }
 
@@ -12200,6 +12190,13 @@
                     `;
                     await loadAdminCampaigns();
                     break;
+                case 'sponsorships':
+                    content.innerHTML = `
+                        <div class="admin-section-header"><h6>🤝 Sponsorships</h6><div class="d-flex gap-2"><select id="sponsorshipFilter" onchange="loadAdminSponsorships()" class="finput" style="width:auto;"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div></div>
+                        <div id="adminSponsorshipsContainer"><p style="color:var(--text3)">Loading sponsorships...</p></div>
+                    `;
+                    await loadAdminSponsorships();
+                    break;
                 case 'audit':
                     content.innerHTML = '<p style="color:var(--text3)">Loading audit logs...</p>';
                     try {
@@ -12297,7 +12294,7 @@
         async function loadAdminCampaigns() {
             const filter = document.getElementById('campaignFilter')?.value || 'all';
             try {
-                const res = await apiCall(`/admin/campaigns?status=${filter}&limit=50`);
+                const res = await apiCall(`/campaigns/admin/all?status=${filter}&limit=50`);
                 const data = res.data;
                 const campaigns = data.campaigns || [];
                 const stats = data.stats || {};
@@ -12315,7 +12312,7 @@
                         <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
                             <div>
                                 <strong>${escapeHtml(c.title)}</strong>
-                                <span class="badge ${c.status === 'active' ? 'badge-success' : c.status === 'pending' ? 'badge-gold' : c.status === 'rejected' ? 'badge-danger' : 'badge-dark'}">${c.status}</span>
+                                <span class="badge ${c.status === 'active' ? 'badge-success' : c.status === 'pending' ? 'badge-gold' : c.status === 'approved' && c.paymentStatus === 'pending' ? 'badge-gold' : c.status === 'rejected' ? 'badge-danger' : 'badge-dark'}">${c.status}</span>
                                 <br>
                                 <small style="color:var(--text3);">
                                     By ${c.userId?.firstName || 'User'} ${c.userId?.lastName || ''} · 
@@ -12350,7 +12347,7 @@
 
         async function approveCampaign(campaignId) {
             try {
-                await apiCall(`/admin/campaigns/${campaignId}/approve`, { method: 'POST' });
+                await apiCall(`/campaigns/admin/${campaignId}/approve`, { method: 'POST' });
                 toast('Campaign approved! User can now pay to activate.', 'success');
                 loadAdminCampaigns();
             } catch (err) { toast(err.message, 'error'); }
@@ -12359,7 +12356,7 @@
         async function rejectCampaign(campaignId) {
             const reason = prompt('Rejection reason:');
             try {
-                await apiCall(`/admin/campaigns/${campaignId}/reject`, { method: 'POST', body: { reason: reason || 'Not specified' } });
+                await apiCall(`/campaigns/admin/${campaignId}/reject`, { method: 'POST', body: { reason: reason || 'Not specified' } });
                 toast('Campaign rejected', 'info');
                 loadAdminCampaigns();
             } catch (err) { toast(err.message, 'error'); }
@@ -12367,7 +12364,7 @@
 
         async function viewCampaignDetails(campaignId) {
             try {
-                const res = await apiCall(`/admin/campaigns/${campaignId}`);
+                const res = await apiCall(`/campaigns/admin/${campaignId}`);
                 const data = res.data;
                 const campaign = data.campaign;
                 const analytics = data.analytics || [];
@@ -12398,7 +12395,7 @@
             if (!confirm('Mark this campaign as manually paid? This will activate the campaign.')) return;
             showLoading('Processing...');
             try {
-                await apiCall(`/admin/campaigns/${campaignId}/verify-manual`, { method: 'POST', body: { reference: 'MANUAL-' +
+                await apiCall(`/campaigns/admin/${campaignId}/verify-manual`, { method: 'POST', body: { reference: 'MANUAL-' +
                             Date.now(), receiptUrl: '' } });
                 toast('✅ Campaign marked as paid and activated!', 'success');
                 loadAdminCampaigns();
@@ -12409,7 +12406,7 @@
             if (!confirm('Refund the remaining escrow balance to the user?')) return;
             showLoading('Processing refund...');
             try {
-                await apiCall(`/admin/campaigns/${campaignId}/refund`, { method: 'POST' });
+                await apiCall(`/campaigns/admin/${campaignId}/refund`, { method: 'POST' });
                 toast('✅ Refund processed!', 'success');
                 loadAdminCampaigns();
             } catch (err) { toast(err.message, 'error'); } finally { hideLoading(); }
@@ -12417,8 +12414,9 @@
 
         // ─── ADMIN SPONSORSHIPS ──────────────────────────────────────────
         async function loadAdminSponsorships() {
+            const filter = document.getElementById('sponsorshipFilter')?.value || 'all';
             try {
-                const res = await apiCall('/sponsorships/admin/all?status=all&limit=50');
+                const res = await apiCall(`/sponsorships/admin/all?status=${filter}&limit=50`);
                 const data = res.data;
                 const sponsorships = data.sponsorships || [];
                 const stats = data.stats || {};
@@ -14265,6 +14263,7 @@
         console.log('📌 Escrow-based budget tracking with real-time deductions.');
         console.log('📌 Top-up campaigns to add more budget.');
         console.log('📌 Fraud detection with IP blacklisting and unique impression tracking.');
+        console.log('📌 Minimum withdrawal: ₦5,000.');
     </script>
 </body>
 </html>
