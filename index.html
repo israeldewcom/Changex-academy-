@@ -5520,8 +5520,6 @@
             border: 1px solid rgba(251, 191, 36, .2);
             font-size: .55rem;
         }
-
-        /* ─── SPONSORSHIP & CAMPAIGN STYLES ──────────────────────────── */
         .sponsor-tab {
             display: none;
         }
@@ -5638,7 +5636,7 @@
     <!-- LANDING PAGE -->
     <!-- ============================================================ -->
     <div id="page-landing" class="page active">
-        <nav class="land-nav" id="landingNav"><div class="logo" onclick="goPage('landing')"><div class="logo-mark"><img src="/logo.png" alt="ChangeX" style="width:100%;height:100%;border-radius:8px;object-fit:cover;" /></div>ChangeX<span style="color:var(--primary)">.</span></div><div class="land-nav-links"><a onclick="smoothTo('how-it-works')">How It Works</a><a onclick="smoothTo('courses-sec')">Courses</a><a onclick="smoothTo('instructors-sec')">Instructors</a><a onclick="smoothTo('pricing-sec')">Pricing</a><a onclick="goPage('contact')">Contact</a><a onclick="smoothTo('books-landing')">Books</a></div><div style="display:flex;align-items:center;gap:.4rem"><button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"><i class="fas" id="themeIcon"></i></button><button class="btn btn-outline btn-sm" onclick="goPage('login')">Sign In</button><button class="btn btn-primary btn-sm" onclick="goPage('register')">Start Free</button><button class="btn-icon d-md-none" onclick="toggleMobNav()"><i class="fas fa-bars"></i></button></div></nav>
+        <nav class="land-nav" id="landingNav"><div class="logo" onclick="navigateTo('/')"><div class="logo-mark"><img src="/logo.png" alt="ChangeX" style="width:100%;height:100%;border-radius:8px;object-fit:cover;" /></div>ChangeX<span style="color:var(--primary)">.</span></div><div class="land-nav-links"><a onclick="smoothTo('how-it-works')">How It Works</a><a onclick="smoothTo('courses-sec')">Courses</a><a onclick="smoothTo('instructors-sec')">Instructors</a><a onclick="smoothTo('pricing-sec')">Pricing</a><a onclick="goPage('contact')">Contact</a><a onclick="smoothTo('books-landing')">Books</a></div><div style="display:flex;align-items:center;gap:.4rem"><button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"><i class="fas" id="themeIcon"></i></button><button class="btn btn-outline btn-sm" onclick="goPage('login')">Sign In</button><button class="btn btn-primary btn-sm" onclick="goPage('register')">Start Free</button><button class="btn-icon d-md-none" onclick="toggleMobNav()"><i class="fas fa-bars"></i></button></div></nav>
         <div class="mob-nav-dd" id="mobNav"><a onclick="smoothTo('how-it-works');toggleMobNav()">How It Works</a><a onclick="smoothTo('courses-sec');toggleMobNav()">Courses</a><a onclick="smoothTo('instructors-sec');toggleMobNav()">Instructors</a><a onclick="smoothTo('pricing-sec');toggleMobNav()">Pricing</a><a onclick="smoothTo('books-landing');toggleMobNav()">Books</a><a onclick="goPage('contact');toggleMobNav()">Contact</a><a onclick="goPage('login')">Sign In</a><a onclick="goPage('register')" style="color:var(--primary);font-weight:600">Start Free →</a></div>
 
         <section class="lhero"><div class="lhero-bg"></div><div class="lhero-wrap"><div class="row items-center"><div class="col-12 col-lg-6"><div class="hero-eyebrow"><span class="pulse-dot"></span><span>🌍 Global Learn-to-Earn Platform</span></div><h1 style="font-size:clamp(2rem,5vw,3.2rem)">Turn Tech Skills Into <span class="grad-text">Real Income</span></h1><p class="hero-desc">Learn HTML, CSS, JavaScript &amp; AI Tools — earn from course sales, referrals, affiliates &amp; bonuses. Pay online or via <strong style="color:var(--primary)">bank transfer</strong>. No experience needed.</p><div class="hero-actions"><button class="btn btn-primary btn-lg" onclick="goPage('register')"><i class="fas fa-rocket"></i>Start Earning Free</button><button class="btn btn-outline btn-lg" onclick="smoothTo('how-it-works')"><i class="fas fa-play"></i>See How</button></div><div class="trust-row"><div class="trust-item"><i class="fas fa-shield-alt"></i>Secure &amp; Verified</div><div class="trust-item"><i class="fas fa-certificate"></i>Earn Certificates</div><div class="trust-item"><i class="fas fa-bolt"></i>Instant Payouts</div><div class="trust-item"><i class="fas fa-university"></i>Bank Transfer Accepted</div></div></div><div class="col-12 col-lg-6" style="padding-top:1.5rem"><div class="hero-vis"><div class="hero-dash"><div class="hd-bar"><div class="hd-dot" style="background:#ff5f57"></div><div class="hd-dot" style="background:#febc2e;margin-left:4px"></div><div class="hd-dot" style="background:#28c840;margin-left:4px"></div><span style="font-size:.67rem;color:var(--text3);margin-left:auto;font-family:var(--font-mono)">changex.academy/dashboard</span></div><div class="hd-body"><div class="hd-earn"><div style="font-size:.7rem;color:var(--text3);margin-bottom:.2rem;font-family:var(--font-mono)">💰 TOTAL EARNINGS</div><div class="hd-amt" id="heroEarnings">₦85M+</div><div class="hd-minis"><div class="hd-mini"><div class="hd-mv" style="color:var(--lime)" id="heroReferrals">₦12.4M</div><div class="hd-ml">Referrals</div></div><div class="hd-mini"><div class="hd-mv" style="color:var(--cyan)" id="heroCourses">₦45.8M</div><div class="hd-ml">Courses</div></div><div class="hd-mini"><div class="hd-mv" style="color:var(--gold)" id="heroStreak">🔥 1,284</div><div class="hd-ml">Streak</div></div></div></div></div></div><div class="fc fc-bot"><i class="fas fa-star" style="color:var(--gold)"></i> 4.9 · 3,200+ reviews</div><div class="fc fc-top"><i class="fas fa-user-plus"></i> 15K+ Students</div></div></div></div></div></section>
@@ -5711,6 +5709,9 @@
     <div class="modal-ov hidden" id="participantsModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">👥 Challenge Participants</h5><button class="btn-icon-sm" onclick="closeModal('participantsModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd" id="participantsContent"></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('participantsModal')">Close</button></div></div></div>
 
     <div class="modal-ov hidden" id="shareModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📤 Share Post</h5><button class="btn-icon-sm" onclick="closeModal('shareModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><p style="color:var(--text2);font-size:.85rem;margin-bottom:1rem">Share this post with your friends and followers!</p><div id="shareLinks" style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1rem"><button class="btn btn-ghost" onclick="shareVia('facebook')" style="color:#1877F2"><i class="fab fa-facebook"></i> Facebook</button><button class="btn btn-ghost" onclick="shareVia('twitter')" style="color:#1DA1F2"><i class="fab fa-twitter"></i> Twitter</button><button class="btn btn-ghost" onclick="shareVia('linkedin')" style="color:#0A66C2"><i class="fab fa-linkedin"></i> LinkedIn</button><button class="btn btn-ghost" onclick="shareVia('whatsapp')" style="color:#25D366"><i class="fab fa-whatsapp"></i> WhatsApp</button><button class="btn btn-ghost" onclick="shareVia('telegram')" style="color:#0088CC"><i class="fab fa-telegram"></i> Telegram</button><button class="btn btn-ghost" onclick="shareVia('copy')"><i class="fas fa-link"></i> Copy Link</button></div><div class="form-group"><label class="flabel">Link</label><div class="ref-box"><span class="ref-link" id="shareLink">Loading...</span><button class="btn btn-primary btn-sm" onclick="copyShareLink()"><i class="fas fa-copy"></i> Copy</button></div></div></div></div></div>
+
+    <!-- ─── CAMPAIGN MANUAL PAYMENT MODAL ──────────────────────────────────────────── -->
+    <div class="modal-ov hidden" id="campaignManualModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">🏦 Bank Transfer for Campaign</h5><button class="btn-icon-sm" onclick="closeModal('campaignManualModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="bank-details-box" id="campaignBankDetailsBox"></div><div class="form-group"><label class="flabel">Transaction Reference *</label><input type="text" class="finput" id="campaignManualRef" placeholder="e.g. TRX123456789"></div><div class="form-group"><label class="flabel">Payment Date</label><input type="date" class="finput" id="campaignManualDate"></div><div class="form-group"><label class="flabel">Upload Receipt *</label><div class="upload-zone" style="padding:1rem"><input type="file" id="campaignManualReceipt" accept="image/*,application/pdf"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:.8rem;color:var(--text2)">Upload bank transfer receipt</div></div><div id="campaignReceiptPreview" style="margin-top:.5rem;display:none"><img id="campaignReceiptPreviewImg" style="max-width:100%;max-height:150px;border-radius:var(--radius-sm)"></div></div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('campaignManualModal')">Cancel</button><button class="btn btn-primary" onclick="submitCampaignManualPayment()"><i class="fas fa-paper-plane"></i>Submit</button></div></div></div>
 
     <!-- ─── SPONSORSHIP MODAL ──────────────────────────────────────────── -->
     <div class="modal-ov hidden" id="sponsorshipModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">🤝 Sponsor ChangeX</h5><button class="btn-icon-sm" onclick="closeModal('sponsorshipModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Sponsorship Type *</label><select class="finput" id="sponsorshipType"><option value="donation">Donation</option><option value="partnership">Partnership</option><option value="collaboration">Collaboration</option><option value="brand">Brand Sponsorship</option><option value="media">Media Partnership</option></select></div><div class="form-group"><label class="flabel">Amount (₦) *</label><input type="number" class="finput" id="sponsorshipAmount" placeholder="e.g. 5000" min="0"></div><div class="form-group"><label class="flabel">Message *</label><textarea class="finput" id="sponsorshipMessage" rows="3" placeholder="Tell us why you want to support us"></textarea></div><div class="form-group"><label class="flabel">Company Name</label><input type="text" class="finput" id="sponsorshipCompany" placeholder="Your company name"></div><div class="form-group"><label class="flabel">Website</label><input type="url" class="finput" id="sponsorshipWebsite" placeholder="https://yourwebsite.com"></div><div class="form-group"><label class="flabel">Phone</label><input type="tel" class="finput" id="sponsorshipPhone" placeholder="+234 800 000 0000"></div><div class="form-group"><label class="flabel">Upload Receipt (optional)</label><div class="upload-zone" style="padding:1rem"><input type="file" id="sponsorshipReceipt" accept="image/*,application/pdf"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:.8rem;color:var(--text2)">Upload bank transfer receipt</div></div></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i><strong>Thank you!</strong> Your support helps us grow and provide better education to thousands of learners.</div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('sponsorshipModal')">Cancel</button><button class="btn btn-primary" onclick="submitSponsorship()"><i class="fas fa-paper-plane"></i>Submit</button></div></div></div>
@@ -6038,6 +6039,169 @@
             sponsorTab: 'overview',
             campaignStats: null,
             campaignAnalytics: [],
+            // ─── ROUTING ──────────────────────────────────────────────
+            currentRoute: '/',
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // CLIENT-SIDE ROUTER (FACEBOOK-STYLE CLEAN URLS)
+        // ═══════════════════════════════════════════════════════════════
+        const routeHandlers = {
+            '/': () => goPage('landing'),
+            '/feed': () => { if (S.loggedIn) setDP('feed');
+                else goPage('login'); },
+            '/explore': () => { if (S.loggedIn) setDP('explore');
+                else goPage('login'); },
+            '/wallet': () => { if (S.loggedIn) setDP('wallet');
+                else goPage('login'); },
+            '/profile': () => { if (S.loggedIn) setDP('profile');
+                else goPage('login'); },
+            '/settings': () => { if (S.loggedIn) setDP('settings');
+                else goPage('login'); },
+            '/admin': () => { if (S.loggedIn && S.user?.roles?.includes('admin')) setDP('admin');
+                else goPage('login'); },
+            '/home': () => { if (S.loggedIn) setDP('home');
+                else goPage('login'); },
+            '/courses': () => { if (S.loggedIn) setDP('courses');
+                else goPage('login'); },
+            '/books': () => { if (S.loggedIn) setDP('books');
+                else goPage('login'); },
+            '/challenges': () => { if (S.loggedIn) setDP('challenges');
+                else goPage('login'); },
+            '/people': () => { if (S.loggedIn) setDP('people');
+                else goPage('login'); },
+            '/following': () => { if (S.loggedIn) setDP('following');
+                else goPage('login'); },
+            '/affiliates': () => { if (S.loggedIn) setDP('affiliates');
+                else goPage('login'); },
+            '/leaderboard': () => { if (S.loggedIn) setDP('leaderboard');
+                else goPage('login'); },
+            '/referrals': () => { if (S.loggedIn) setDP('referrals');
+                else goPage('login'); },
+            '/instructor': () => { if (S.loggedIn) setDP('instructor');
+                else goPage('login'); },
+            '/course-editor': () => { if (S.loggedIn) setDP('course-editor');
+                else goPage('login'); },
+            '/ai': () => { if (S.loggedIn) setDP('ai');
+                else goPage('login'); },
+            '/social-earnings': () => { if (S.loggedIn) setDP('social-earnings');
+                else goPage('login'); },
+            '/sponsorship': () => { if (S.loggedIn) setDP('sponsorship');
+                else goPage('login'); },
+            '/tools': () => { if (S.loggedIn) setDP('tools');
+                else goPage('login'); },
+            '/badges': () => { if (S.loggedIn) setDP('badges');
+                else goPage('login'); },
+            '/manual-payments': () => { if (S.loggedIn) setDP('manual-payments');
+                else goPage('login'); },
+            '/purchased-articles': () => { if (S.loggedIn) setDP('purchased-articles');
+                else goPage('login'); },
+        };
+
+        function navigateTo(url) {
+            // Strip leading slash for relative paths
+            const cleanUrl = url.startsWith('/') ? url : '/' + url;
+            window.history.pushState({}, '', cleanUrl);
+            handleRoute(cleanUrl);
+        }
+
+        function handleRoute(path) {
+            const url = path || window.location.pathname;
+            S.currentRoute = url;
+
+            // Check exact matches first
+            if (routeHandlers[url]) {
+                routeHandlers[url]();
+                return;
+            }
+
+            // Dynamic routes: /post/:slug, /course/:slug, /book/:slug, /user/:id
+            const postMatch = url.match(/^\/post\/(.+)/);
+            if (postMatch) {
+                if (S.loggedIn) loadPostBySlug(postMatch[1]);
+                else goPage('login');
+                return;
+            }
+
+            const courseMatch = url.match(/^\/course\/(.+)/);
+            if (courseMatch) {
+                if (S.loggedIn) {
+                    // Try to find course by slug or ID
+                    const slug = courseMatch[1];
+                    const course = (S.appCourses || []).find(c => c.slug === slug || c._id === slug);
+                    if (course) openBuyCourse(course._id);
+                    else {
+                        // Try fetching by ID directly
+                        apiCall(`/courses/slug/${slug}`).then(res => {
+                            if (res.data) openBuyCourse(res.data._id);
+                            else toast('Course not found', 'error');
+                        }).catch(() => toast('Course not found', 'error'));
+                    }
+                } else goPage('login');
+                return;
+            }
+
+            const bookMatch = url.match(/^\/book\/(.+)/);
+            if (bookMatch) {
+                if (S.loggedIn) {
+                    const slug = bookMatch[1];
+                    const book = S.books.find(b => b.slug === slug || b._id === slug);
+                    if (book) openBookDetail(book._id);
+                    else {
+                        apiCall(`/books/slug/${slug}`).then(res => {
+                            if (res.data) openBookDetail(res.data._id);
+                            else toast('Book not found', 'error');
+                        }).catch(() => toast('Book not found', 'error'));
+                    }
+                } else goPage('login');
+                return;
+            }
+
+            const userMatch = url.match(/^\/user\/(.+)/);
+            if (userMatch) {
+                if (S.loggedIn) openUserProfile(userMatch[1]);
+                else goPage('login');
+                return;
+            }
+
+            // Fallback: if logged in, go to feed, else landing
+            if (S.loggedIn) setDP('feed');
+            else goPage('landing');
+        }
+
+        // Handle popstate (back/forward)
+        window.addEventListener('popstate', () => handleRoute());
+
+        // Override goPage to also update URL
+        const originalGoPage = goPage;
+        goPage = function(pg) {
+            originalGoPage(pg);
+            // Update URL for app pages
+            if (pg === 'app' || pg === 'login' || pg === 'register' || pg === 'setup' || pg === 'contact') {
+                // Don't change URL for auth pages to avoid confusion
+                if (pg === 'app' && S.dp) {
+                    const path = '/' + S.dp;
+                    if (window.location.pathname !== path) {
+                        window.history.pushState({}, '', path);
+                    }
+                }
+            } else if (pg === 'landing') {
+                if (window.location.pathname !== '/') {
+                    window.history.pushState({}, '', '/');
+                }
+            }
+        };
+
+        // Override setDP to update URL
+        const originalSetDP = setDP;
+        setDP = function(pg) {
+            originalSetDP(pg);
+            if (S.page === 'app') {
+                const path = '/' + pg;
+                if (window.location.pathname !== path) {
+                    window.history.pushState({}, '', path);
+                }
+            }
         };
 
         // ═══════════════════════════════════════════════════════════════
@@ -6603,6 +6767,17 @@
             if (pg === 'setup') { setTimeout(() => { if (typeof showWizStep === 'function') showWizStep(S.wizStep || 0); },
                     50); }
             if (pg === 'landing') { updateLandingHeroStats(); }
+            // Update URL
+            if (pg === 'app' && S.dp) {
+                const path = '/' + S.dp;
+                if (window.location.pathname !== path) {
+                    window.history.pushState({}, '', path);
+                }
+            } else if (pg === 'landing') {
+                if (window.location.pathname !== '/') {
+                    window.history.pushState({}, '', '/');
+                }
+            }
         }
 
         function forceRedirect(targetPage) {
@@ -6688,6 +6863,13 @@
             checkPlanExpiry();
             updatePremiumUI();
             updateSocialBadge();
+            // Update URL for app pages
+            if (S.page === 'app') {
+                const path = '/' + pg;
+                if (window.location.pathname !== path) {
+                    window.history.pushState({}, '', path);
+                }
+            }
         }
 
         function openSidebar() { document.getElementById('sidebar')?.classList.add('open');
@@ -6938,9 +7120,9 @@
         }
 
         function populateAllBankDetailsBoxes() {
-            ['buyBankDetailsBox', 'premBankDetailsBox', 'wizBankDetailsBox'].forEach(id => {
+            ['buyBankDetailsBox', 'premBankDetailsBox', 'wizBankDetailsBox', 'campaignBankDetailsBox'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.innerHTML = renderBankDetailsHTML(id !== 'wizBankDetailsBox');
+                if (el) el.innerHTML = renderBankDetailsHTML(id !== 'wizBankDetailsBox' && id !== 'campaignBankDetailsBox');
             });
         }
 
@@ -7046,6 +7228,17 @@
                 updateLandingHeroStats();
             }
             setTimeout(() => { if (S.dp) setDP(S.dp); }, 300);
+            // Update URL for app
+            if (targetPage === 'app' && S.dp) {
+                const path = '/' + S.dp;
+                if (window.location.pathname !== path) {
+                    window.history.pushState({}, '', path);
+                }
+            } else if (targetPage === 'landing') {
+                if (window.location.pathname !== '/') {
+                    window.history.pushState({}, '', '/');
+                }
+            }
         }
 
         function handleGoogleLogin() { window.location.href = `${API_BASE}/auth/google`; }
@@ -7087,7 +7280,11 @@
             S.enrollments = [];
             S.appCourses = [];
             toast('See you soon! 👋', 'info');
-            window.location.href = '/';
+            // Navigate to landing
+            if (window.location.pathname !== '/') {
+                window.history.pushState({}, '', '/');
+            }
+            window.location.reload();
         }
 
         function togglePw(id, btn) {
@@ -7262,6 +7459,15 @@
                 loadSidebarAd();
                 loadBottomAd();
             }
+            // Show/hide both upload course and upload book
+            const navUploadCourse = document.getElementById('nav-premium-upload');
+            const navUploadBook = document.getElementById('nav-create-book');
+            const isPremium = S.isPremium;
+            if (navUploadCourse) navUploadCourse.style.display = isPremium ? '' : 'none';
+            if (navUploadBook) navUploadBook.style.display = isPremium ? '' : 'none';
+            const adminLi = document.getElementById('adminNavLi');
+            if (adminLi) adminLi.style.display = (S.user?.roles?.includes('admin') || S.user?.role === 'admin' || S.user
+                ?.role === 'superadmin') ? '' : 'none';
         }
 
         function updatePremiumUI() {
@@ -7293,6 +7499,11 @@
                 toast('Premium required', 'warning');
                 setDP('home');
             }
+            // Also handle both upload links
+            const navUploadCourse = document.getElementById('nav-premium-upload');
+            const navUploadBook = document.getElementById('nav-create-book');
+            if (navUploadCourse) navUploadCourse.style.display = isPremium ? '' : 'none';
+            if (navUploadBook) navUploadBook.style.display = isPremium ? '' : 'none';
         }
 
         // ================================================================
@@ -7466,8 +7677,15 @@
                 if (response.status === 401) {
                     localStorage.removeItem('cx_accessToken');
                     localStorage.removeItem('cx_user');
-                    if (S.loggedIn) { toast('Session expired. Please log in again.', 'error');
-                        goPage('login'); }
+                    S.loggedIn = false;
+                    S.user = null;
+                    S.isPremium = false;
+                    toast('Session expired. Please log in again.', 'error');
+                    // Navigate to login
+                    if (window.location.pathname !== '/login') {
+                        window.history.pushState({}, '', '/login');
+                    }
+                    goPage('login');
                     throw new Error(data.message || 'Session expired. Please log in again.');
                 }
                 if (!response.ok) { const err = new Error(data.message || data.errors?.[0]?.msg || `HTTP ${response.status}`);
@@ -13738,6 +13956,92 @@
             if (tab === 'dashboard') loadCampaignAnalytics();
         }
 
+        // ─── CAMPAIGN PAYMENT FUNCTIONS ──────────────────────────────────
+        async function payCampaign(campaignId) {
+            try {
+                const res = await apiCall('/campaigns/pay', {
+                    method: 'POST',
+                    body: { campaignId }
+                });
+                if (res.data.paymentUrl) {
+                    window.location.href = res.data.paymentUrl;
+                } else {
+                    toast('Could not initiate payment.', 'error');
+                }
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        // ─── OPEN CAMPAIGN MANUAL PAYMENT MODAL ──────────────────────────
+        function openCampaignManualPayment(campaignId) {
+            document.getElementById('campaignManualModal')._campaignId = campaignId;
+            populateAllBankDetailsBoxes();
+            document.getElementById('campaignManualRef').value = '';
+            document.getElementById('campaignManualDate').value = '';
+            document.getElementById('campaignManualReceipt').value = '';
+            document.getElementById('campaignReceiptPreview').style.display = 'none';
+            openModal('campaignManualModal');
+        }
+
+        // ─── SUBMIT CAMPAIGN MANUAL PAYMENT ──────────────────────────────
+        async function submitCampaignManualPayment() {
+            const campaignId = document.getElementById('campaignManualModal')._campaignId;
+            const reference = document.getElementById('campaignManualRef').value.trim();
+            const paymentDate = document.getElementById('campaignManualDate').value;
+            const receiptFile = document.getElementById('campaignManualReceipt').files[0];
+
+            if (!campaignId) { toast('No campaign selected', 'error'); return; }
+            if (!reference) { toast('Enter transaction reference', 'error'); return; }
+            if (!paymentDate) { toast('Select payment date', 'error'); return; }
+            if (!receiptFile) { toast('Upload receipt', 'error'); return; }
+
+            const formData = new FormData();
+            formData.append('campaignId', campaignId);
+            formData.append('reference', reference);
+            formData.append('paymentDate', paymentDate);
+            formData.append('receipt', receiptFile);
+
+            showLoading('Submitting manual payment...');
+            try {
+                const token = localStorage.getItem('cx_accessToken');
+                const res = await fetch(`${API_BASE}/campaigns/manual-pay`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    toast('✅ Manual payment submitted for review!', 'success');
+                    closeModal('campaignManualModal');
+                    loadMyCampaigns();
+                } else {
+                    toast(data.message || 'Submission failed', 'error');
+                }
+            } catch (err) {
+                toast('Error: ' + err.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ─── PREVIEW CAMPAIGN MANUAL RECEIPT ──────────────────────────────
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'campaignManualReceipt') {
+                const preview = document.getElementById('campaignReceiptPreview');
+                const img = document.getElementById('campaignReceiptPreviewImg');
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        img.src = ev.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                } else {
+                    preview.style.display = 'none';
+                }
+            }
+        });
+
+        // ─── LOAD MY CAMPAIGNS ────────────────────────────────────────────
         async function loadMyCampaigns() {
             showLoading('Loading campaigns...');
             try {
@@ -13778,6 +14082,7 @@
                                 <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
                                     ${needsPayment ? `
                                         <button class="campaign-pay-btn" onclick="payCampaign('${c._id}')"><i class="fas fa-credit-card"></i> Pay ₦${c.budget.toLocaleString()}</button>
+                                        <button class="btn btn-ghost btn-sm" onclick="openCampaignManualPayment('${c._id}')"><i class="fas fa-university"></i> Bank Transfer</button>
                                     ` : ''}
                                     ${c.status === 'active' || c.status === 'paused' ? `
                                         <button class="btn btn-${isPaused ? 'success' : 'warning'} btn-sm" onclick="toggleCampaign('${c._id}', ${isPaused})">
@@ -13797,6 +14102,91 @@
                     `;
                 }).join('');
             } catch (err) { toast('Failed to load campaigns: ' + err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        // ─── TOGGLE CAMPAIGN ─────────────────────────────────────────────
+        async function toggleCampaign(campaignId, pause) {
+            try {
+                await apiCall(`/campaigns/${campaignId}/toggle`, {
+                    method: 'PUT',
+                    body: { pause }
+                });
+                toast(pause ? 'Campaign paused' : 'Campaign resumed', 'success');
+                loadMyCampaigns();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        // ─── DELETE CAMPAIGN ─────────────────────────────────────────────
+        async function deleteCampaign(campaignId) {
+            if (!confirm('Delete this campaign? This action cannot be undone.')) return;
+            try {
+                await apiCall(`/campaigns/${campaignId}`, { method: 'DELETE' });
+                toast('Campaign deleted', 'success');
+                loadMyCampaigns();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        // ─── TOP UP CAMPAIGN ─────────────────────────────────────────────
+        async function topUpCampaign(campaignId) {
+            const amount = prompt('Enter amount to top up (₦):', '5000');
+            if (!amount) return;
+            if (isNaN(amount) || parseFloat(amount) < 1000) { toast('Minimum top-up is ₦1,000', 'error'); return; }
+            try {
+                const res = await apiCall(`/campaigns/${campaignId}/topup`, { method: 'POST', body: { amount: parseFloat(
+                            amount) } });
+                if (res.data.paymentUrl) {
+                    window.location.href = res.data.paymentUrl;
+                } else {
+                    toast('Could not initiate top-up.', 'error');
+                }
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        // ─── VIEW CAMPAIGN STATS ──────────────────────────────────────────
+        async function viewCampaignStats(campaignId) {
+            showLoading('Loading stats...');
+            try {
+                const res = await apiCall(`/campaigns/${campaignId}/stats`);
+                const data = res.data;
+                const summary = data.summary;
+                const dailyAnalytics = data.dailyAnalytics || [];
+
+                const content = document.getElementById('userDetailsContent');
+                if (!content) return;
+
+                const ctr = summary.ctr || 0;
+                content.innerHTML = `
+                    <div class="campaign-stats-grid">
+                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalImpressions.toLocaleString()}</div><div class="cs-label">Impressions</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalClicks.toLocaleString()}</div><div class="cs-label">Clicks</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalViews.toLocaleString()}</div><div class="cs-label">Views</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${ctr}%</div><div class="cs-label">CTR</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalConversions || 0}</div><div class="cs-label">Conversions</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${fmtMoneyAPI(summary.spent)}</div><div class="cs-label">Spent</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${fmtMoneyAPI(summary.escrowBalance)}</div><div class="cs-label">Remaining</div></div>
+                        <div class="campaign-stat-card"><div class="cs-value">${summary.budget ? fmtMoneyAPI(summary.budget) : '—'}</div><div class="cs-label">Budget</div></div>
+                    </div>
+                    <div style="margin-top:1rem;">
+                        <h6>Daily Performance</h6>
+                        ${dailyAnalytics.length ? `
+                            <div class="mini-chart" style="height:150px;align-items:flex-end;gap:2px;">
+                                ${dailyAnalytics.map(d => {
+                                    const maxVal = Math.max(...dailyAnalytics.map(x => x.impressions || 0), 1);
+                                    const height = ((d.impressions || 0) / maxVal) * 100;
+                                    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div style="width:100%;background:rgba(212,175,55,.3);height:${height}%;border-radius:2px 2px 0 0;min-height:2px;"></div><span style="font-size:.45rem;color:var(--text3);">${new Date(d.date).getDate()}</span></div>`;
+                                }).join('')}
+                            </div>
+                            <div style="display:flex;gap:.75rem;font-size:.7rem;color:var(--text3);margin-top:.5rem;flex-wrap:wrap;">
+                                <span>📊 Bar height = daily impressions</span>
+                            </div>
+                        ` : '<p style="color:var(--text3);font-size:.8rem;">No daily data yet</p>'}
+                        ${summary.fraudScore !== undefined ? `<div style="font-size:.75rem;color:var(--text3);margin-top:.5rem;">🛡️ Fraud Score: ${summary.fraudScore}/100</div>` : ''}
+                        ${summary.invalidImpressions !== undefined ? `<div style="font-size:.75rem;color:var(--text3);">🚫 Invalid Impressions: ${summary.invalidImpressions}</div>` : ''}
+                    </div>
+                `;
+                document.querySelector('#userDetailsModal .modal-hd h5').textContent = `📊 Campaign: ${data.campaign.title}`;
+                openModal('userDetailsModal');
+            } catch (err) { toast('Failed to load stats: ' + err.message, 'error'); } finally { hideLoading(); }
         }
 
         // ─── TOGGLE CAMPAIGN PRICING ────────────────────────────────────
@@ -13819,6 +14209,7 @@
             }
         }
 
+        // ─── SUBMIT CAMPAIGN ─────────────────────────────────────────────
         async function submitCampaign() {
             const title = document.getElementById('campaignTitle').value.trim();
             const description = document.getElementById('campaignDesc').value.trim();
@@ -13874,98 +14265,6 @@
                     toast(data.message || 'Submission failed', 'error');
                 }
             } catch (err) { toast('Error: ' + err.message, 'error'); } finally { hideLoading(); }
-        }
-
-        async function toggleCampaign(campaignId, pause) {
-            try {
-                await apiCall(`/campaigns/${campaignId}/toggle`, {
-                    method: 'PUT',
-                    body: { pause }
-                });
-                toast(pause ? 'Campaign paused' : 'Campaign resumed', 'success');
-                loadMyCampaigns();
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
-        async function deleteCampaign(campaignId) {
-            if (!confirm('Delete this campaign? This action cannot be undone.')) return;
-            try {
-                await apiCall(`/campaigns/${campaignId}`, { method: 'DELETE' });
-                toast('Campaign deleted', 'success');
-                loadMyCampaigns();
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
-        async function payCampaign(campaignId) {
-            try {
-                const res = await apiCall('/campaigns/pay', { method: 'POST', body: { campaignId } });
-                if (res.data.paymentUrl) {
-                    window.location.href = res.data.paymentUrl;
-                } else {
-                    toast('Could not initiate payment.', 'error');
-                }
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
-        async function topUpCampaign(campaignId) {
-            const amount = prompt('Enter amount to top up (₦):', '5000');
-            if (!amount) return;
-            if (isNaN(amount) || parseFloat(amount) < 1000) { toast('Minimum top-up is ₦1,000', 'error'); return; }
-            try {
-                const res = await apiCall(`/campaigns/${campaignId}/topup`, { method: 'POST', body: { amount: parseFloat(
-                            amount) } });
-                if (res.data.paymentUrl) {
-                    window.location.href = res.data.paymentUrl;
-                } else {
-                    toast('Could not initiate top-up.', 'error');
-                }
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
-        async function viewCampaignStats(campaignId) {
-            showLoading('Loading stats...');
-            try {
-                const res = await apiCall(`/campaigns/${campaignId}/stats`);
-                const data = res.data;
-                const summary = data.summary;
-                const dailyAnalytics = data.dailyAnalytics || [];
-
-                const content = document.getElementById('userDetailsContent');
-                if (!content) return;
-
-                const ctr = summary.ctr || 0;
-                content.innerHTML = `
-                    <div class="campaign-stats-grid">
-                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalImpressions.toLocaleString()}</div><div class="cs-label">Impressions</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalClicks.toLocaleString()}</div><div class="cs-label">Clicks</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalViews.toLocaleString()}</div><div class="cs-label">Views</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${ctr}%</div><div class="cs-label">CTR</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${summary.totalConversions || 0}</div><div class="cs-label">Conversions</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${fmtMoneyAPI(summary.spent)}</div><div class="cs-label">Spent</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${fmtMoneyAPI(summary.escrowBalance)}</div><div class="cs-label">Remaining</div></div>
-                        <div class="campaign-stat-card"><div class="cs-value">${summary.budget ? fmtMoneyAPI(summary.budget) : '—'}</div><div class="cs-label">Budget</div></div>
-                    </div>
-                    <div style="margin-top:1rem;">
-                        <h6>Daily Performance</h6>
-                        ${dailyAnalytics.length ? `
-                            <div class="mini-chart" style="height:150px;align-items:flex-end;gap:2px;">
-                                ${dailyAnalytics.map(d => {
-                                    const maxVal = Math.max(...dailyAnalytics.map(x => x.impressions || 0), 1);
-                                    const height = ((d.impressions || 0) / maxVal) * 100;
-                                    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div style="width:100%;background:rgba(212,175,55,.3);height:${height}%;border-radius:2px 2px 0 0;min-height:2px;"></div><span style="font-size:.45rem;color:var(--text3);">${new Date(d.date).getDate()}</span></div>`;
-                                }).join('')}
-                            </div>
-                            <div style="display:flex;gap:.75rem;font-size:.7rem;color:var(--text3);margin-top:.5rem;flex-wrap:wrap;">
-                                <span>📊 Bar height = daily impressions</span>
-                            </div>
-                        ` : '<p style="color:var(--text3);font-size:.8rem;">No daily data yet</p>'}
-                        ${summary.fraudScore !== undefined ? `<div style="font-size:.75rem;color:var(--text3);margin-top:.5rem;">🛡️ Fraud Score: ${summary.fraudScore}/100</div>` : ''}
-                        ${summary.invalidImpressions !== undefined ? `<div style="font-size:.75rem;color:var(--text3);">🚫 Invalid Impressions: ${summary.invalidImpressions}</div>` : ''}
-                    </div>
-                `;
-                document.querySelector('#userDetailsModal .modal-hd h5').textContent = `📊 Campaign: ${data.campaign.title}`;
-                openModal('userDetailsModal');
-            } catch (err) { toast('Failed to load stats: ' + err.message, 'error'); } finally { hideLoading(); }
         }
 
         // ─── SPONSORSHIP FUNCTIONS ──────────────────────────────────────
@@ -14150,6 +14449,19 @@
                         loadPostBySlug(slug), 1000); }
             }, 800);
             handleDeepLink();
+            // Handle initial route
+            const path = window.location.pathname;
+            if (path !== '/' && path !== '/login' && path !== '/register' && path !== '/setup' && path !== '/contact') {
+                // If it's a dynamic route, handle it
+                handleRoute(path);
+            } else if (path === '/' && S.loggedIn) {
+                setDP('feed');
+            }
+            // Check for initial post route
+            const postMatch = path.match(/^\/post\/(.+)/);
+            if (postMatch && S.loggedIn) {
+                loadPostBySlug(postMatch[1]);
+            }
         }
 
         function handleDeepLink() {
@@ -14212,58 +14524,119 @@
             images.forEach(img => imageObserver.observe(img));
         }
 
-        console.log('🚀 ChangeX Academy — Production Ready with All Features');
-        console.log('📚 Learn, Earn, and Grow with ChangeX!');
-        console.log('✅ Premium Course Upload — Users can create courses with lessons and submit for approval.');
-        console.log('✅ Social Earnings Config — Admin config with engagement weights and distribution trigger.');
-        console.log('✅ Manual Payment Status — Users can track their bank transfer submissions.');
-        console.log('✅ Platform Stats — Admin dashboard with total users, courses, revenue, posts, books, enrollments.');
-        console.log('✅ User Badges — Achievements system with earned badges display.');
-        console.log('✅ Revenue Split Management — Instructors can split revenue with co-instructors.');
-        console.log('✅ Analytics Dashboard — Course analytics with funnel charts and engagement metrics.');
-        console.log('✅ Cohort Management — Create and manage student cohorts.');
-        console.log('✅ Purchase Article List — Users can see all purchased articles.');
-        console.log('✅ Articles Paywall — Paid articles with purchase flow and access control.');
-        console.log('✅ Sponsorship & Ad Campaign Platform — Users submit campaigns, pay, track performance.');
-        console.log('✅ Admin Campaign Management — Approve, reject, mark paid, refund campaigns.');
-        console.log('✅ Admin Sponsorship Management — Approve/reject sponsorships.');
-        console.log('✅ Campaign Analytics — Real-time stats with impressions, clicks, CTR, and daily charts.');
-        console.log('📱 PWA: Install banner hides for 7 days after dismissal.');
-        console.log('⭐ Rating system fully integrated with course reviews.');
-        console.log('👥 Following system fixed with proper localStorage persistence.');
-        console.log('🔍 SEO meta tags dynamically updated for posts and courses.');
-        console.log('📖 Book downloads permanently unlocked after purchase approval.');
-        console.log('👁️ Course views and book views are actively tracked.');
-        console.log('💰 Course completion bonus: ₦100.');
-        console.log('🎨 Gold, White & Black premium theme applied.');
-        console.log('📢 Hybrid Ads: Custom Admin Ads + Adsterra fallback with 50% creator revenue share.');
-        console.log('📢 Ads appear between posts (every 3 for free, 6 for premium) AND after every 4 courses in Explore.');
-        console.log('📢 Ads also appear in: Video (pre/mid-roll), Sidebar, Books, Lesson inline, Challenges.');
-        console.log('🗑️ Admin can delete any post.');
-        console.log('📤 Book upload: Premium users can submit books for admin approval.');
-        console.log('📤 Admin can directly add books with immediate publishing.');
-        console.log('🔗 Affiliate links now use hash-based routing for SPA compatibility.');
-        console.log('🏦 Bank details updated: Lead Bank & Taj Bank for manual transfers.');
-        console.log('⚡ Performance: Lazy loading, debounce, throttle, batch DOM updates, request deduplication.');
-        console.log('🔥 Landing page hero stats hardcoded for marketing impact.');
-        console.log('📊 Leaderboard shows correct user data (no more zeros).');
-        console.log('👤 Profile earnings hidden when viewing other users\' profiles.');
-        console.log('📢 Ad Frequency: Free users see ads every 3 posts, Premium users every 6 posts.');
-        console.log('📚 Book purchase approval automatically converts purchase button to download.');
-        console.log('🌱 Social Earnings fully integrated with wallet breakdown and dedicated page.');
-        console.log('✅ Production-ready: All features optimized for growth, engagement, and profitability.');
-        console.log('📊 Social Earnings: Daily pool distribution with admin config and real-time socket updates.');
-        console.log('📌 Read More: Posts truncate at 200 characters with toggle.');
-        console.log('📌 Premium Book Upload: Only visible to premium users with pending status.');
-        console.log('📌 All 11 ad placements supported in dropdown and rendering.');
-        console.log('📌 Popup ads: Only shown to free users, once per session.');
-        console.log('📌 Ad containers hidden for premium users.');
-        console.log('📌 Sponsorship Tab: Users can create ad campaigns, sponsor the platform, and track analytics.');
-        console.log('📌 Campaign Payment Flow: Users pay after admin approval — campaign goes live on payment.');
-        console.log('📌 Escrow-based budget tracking with real-time deductions.');
-        console.log('📌 Top-up campaigns to add more budget.');
-        console.log('📌 Fraud detection with IP blacklisting and unique impression tracking.');
-        console.log('📌 Minimum withdrawal: ₦5,000.');
+        // ─── INITIAL BOOT ──────────────────────────────────────────────────
+        (function boot() {
+            // Check if user is already logged in via token
+            const token = localStorage.getItem('cx_accessToken');
+            const user = JSON.parse(localStorage.getItem('cx_user') || 'null');
+
+            if (token && user) {
+                S.user = user;
+                S.loggedIn = true;
+                S.isPremium = user.isPremium || false;
+                S.walletBal = user.walletBalance || 0;
+                updateUserUI();
+                // Start the app
+                goPage('app');
+                setTimeout(() => initApp(), 100);
+            } else {
+                // Landing page
+                initLanding();
+                // Check for referral code in URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const refCode = urlParams.get('ref');
+                if (refCode) {
+                    localStorage.setItem('cx_pending_ref', refCode);
+                    toast('🎯 Referral code detected! You\'ll get a bonus when you sign up.', 'info');
+                }
+            }
+
+            // Handle popstate for SPA routing
+            window.addEventListener('popstate', function() {
+                if (S.loggedIn) {
+                    const path = window.location.pathname;
+                    if (path === '/') {
+                        goPage('landing');
+                    } else if (path.startsWith('/post/')) {
+                        const slug = path.replace('/post/', '');
+                        loadPostBySlug(slug);
+                    } else if (path.startsWith('/course/')) {
+                        // Handle course routes
+                    } else if (path.startsWith('/book/')) {
+                        // Handle book routes
+                    } else if (path.startsWith('/user/')) {
+                        const id = path.replace('/user/', '');
+                        openUserProfile(id);
+                    } else {
+                        // Try to find matching dashboard page
+                        const dp = path.replace('/', '');
+                        if (document.getElementById('dash-' + dp)) {
+                            setDP(dp);
+                        } else {
+                            setDP('feed');
+                        }
+                    }
+                } else {
+                    if (window.location.pathname !== '/') {
+                        goPage('landing');
+                    }
+                }
+            });
+
+            console.log('🚀 ChangeX Academy — Production Ready with All Features');
+            console.log('📚 Learn, Earn, and Grow with ChangeX!');
+            console.log('✅ Premium Course Upload — Users can create courses with lessons and submit for approval.');
+            console.log('✅ Social Earnings Config — Admin config with engagement weights and distribution trigger.');
+            console.log('✅ Manual Payment Status — Users can track their bank transfer submissions.');
+            console.log('✅ Platform Stats — Admin dashboard with total users, courses, revenue, posts, books, enrollments.');
+            console.log('✅ User Badges — Achievements system with earned badges display.');
+            console.log('✅ Revenue Split Management — Instructors can split revenue with co-instructors.');
+            console.log('✅ Analytics Dashboard — Course analytics with funnel charts and engagement metrics.');
+            console.log('✅ Cohort Management — Create and manage student cohorts.');
+            console.log('✅ Purchase Article List — Users can see all purchased articles.');
+            console.log('✅ Articles Paywall — Paid articles with purchase flow and access control.');
+            console.log('✅ Sponsorship & Ad Campaign Platform — Users submit campaigns, pay, track performance.');
+            console.log('✅ Admin Campaign Management — Approve, reject, mark paid, refund campaigns.');
+            console.log('✅ Admin Sponsorship Management — Approve/reject sponsorships.');
+            console.log('✅ Campaign Analytics — Real-time stats with impressions, clicks, CTR, and daily charts.');
+            console.log('📱 PWA: Install banner hides for 7 days after dismissal.');
+            console.log('⭐ Rating system fully integrated with course reviews.');
+            console.log('👥 Following system fixed with proper localStorage persistence.');
+            console.log('🔍 SEO meta tags dynamically updated for posts and courses.');
+            console.log('📖 Book downloads permanently unlocked after purchase approval.');
+            console.log('👁️ Course views and book views are actively tracked.');
+            console.log('💰 Course completion bonus: ₦100.');
+            console.log('🎨 Gold, White & Black premium theme applied.');
+            console.log('📢 Hybrid Ads: Custom Admin Ads + Adsterra fallback with 50% creator revenue share.');
+            console.log('📢 Ads appear between posts (every 3 for free, 6 for premium) AND after every 4 courses in Explore.');
+            console.log('📢 Ads also appear in: Video (pre/mid-roll), Sidebar, Books, Lesson inline, Challenges.');
+            console.log('🗑️ Admin can delete any post.');
+            console.log('📤 Book upload: Premium users can submit books for admin approval.');
+            console.log('📤 Admin can directly add books with immediate publishing.');
+            console.log('🔗 Affiliate links now use hash-based routing for SPA compatibility.');
+            console.log('🏦 Bank details updated: Lead Bank & Taj Bank for manual transfers.');
+            console.log('⚡ Performance: Lazy loading, debounce, throttle, batch DOM updates, request deduplication.');
+            console.log('🔥 Landing page hero stats hardcoded for marketing impact.');
+            console.log('📊 Leaderboard shows correct user data (no more zeros).');
+            console.log('👤 Profile earnings hidden when viewing other users\' profiles.');
+            console.log('📢 Ad Frequency: Free users see ads every 3 posts, Premium users every 6 posts.');
+            console.log('📚 Book purchase approval automatically converts purchase button to download.');
+            console.log('🌱 Social Earnings fully integrated with wallet breakdown and dedicated page.');
+            console.log('✅ Production-ready: All features optimized for growth, engagement, and profitability.');
+            console.log('📊 Social Earnings: Daily pool distribution with admin config and real-time socket updates.');
+            console.log('📌 Read More: Posts truncate at 200 characters with toggle.');
+            console.log('📌 Premium Book Upload: Only visible to premium users with pending status.');
+            console.log('📌 All 11 ad placements supported in dropdown and rendering.');
+            console.log('📌 Popup ads: Only shown to free users, once per session.');
+            console.log('📌 Ad containers hidden for premium users.');
+            console.log('📌 Sponsorship Tab: Users can create ad campaigns, sponsor the platform, and track analytics.');
+            console.log('📌 Campaign Payment Flow: Users pay after admin approval — campaign goes live on payment.');
+            console.log('📌 Escrow-based budget tracking with real-time deductions.');
+            console.log('📌 Top-up campaigns to add more budget.');
+            console.log('📌 Fraud detection with IP blacklisting and unique impression tracking.');
+            console.log('📌 Minimum withdrawal: ₦5,000.');
+            console.log('📌 Clean URL routing with pushState — Facebook-style linking.');
+        })();
     </script>
 </body>
 </html>
