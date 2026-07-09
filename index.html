@@ -5844,7 +5844,7 @@
                     <div id="dash-book-detail" class="dash-sub"><div class="page-hd"><button class="btn btn-ghost btn-sm" onclick="setDP('books')"><i class="fas fa-arrow-left"></i> Back to Library</button></div><div id="bookPageAdContainerDetail" class="ad-container"></div><div id="bookDetailContent"></div><div id="bookSponsorAdContainerDetail" class="ad-container"></div></div>
 
                     <!-- UPLOAD BOOK (Premium Only) – COMPLETE FORM WITH ALL FIELDS -->
-                    <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
+                    <div id="dash-create-book" class="dash-sub premium-only"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
 
                     <!-- SOCIAL EARNINGS -->
                     <div id="dash-social-earnings" class="dash-sub"><div class="page-hd"><h2 class="page-title">🌱 Social Earnings</h2><p class="page-sub">Earn from engagement on your posts</p></div><div class="card card-p mb-3"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;"><div><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;">Total Earned</div><div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--lime);" id="socialTotalEarnings">₦0</div></div><div style="display:flex;gap:1rem;"><div><span style="color:var(--text3);font-size:.7rem;">Posts</span><br><strong id="socialPostCount">0</strong></div><div><span style="color:var(--text3);font-size:.7rem;">Avg per Post</span><br><strong id="socialAvgPerPost">₦0</strong></div></div></div></div><div id="socialPostsList" class="social-posts-grid"></div></div>
@@ -6660,6 +6660,7 @@
                         setDP('home');
                         return;
                     }
+                    // Ensure the container is visible
                     const container = document.getElementById('dash-create-book');
                     if (container) {
                         container.style.display = 'block';
@@ -6688,6 +6689,14 @@
             checkPlanExpiry();
             updatePremiumUI();
             updateSocialBadge();
+            // Ensure create-book is shown if we're on that page and premium
+            if (S.dp === 'create-book' && S.isPremium) {
+                const container = document.getElementById('dash-create-book');
+                if (container) {
+                    container.style.display = 'block';
+                    container.classList.add('active');
+                }
+            }
         }
 
         function openSidebar() { document.getElementById('sidebar')?.classList.add('open');
@@ -7273,6 +7282,7 @@
             if (navCreateBook) navCreateBook.style.display = isPremium ? '' : 'none';
             const navPremUpload = document.getElementById('nav-premium-upload');
             if (navPremUpload) navPremUpload.style.display = isPremium ? '' : 'none';
+            // Ensure create-book dash-sub is visible for premium users
             if (isPremium && S.dp === 'create-book') {
                 const container = document.getElementById('dash-create-book');
                 if (container) {
@@ -7286,6 +7296,7 @@
                 el.textContent = isPremium ? '✅ Premium' : '🔓 Free';
                 el.className = `badge ${isPremium ? 'badge-premium' : 'badge-dark'}`;
             });
+            // Hide all ad containers for premium users
             document.querySelectorAll('.ad-container').forEach(container => {
                 container.style.display = isPremium ? 'none' : '';
             });
