@@ -5718,6 +5718,9 @@
     <!-- ─── CAMPAIGN FORM MODAL ─────────────────────────────────────────── -->
     <div class="modal-ov hidden" id="campaignModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📢 Create Ad Campaign</h5><button class="btn-icon-sm" onclick="closeModal('campaignModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Campaign Title *</label><input type="text" class="finput" id="campaignTitle" placeholder="e.g. Summer Sale 2025"></div><div class="form-group"><label class="flabel">Description *</label><textarea class="finput" id="campaignDesc" rows="3" placeholder="Describe your ad"></textarea></div><div class="form-group"><label class="flabel">Link URL *</label><input type="url" class="finput" id="campaignLink" placeholder="https://yourwebsite.com"></div><div class="form-group"><label class="flabel">Placement</label><select class="finput" id="campaignPlacement"><option value="in-feed">In-Feed</option><option value="sidebar">Sidebar</option><option value="banner">Banner</option><option value="popup">Popup</option><option value="book-page">Book Page</option><option value="explore">Explore</option><option value="video-pre">Video Pre-roll</option><option value="video-mid">Video Mid-roll</option><option value="lesson-inline">Lesson Inline</option><option value="challenge-sponsor">Challenge Sponsor</option><option value="book-sponsor">Book Sponsor</option><option value="explore-sponsor">Explore Sponsor</option></select></div><div class="row"><div class="col-6"><div class="form-group"><label class="flabel">Budget (₦) *</label><input type="number" class="finput" id="campaignBudget" placeholder="e.g. 50000" min="1000"></div></div><div class="col-6"><div class="form-group"><label class="flabel">Pricing Model</label><select class="finput" id="campaignPricing" onchange="toggleCampaignPricing()"><option value="cpm">CPM (per 1000 impressions)</option><option value="cpc">CPC (per click)</option></select></div></div></div><div class="row" id="campaignCpmFields"><div class="col-6"><div class="form-group"><label class="flabel">CPM Rate (₦)</label><input type="number" class="finput" id="campaignCpm" placeholder="e.g. 1.00" step="0.01" min="0.01" value="1.00"></div></div><div class="col-6"><div class="form-group"><label class="flabel">Target Impressions</label><input type="number" class="finput" id="campaignTargetImp" placeholder="e.g. 10000"></div></div></div><div class="row" id="campaignCpcFields" style="display:none;"><div class="col-6"><div class="form-group"><label class="flabel">CPC Rate (₦)</label><input type="number" class="finput" id="campaignCpc" placeholder="e.g. 0.02" step="0.01" min="0.01" value="0.02"></div></div><div class="col-6"><div class="form-group"><label class="flabel">Target Clicks</label><input type="number" class="finput" id="campaignTargetClick" placeholder="e.g. 500"></div></div></div><div class="row"><div class="col-6"><div class="form-group"><label class="flabel">Start Date *</label><input type="date" class="finput" id="campaignStart"></div></div><div class="col-6"><div class="form-group"><label class="flabel">End Date *</label><input type="date" class="finput" id="campaignEnd"></div></div></div><div class="form-group"><label class="flabel">Upload Ad Image *</label><div class="upload-zone" style="padding:1.5rem"><input type="file" id="campaignImage" accept="image/*" onchange="previewCampaignImage(this)"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:.8rem;color:var(--text2)">Click or drop your ad image (PNG, JPG, WebP)</div></div><div id="campaignImagePreview" style="display:none;margin-top:.5rem;"><img id="campaignImagePreviewImg" style="max-width:100%;max-height:200px;border-radius:var(--radius-sm);"></div></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i><strong>How it works:</strong> Submit your campaign for admin approval. Once approved, you'll be required to pay before it goes live. You'll be charged based on impressions or clicks.</div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('campaignModal')">Cancel</button><button class="btn btn-primary" onclick="submitCampaign()"><i class="fas fa-paper-plane"></i>Submit for Approval</button></div></div></div>
 
+    <!-- CAMPAIGN MANUAL PAYMENT MODAL -->
+    <div class="modal-ov hidden" id="campaignManualModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">🏦 Manual Payment – Campaign</h5><button class="btn-icon-sm" onclick="closeModal('campaignManualModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="bank-details-box" id="campaignBankDetailsBox"></div><div class="form-group"><label class="flabel">Transaction Reference *</label><input type="text" class="finput" id="campaignManualRef" placeholder="e.g. TRX123456789"></div><div class="form-group"><label class="flabel">Payment Date *</label><input type="date" class="finput" id="campaignManualDate"></div><div class="form-group"><label class="flabel">Upload Receipt *</label><div class="upload-zone" style="padding:1rem"><input type="file" id="campaignManualReceipt" accept="image/*,application/pdf"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:.8rem;color:var(--text2)">Upload bank transfer receipt</div></div></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>After submission, an admin will verify your payment and activate your campaign.</div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('campaignManualModal')">Cancel</button><button class="btn btn-primary" onclick="submitCampaignManualPayment()"><i class="fas fa-paper-plane"></i>Submit</button></div></div></div>
+
     <!-- NOTIFICATION PANEL -->
     <div class="notif-panel" id="notifPanel"><div style="padding:.85rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><h6 style="margin:0">Notifications</h6><div style="display:flex;gap:.4rem"><button class="btn btn-ghost btn-sm" style="font-size:.69rem" onclick="markAllRead()">Mark all read</button><button class="btn-icon-sm" onclick="closeNotifPanel()"><i class="fas fa-times"></i></button></div></div><div style="flex:1;overflow-y:auto;padding:.25rem 0" id="notifList"></div></div>
 
@@ -5751,11 +5754,12 @@
                         <li class="nav-sec" style="margin-top:.3rem">Create</li>
                         <li><span class="nav-item" id="nav-instructor" onclick="setDP('instructor')"><span class="nav-ico"><i class="fas fa-chalkboard-teacher"></i></span>Instructor Hub</span></li>
                         <li><span class="nav-item" id="nav-course-editor" onclick="setDP('course-editor')"><span class="nav-ico"><i class="fas fa-edit"></i></span>Course Editor</span></li>
-                        <li><span class="nav-item" id="nav-premium-upload" class="premium-only" onclick="setDP('premium-upload-course')"><span class="nav-ico"><i class="fas fa-upload"></i></span>Upload Course<span class="nav-badge nav-badge-premium">Premium</span></span></li>
+                        <!-- Premium Upload Course REMOVED – replaced by Upload Book -->
                         <li><span class="nav-item" id="nav-ai" onclick="setDP('ai')"><span class="nav-ico"><i class="fas fa-robot"></i></span>AI Tutor<span class="nav-badge nav-badge-o">AI</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Library</li>
                         <li><span class="nav-item" id="nav-books" onclick="setDP('books')"><span class="nav-ico"><i class="fas fa-book"></i></span>Books</span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Publish</li>
+                        <!-- Upload Book – Premium only -->
                         <li id="nav-create-book" class="premium-only"><span class="nav-item" onclick="setDP('create-book')"><span class="nav-ico"><i class="fas fa-book"></i></span>Upload Book<span class="nav-badge nav-badge-premium">Premium</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Earn More</li>
                         <li><span class="nav-item" id="nav-social-earnings" onclick="setDP('social-earnings')"><span class="nav-ico"><i class="fas fa-seedling"></i></span>Social Earnings<span class="nav-badge nav-badge-gold" id="navSocialBadge">0</span></span></li>
@@ -5831,8 +5835,7 @@
                     <!-- COURSE EDITOR -->
                     <div id="dash-course-editor" class="dash-sub"><div class="editor-shell"><div class="editor-sidebar"><div class="esc-label">COURSE SETUP</div><div class="esc-step active" id="es-1" onclick="goES(1)"><div class="esc-num">1</div><div class="esc-text">Basic Info</div></div><div class="esc-step" id="es-2" onclick="goES(2)"><div class="esc-num">2</div><div class="esc-text">Lessons</div></div><div class="esc-step" id="es-3" onclick="goES(3)"><div class="esc-num">3</div><div class="esc-text">Content</div></div><div class="esc-step" id="es-4" onclick="goES(4)"><div class="esc-num">4</div><div class="esc-text">Media</div></div><div class="esc-step" id="es-5" onclick="goES(5)"><div class="esc-num">5</div><div class="esc-text">Quiz</div></div><div class="esc-step" id="es-6" onclick="goES(6)"><div class="esc-num">6</div><div class="esc-text">Pricing</div></div><div class="esc-step" id="es-7" onclick="goES(7)"><div class="esc-num">7</div><div class="esc-text">Affiliate</div></div><div class="esc-step" id="es-8" onclick="goES(8)"><div class="esc-num">8</div><div class="esc-text">Review</div></div></div><div class="editor-main"><div class="editor-topbar"><button class="btn btn-ghost btn-sm" onclick="setDP('instructor')"><i class="fas fa-arrow-left"></i>Back</button><div class="flex-1"><div style="font-size:.8rem;font-weight:600" id="edCourseTitle">Untitled Course</div><div style="font-size:.7rem;color:var(--text3)" id="edAutoSave">Draft · Auto-saved</div></div><button class="btn btn-ghost btn-sm" onclick="saveDraftToServer(false)"><i class="fas fa-save"></i>Save Draft</button><button class="btn btn-primary btn-sm" onclick="goES(8)"><i class="fas fa-rocket"></i>Review</button></div><div class="editor-step-panel active" id="esp-1"><div style="max-width:720px;margin:0 auto"><h4 style="margin-bottom:.25rem">Course Basic Info</h4><p style="font-size:.82rem;color:var(--text3);margin-bottom:1.25rem">Tell students what your course is about.</p><div class="form-group"><label class="flabel">Course Title</label><input type="text" class="finput" id="edTitle" placeholder="e.g. JavaScript Mastery: Zero to Freelancer" oninput="document.getElementById('edCourseTitle').textContent=this.value||'Untitled Course'"/></div><div class="form-group"><label class="flabel">Subtitle</label><input type="text" class="finput" id="edSubtitle" placeholder="A short powerful description..."/></div><div class="form-group"><label class="flabel">Description</label><div class="quill-wrapper"><div id="descEditorQuill" style="min-height:200px"></div></div></div><div class="row"><div class="col-12 col-md-4"><div class="form-group"><label class="flabel">Category</label><select class="finput" id="edCategory"><option>Web Development</option><option>AI &amp; Tools</option><option>Freelancing</option><option>Design</option><option>Backend</option><option>Mobile Dev</option><option>Data Science</option></select></div></div><div class="col-12 col-md-4"><div class="form-group"><label class="flabel">Level</label><select class="finput" id="edLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>All Levels</option></select></div></div><div class="col-12 col-md-4"><div class="form-group"><label class="flabel">Language</label><select class="finput" id="edLanguage"><option>English</option><option>Pidgin English</option><option>Yoruba</option><option>Igbo</option><option>Hausa</option></select></div></div></div><div class="row"><div class="col-12 col-md-6"><div class="form-group"><label class="flabel">Thumbnail Emoji</label><input type="text" class="finput" id="edEmoji" placeholder="📚" maxlength="4"/></div></div><div class="col-12 col-md-6"><div class="form-group"><label class="flabel">Promo Video URL (optional)</label><input type="url" class="finput" id="edPromoVideo" placeholder="https://youtube.com/..."/></div></div></div><div class="form-group"><label class="flabel">Learning Outcomes</label><div id="outcomesList" style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:.45rem"></div><button class="btn btn-ghost btn-sm" onclick="addOutcome()"><i class="fas fa-plus"></i>Add Outcome</button></div><div class="d-flex items-center gap-2 p-3" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:.5rem"><div class="flex-1"><div style="font-size:.84rem;font-weight:600">Issue Certificate on Completion</div><div style="font-size:.74rem;color:var(--text3)">Students who complete get a certificate</div></div><input type="checkbox" checked style="accent-color:var(--primary);width:15px;height:15px;cursor:pointer" id="edCertEnabled"/></div><div style="display:flex;justify-content:flex-end;margin-top:1.5rem"><button class="btn btn-primary" onclick="goES(2)">Next: Lessons <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-2"><div style="max-width:720px;margin:0 auto"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem"><div><h4 style="margin-bottom:.2rem">Course Curriculum</h4><p style="font-size:.82rem;color:var(--text3)">Minimum <strong style="color:var(--primary)">20 lessons</strong> required to publish</p></div><button class="btn btn-primary btn-sm" onclick="openModal('addLessonModal')"><i class="fas fa-plus"></i>Add Lesson</button></div><div id="lessonCountBadge" style="margin-bottom:.85rem"></div><div id="lessonBuilderList"></div><div style="background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.15);border-radius:var(--radius-sm);padding:.75rem;font-size:.79rem;color:var(--text2);margin-bottom:1rem"><i class="fas fa-info-circle" style="color:var(--primary);margin-right:.3rem"></i>You need at least 20 lessons with content to submit for admin approval.</div><div class="d-flex justify-between mt-3"><button class="btn btn-ghost" onclick="goES(1)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary" onclick="goES(3)">Next: Content <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-3"><div style="max-width:720px;margin:0 auto"><h4 style="margin-bottom:.25rem">Lesson Content Editor</h4><p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Edit each lesson's content using the rich text editor. Content is always editable even after approval.</p><div id="lessonContentEditor"></div><div class="d-flex justify-between mt-4"><button class="btn btn-ghost" onclick="goES(2)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary" onclick="goES(4)">Next: Media <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-4"><div style="max-width:720px;margin:0 auto"><h4 style="margin-bottom:.25rem">Media &amp; Files Upload</h4><p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem" id="uploadLimitNote">Upload videos, PDFs, images, resources for your course.</p><div class="upload-zone" style="padding:2rem;margin-bottom:1rem"><input type="file" multiple id="mediaFileInput" onchange="handleMediaUpload(this)"/><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:.88rem;color:var(--text2);font-weight:600">Drop any files here or click to upload</div><div style="font-size:.74rem;color:var(--text3);margin-top:.3rem" id="uploadHint">Free: max 10 files · Premium: unlimited files of any size</div></div><div id="uploadedFilesList"></div><div class="d-flex justify-between mt-3"><button class="btn btn-ghost" onclick="goES(3)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary" onclick="goES(5)">Next: Quiz <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-5"><div style="max-width:720px;margin:0 auto"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem"><div><h4 style="margin-bottom:.2rem">Quiz Builder</h4><p style="font-size:.82rem;color:var(--text3)">Add quiz questions for this course</p></div><button class="btn btn-primary btn-sm" onclick="addQuizQ()"><i class="fas fa-plus"></i>Add Question</button></div><div id="quizBuilderList"></div><div class="d-flex justify-between mt-3"><button class="btn btn-ghost" onclick="goES(4)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary" onclick="goES(6)">Next: Pricing <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-6"><div style="max-width:720px;margin:0 auto"><h4 style="margin-bottom:.25rem">Course Pricing</h4><p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Platform takes 20%, you keep 80%.</p><div style="display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.25rem"><div class="price-type-opt selected" id="pt-paid" onclick="selectPriceType('paid')"><i class="fas fa-tag" style="color:var(--primary);width:20px"></i><div><strong>Paid Course</strong><br><small style="color:var(--text3)">Students pay to access</small></div></div><div class="price-type-opt" id="pt-free" onclick="selectPriceType('free')"><i class="fas fa-gift" style="color:var(--accent);width:20px"></i><div><strong>Free Course</strong><br><small style="color:var(--text3)">Open to all students</small></div></div><div class="price-type-opt" id="pt-sub" onclick="selectPriceType('sub')"><i class="fas fa-crown" style="color:var(--gold);width:20px"></i><div><strong>Premium Only</strong><br><small style="color:var(--text3)">Only premium subscribers</small></div></div></div><div id="pricingFields"><div class="row"><div class="col-12 col-md-6"><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="edPrice" placeholder="e.g. 15000" min="1000"/></div></div><div class="col-12 col-md-6"><div class="form-group"><label class="flabel">Sale Price (₦, optional)</label><input type="number" class="finput" id="edSalePrice" placeholder="e.g. 12000"/></div></div></div></div><div style="background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.15);border-radius:var(--radius-sm);padding:.75rem;font-size:.8rem;color:var(--text2)"><i class="fas fa-info-circle" style="color:var(--primary);margin-right:.3rem"></i>Revenue: <strong style="color:var(--primary)">80%</strong> to you · <strong style="color:var(--text3)">20%</strong> platform fee per sale.</div><div class="d-flex justify-between mt-3"><button class="btn btn-ghost" onclick="goES(5)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary" onclick="goES(7)">Next: Affiliate <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-7"><div style="max-width:720px;margin:0 auto"><h4 style="margin-bottom:.25rem">🤝 Affiliate Program</h4><p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Let other ChangeX users promote your course and earn commissions.</p><div class="d-flex items-center gap-2 p-3 mb-3" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm)"><div class="flex-1"><div style="font-size:.84rem;font-weight:600">Enable Affiliate Program</div><div style="font-size:.74rem;color:var(--text3)">After admin approves, all users get notified</div></div><input type="checkbox" id="edAffEnabled" style="accent-color:var(--primary);width:15px;height:15px;cursor:pointer" onchange="toggleAffiliateFields(this.checked)"/></div><div id="affiliateFields" style="display:none"><div class="form-group"><label class="flabel">Commission Percentage (%)</label><input type="number" class="finput" id="edAffPercent" placeholder="e.g. 15" min="5" max="50" value="15"/></div><div class="form-group"><label class="flabel">Affiliate Offer Description</label><textarea class="finput" style="min-height:80px;resize:vertical" id="edAffDesc" placeholder="e.g. Promote this JS course and earn 15% commission!"></textarea></div></div><div class="d-flex justify-between mt-3"><button class="btn btn-ghost" onclick="goES(6)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary" onclick="goES(8)">Next: Review <i class="fas fa-arrow-right"></i></button></div></div></div><div class="editor-step-panel" id="esp-8"><div style="max-width:720px;margin:0 auto"><h4 style="margin-bottom:.25rem">Review &amp; Submit</h4><p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Review your course before submitting for admin approval.</p><div id="courseReviewSummary"></div><div style="background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.15);border-radius:var(--radius-sm);padding:.85rem;margin:1rem 0;font-size:.8rem;color:var(--text2)"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:.3rem"></i>After submission, admin reviews your course. On approval, all ChangeX users get a notification. You can still edit after approval — changes will be reviewed again.</div><div class="d-flex justify-between mt-3"><button class="btn btn-ghost" onclick="goES(7)"><i class="fas fa-arrow-left"></i>Back</button><button class="btn btn-primary btn-lg" onclick="submitCourseForApproval()"><i class="fas fa-rocket"></i>Submit for Approval</button></div></div></div></div></div></div>
 
-                    <!-- PREMIUM UPLOAD COURSE -->
-                    <div id="dash-premium-upload-course" class="dash-sub premium-only"><div class="page-hd"><h2 class="page-title">📚 Upload New Course</h2><p class="page-sub">Create a course and submit for admin approval. Premium users only.</p></div><div class="card card-p"><div class="form-group"><label class="flabel">Course Title *</label><input type="text" class="finput" id="premCourseTitle" placeholder="e.g. JavaScript Mastery: Zero to Hero"></div><div class="form-group"><label class="flabel">Subtitle</label><input type="text" class="finput" id="premCourseSubtitle" placeholder="Short powerful description"></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="premCourseDesc" rows="4" placeholder="Full course description..."></textarea></div><div class="row"><div class="col-12 col-md-4"><div class="form-group"><label class="flabel">Category</label><select class="finput" id="premCourseCategory"><option>Web Development</option><option>AI &amp; Tools</option><option>Freelancing</option><option>Design</option><option>Backend</option><option>Mobile Dev</option><option>Data Science</option></select></div></div><div class="col-12 col-md-4"><div class="form-group"><label class="flabel">Level</label><select class="finput" id="premCourseLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>All Levels</option></select></div></div><div class="col-12 col-md-4"><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="premCoursePrice" placeholder="e.g. 15000" min="0"></div></div></div><div class="form-group"><label class="flabel">Thumbnail Emoji</label><input type="text" class="finput" id="premCourseEmoji" placeholder="📚" maxlength="4"></div><div class="form-group"><label class="flabel">Lessons (minimum 20) <span id="premLessonCount" class="badge badge-dark" style="font-size:.6rem">0</span></label><div id="premLessonList"></div><button class="btn btn-ghost btn-sm" onclick="addPremLesson()"><i class="fas fa-plus"></i> Add Lesson</button></div><div style="background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.15);border-radius:var(--radius-sm);padding:.75rem;margin:1rem 0;font-size:.8rem;color:var(--text2)"><i class="fas fa-info-circle" style="color:var(--accent)"></i> You need at least 20 lessons with content to submit.</div><div class="d-flex gap-2"><button class="btn btn-ghost" onclick="savePremCourseDraft()"><i class="fas fa-save"></i> Save Draft</button><button class="btn btn-primary" onclick="submitPremCourse()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div></div>
+                    <!-- PREMIUM UPLOAD COURSE – REMOVED, replaced by Upload Book -->
 
                     <!-- AI TUTOR -->
                     <div id="dash-ai" class="dash-sub"><div class="page-hd"><h2 class="page-title">🤖 AI Tutor</h2><p class="page-sub">Your personal AI-powered learning assistant</p></div><div id="aiPlanNote" style="margin-bottom:.85rem"></div><div class="card card-p mb-3"><div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.85rem"><button class="fpill active" onclick="switchAIMode('chat',this)"><i class="fas fa-comments"></i>Chat</button><button class="fpill" onclick="switchAIMode('explain',this)"><i class="fas fa-book-open"></i>Explain Code</button><button class="fpill" onclick="switchAIMode('quiz',this)"><i class="fas fa-question-circle"></i>Generate Quiz</button><button class="fpill" onclick="switchAIMode('upload',this)"><i class="fas fa-upload"></i>Upload &amp; Analyze</button></div><div id="aiMessages" style="min-height:280px;max-height:380px;overflow-y:auto;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem;margin-bottom:.65rem;display:flex;flex-direction:column;gap:.6rem"></div><div class="d-flex gap-2"><input type="text" class="finput flex-1" id="aiInput" placeholder="Ask me anything about coding or your course..." onkeydown="if(event.key==='Enter')sendAI()"/><button class="btn btn-primary btn-sm" onclick="sendAI()"><i class="fas fa-paper-plane"></i></button></div></div><div class="card card-p" id="aiUploadPanel" style="display:none"><h6 style="margin-bottom:.65rem">📎 Upload Files for AI Analysis</h6><div id="aiUploadInfo" style="font-size:.8rem;color:var(--text3);margin-bottom:.65rem"></div><div class="upload-zone" style="padding:1.5rem"><input type="file" multiple id="aiFileInput" onchange="handleAIUpload(this)"/><div class="upload-icon"><i class="fas fa-file-upload"></i></div><div style="font-size:.84rem;color:var(--text2)">Drop any file here (PDF, image, code, etc.)</div><div style="font-size:.72rem;color:var(--text3);margin-top:.2rem" id="aiUploadLimit"></div></div><div id="aiUploadedFiles" style="margin-top:.65rem"></div></div></div>
@@ -5843,7 +5846,7 @@
                     <!-- BOOK DETAIL -->
                     <div id="dash-book-detail" class="dash-sub"><div class="page-hd"><button class="btn btn-ghost btn-sm" onclick="setDP('books')"><i class="fas fa-arrow-left"></i> Back to Library</button></div><div id="bookPageAdContainerDetail" class="ad-container"></div><div id="bookDetailContent"></div><div id="bookSponsorAdContainerDetail" class="ad-container"></div></div>
 
-                    <!-- UPLOAD BOOK (Premium Only) – COMPLETE FORM WITH ALL FIELDS -->
+                    <!-- UPLOAD BOOK (Premium Only) – FULLY INTEGRATED -->
                     <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
 
                     <!-- SOCIAL EARNINGS -->
@@ -6667,10 +6670,6 @@
                     }
                 },
                 tools: () => { loadTools(); },
-                'premium-upload-course': () => { if (!S.isPremium) { toast('Premium required to upload courses',
-                            'warning');
-                        openModal('premiumModal');
-                        setDP('home'); } },
                 badges: loadUserBadges,
                 'manual-payments': loadUserManualPayments,
                 'purchased-articles': loadPurchasedArticles,
@@ -6710,6 +6709,19 @@
             }
             if (id === 'shareModal') {
                 document.getElementById('shareLink').textContent = `${FRONTEND_URL}/post/${S.sharePostSlug || ''}`;
+            }
+            if (id === 'campaignManualModal') {
+                const campaignId = document.getElementById('campaignManualModal')._campaignId;
+                if (campaignId) {
+                    const campaign = S.myCampaigns.find(c => c._id === campaignId);
+                    if (campaign) {
+                        document.getElementById('campaignManualRef').value = '';
+                        document.getElementById('campaignManualDate').value = '';
+                        document.getElementById('campaignManualReceipt').value = '';
+                        document.getElementById('campaignReceiptPreview').style.display = 'none';
+                        populateAllBankDetailsBoxes();
+                    }
+                }
             }
         }
 
@@ -6894,6 +6906,12 @@
                     toast(`❌ Your sponsorship (${data.type}) was rejected`, 'error');
                     if (S.dp === 'sponsorship') loadMySponsorships();
                 });
+                // ─── Campaign manual payment events ──────────────────────
+                socket.on('campaign_manual_payment', (data) => {
+                    toast(`📋 Manual payment submitted for campaign "${data.title || data.campaignId}"`, 'info');
+                    if (S.dp === 'sponsorship') loadMyCampaigns();
+                    if (S.dp === 'admin' && S.admSec === 'campaigns') loadAdminCampaigns();
+                });
             } catch (e) { console.warn('Socket init failed:', e.message); }
         }
 
@@ -6902,6 +6920,10 @@
             socket.on('admin_manual_payment_alert', (data) => { toast(
                     `📋 New manual payment from ${data.userName} - ₦${data.amount.toLocaleString()}`, 'info'); if (S.dp ===
                     'admin' && S.admSec === 'manualPayments') loadManualPayments(); });
+            socket.on('campaign_manual_payment_alert', (data) => {
+                toast(`📋 Manual payment for campaign "${data.campaignTitle}" from ${data.userName} - ₦${data.amount.toLocaleString()}`, 'info');
+                if (S.dp === 'admin' && S.admSec === 'campaigns') loadAdminCampaigns();
+            });
         }
 
         // ================================================================
@@ -6938,9 +6960,9 @@
         }
 
         function populateAllBankDetailsBoxes() {
-            ['buyBankDetailsBox', 'premBankDetailsBox', 'wizBankDetailsBox'].forEach(id => {
+            ['buyBankDetailsBox', 'premBankDetailsBox', 'wizBankDetailsBox', 'campaignBankDetailsBox'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.innerHTML = renderBankDetailsHTML(id !== 'wizBankDetailsBox');
+                if (el) el.innerHTML = renderBankDetailsHTML(id !== 'wizBankDetailsBox' && id !== 'campaignBankDetailsBox');
             });
         }
 
@@ -7242,6 +7264,7 @@
             if (navInstructor) navInstructor.style.display = hasCreatorAccess ? '' : 'none';
             const navCourseEditor = document.getElementById('nav-course-editor');
             if (navCourseEditor) navCourseEditor.style.display = hasCreatorAccess ? '' : 'none';
+            // Upload Book visibility handled in updatePremiumUI
             const fab = document.getElementById('fab');
             if (fab) fab.style.display = hasCreatorAccess ? 'block' : 'none';
             renderCurrencySelectorUI();
@@ -7269,17 +7292,23 @@
             document.querySelectorAll('.premium-only').forEach(el => {
                 el.style.display = isPremium ? '' : 'none';
             });
-            const navCreateBook = document.getElementById('nav-create-book');
-            if (navCreateBook) navCreateBook.style.display = isPremium ? '' : 'none';
-            const navPremUpload = document.getElementById('nav-premium-upload');
-            if (navPremUpload) navPremUpload.style.display = isPremium ? '' : 'none';
-            if (isPremium && S.dp === 'create-book') {
-                const container = document.getElementById('dash-create-book');
-                if (container) {
-                    container.style.display = 'block';
-                    container.classList.add('active');
+            // Explicitly handle Upload Book
+            const navUploadBook = document.getElementById('nav-create-book');
+            if (navUploadBook) navUploadBook.style.display = isPremium ? '' : 'none';
+            // Also ensure the create-book dashboard section shows/hides
+            const createBookDash = document.getElementById('dash-create-book');
+            if (createBookDash) {
+                createBookDash.style.display = isPremium ? '' : 'none';
+                // If it's the active sub and not premium, redirect
+                if (!isPremium && S.dp === 'create-book') {
+                    toast('Premium required to upload books', 'warning');
+                    setDP('home');
                 }
             }
+            // Update any premium badge indicators
+            document.querySelectorAll('.badge-premium-upload').forEach(el => {
+                el.style.display = isPremium ? '' : 'none';
+            });
             const upgradeBanner = document.getElementById('homeUpgradeBanner');
             if (upgradeBanner) upgradeBanner.style.display = isPremium ? 'none' : 'block';
             document.querySelectorAll('.premium-badge').forEach(el => {
@@ -7289,8 +7318,9 @@
             document.querySelectorAll('.ad-container').forEach(container => {
                 container.style.display = isPremium ? 'none' : '';
             });
-            if ((S.dp === 'create-book' || S.dp === 'premium-upload-course') && !isPremium) {
-                toast('Premium required', 'warning');
+            // If the user is on create-book but not premium, redirect
+            if (S.dp === 'create-book' && !isPremium) {
+                toast('Premium required to upload books', 'warning');
                 setDP('home');
             }
         }
@@ -7438,7 +7468,7 @@
         }
 
         // ================================================================
-        // API CALL
+        // API CALL – FIXED SESSION EXPIRY
         // ================================================================
         async function apiCall(endpoint, options = {}) {
             const token = localStorage.getItem('cx_accessToken');
@@ -7464,10 +7494,17 @@
                 if (ct && ct.includes('application/json')) { data = await response.json(); } else { data = { success: false,
                         message: 'Invalid server response' }; }
                 if (response.status === 401) {
+                    // ─── FIXED: Clear everything and hard redirect ───
                     localStorage.removeItem('cx_accessToken');
                     localStorage.removeItem('cx_user');
-                    if (S.loggedIn) { toast('Session expired. Please log in again.', 'error');
-                        goPage('login'); }
+                    S.loggedIn = false;
+                    S.user = null;
+                    S.isPremium = false;
+                    // Close any open modals
+                    document.querySelectorAll('.modal-ov:not(.hidden)').forEach(m => m.classList.add('hidden'));
+                    toast('Session expired. Please log in again.', 'error');
+                    // Force a full page reload to login page
+                    window.location.href = '/login';
                     throw new Error(data.message || 'Session expired. Please log in again.');
                 }
                 if (!response.ok) { const err = new Error(data.message || data.errors?.[0]?.msg || `HTTP ${response.status}`);
@@ -7484,7 +7521,7 @@
         }
 
         // ================================================================
-        // POSTS MODULE – ENHANCED WITH READ MORE, NESTED COMMENTS, OPTIMISTIC LIKES
+        // POSTS MODULE
         // ================================================================
         const POSTS_API = '/posts';
         const CHALLENGES_API = '/challenges';
@@ -7714,7 +7751,7 @@
             feedSentinelObserver.observe(sentinel);
         }
 
-        // ─── POST CARD WITH READ MORE (FULLY FIXED) ──────────────────────
+        // ─── POST CARD WITH READ MORE ──────────────────────────────────
         function renderPostCard(post, scoreBadge = '') {
             let author = post.authorId || post.author || {};
             if (typeof author === 'string') {
@@ -7793,7 +7830,6 @@
             `;
         }
 
-        // ─── TOGGLE READ MORE (FULLY FIXED) ──────────────────────────────
         function togglePostContent(postId) {
             const container = document.getElementById(`postContent-${postId}`);
             if (!container) return;
@@ -8587,7 +8623,7 @@
         }
 
         // ================================================================
-        // SOCIAL EARNINGS – FULL INTEGRATION
+        // SOCIAL EARNINGS
         // ================================================================
         async function renderSocialEarnings() {
             showLoading('Loading social earnings...');
@@ -8843,7 +8879,7 @@
         }
 
         // ================================================================
-        // EXPLORE COURSES – WITH ADS AFTER EVERY 4 COURSES FOR FREE USERS
+        // EXPLORE COURSES
         // ================================================================
         async function renderExplore() {
             showLoading('Loading courses...');
@@ -9277,6 +9313,59 @@
                         finishWizard(false); }
                 } else { toast(data.message || 'Submission failed', 'error'); }
             } catch (err) { toast('Network error: ' + err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        // ─── CAMPAIGN MANUAL PAYMENT ────────────────────────────────────
+        function openCampaignManualPayment(campaignId) {
+            const modal = document.getElementById('campaignManualModal');
+            if (modal) {
+                modal._campaignId = campaignId;
+                document.getElementById('campaignManualRef').value = '';
+                document.getElementById('campaignManualDate').value = '';
+                document.getElementById('campaignManualReceipt').value = '';
+                document.getElementById('campaignReceiptPreview').style.display = 'none';
+                populateAllBankDetailsBoxes();
+                openModal('campaignManualModal');
+            }
+        }
+
+        async function submitCampaignManualPayment() {
+            const campaignId = document.getElementById('campaignManualModal')._campaignId;
+            const reference = document.getElementById('campaignManualRef')?.value.trim();
+            const paymentDate = document.getElementById('campaignManualDate')?.value;
+            const receipt = document.getElementById('campaignManualReceipt')?.files[0];
+
+            if (!campaignId) { toast('Campaign not found', 'error'); return; }
+            if (!reference) { toast('Enter transaction reference', 'error'); return; }
+            if (!paymentDate) { toast('Select payment date', 'error'); return; }
+            if (!receipt) { toast('Upload receipt', 'error'); return; }
+
+            const formData = new FormData();
+            formData.append('campaignId', campaignId);
+            formData.append('reference', reference);
+            formData.append('paymentDate', paymentDate);
+            formData.append('receipt', receipt);
+
+            showLoading('Submitting manual payment...');
+            try {
+                const token = localStorage.getItem('cx_accessToken');
+                const response = await fetch(`${API_BASE}/campaigns/manual-pay`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    toast('✅ Manual payment submitted for admin review. Your campaign will be activated after verification.',
+                        'success');
+                    closeModal('campaignManualModal');
+                    loadMyCampaigns();
+                } else {
+                    toast(data.message || 'Submission failed', 'error');
+                }
+            } catch (err) {
+                toast('Error: ' + err.message, 'error');
+            } finally { hideLoading(); }
         }
 
         // ================================================================
@@ -9867,7 +9956,6 @@
                 return;
             }
             const amt = Number(document.getElementById('withdrawAmt')?.value);
-            // Minimum withdrawal is ₦5,000
             if (!amt || amt < 5000) { toast('Minimum withdrawal is ₦5,000', 'error'); return; }
             if (amt > S.walletBal) { toast('Insufficient balance', 'error'); return; }
             closeModal('withdrawModal');
@@ -10648,73 +10736,6 @@
                 hideLoading(); }
         }
 
-        // ─── PREMIUM COURSE UPLOAD ──────────────────────────────────────
-        let premCourseLessons = [];
-
-        function addPremLesson() {
-            const idx = premCourseLessons.length;
-            premCourseLessons.push({ title: '', type: 'video', duration: 10, content: '' });
-            renderPremLessons();
-        }
-
-        function renderPremLessons() {
-            const container = document.getElementById('premLessonList');
-            if (!container) return;
-            container.innerHTML = premCourseLessons.map((l, i) => `
-                <div class="prem-course-lesson-item">
-                    <span class="lesson-drag"><i class="fas fa-grip-vertical"></i></span>
-                    <input type="text" class="lesson-title-input" placeholder="Lesson title" value="${l.title}" oninput="premCourseLessons[${i}].title=this.value">
-                    <select onchange="premCourseLessons[${i}].type=this.value">
-                        <option value="video" ${l.type==='video'?'selected':''}>Video</option>
-                        <option value="text" ${l.type==='text'?'selected':''}>Text</option>
-                        <option value="quiz" ${l.type==='quiz'?'selected':''}>Quiz</option>
-                    </select>
-                    <input type="number" class="lesson-dur" placeholder="min" value="${l.duration}" oninput="premCourseLessons[${i}].duration=this.value">
-                    <button class="btn-icon-sm" onclick="premCourseLessons.splice(${i},1);renderPremLessons()" style="color:var(--danger)"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
-            const countEl = document.getElementById('premLessonCount');
-            if (countEl) countEl.textContent = premCourseLessons.length;
-        }
-
-        async function savePremCourseDraft() {
-            const title = document.getElementById('premCourseTitle').value.trim();
-            if (!title) { toast('Enter a title', 'error'); return; }
-            const payload = {
-                title,
-                subtitle: document.getElementById('premCourseSubtitle').value.trim(),
-                description: document.getElementById('premCourseDesc').value.trim(),
-                category: document.getElementById('premCourseCategory').value,
-                level: document.getElementById('premCourseLevel').value,
-                price: parseFloat(document.getElementById('premCoursePrice').value) || 0,
-                thumbnail: document.getElementById('premCourseEmoji').value || '📚',
-                lessons: premCourseLessons.map(l => ({ ...l, content: l.content || '' })),
-                isPublished: false,
-            };
-            try {
-                const res = await apiCall('/instructor/courses', { method: 'POST', body: payload });
-                toast('✅ Draft saved!', 'success');
-                return res.data;
-            } catch (err) { toast(err.message, 'error'); return null; }
-        }
-
-        async function submitPremCourse() {
-            if (premCourseLessons.length < 20) { toast('Need at least 20 lessons', 'warning'); return; }
-            const course = await savePremCourseDraft();
-            if (!course) return;
-            try {
-                await apiCall(`/instructor/courses/${course._id}/submit`, { method: 'POST' });
-                toast('🚀 Course submitted for admin approval!', 'success');
-                premCourseLessons = [];
-                renderPremLessons();
-                document.getElementById('premCourseTitle').value = '';
-                document.getElementById('premCourseSubtitle').value = '';
-                document.getElementById('premCourseDesc').value = '';
-                document.getElementById('premCoursePrice').value = '';
-                document.getElementById('premCourseEmoji').value = '';
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
         // ================================================================
         // AI TUTOR
         // ================================================================
@@ -10780,7 +10801,7 @@
         }
 
         // ================================================================
-        // BOOKS MODULE – WITH HYBRID ADS + ADMIN APPROVAL + PREMIUM UPLOAD
+        // BOOKS MODULE – FULLY INTEGRATED WITH UPLOAD
         // ================================================================
         async function loadBooks() {
             showLoading('Loading books...');
@@ -11040,7 +11061,7 @@
             }
         }
 
-        // ─── BOOK UPLOAD (Premium) – COMPLETE ────────────────────────────
+        // ─── BOOK UPLOAD (Premium) – FULLY INTEGRATED ──────────────────
         function previewBookCover(url) {
             const preview = document.getElementById('bookUploadCoverPreview');
             const img = document.getElementById('bookUploadCoverPreviewImg');
@@ -11264,7 +11285,7 @@
         }
 
         // ================================================================
-        // PURCHASED ARTICLES – FIXED WITH BETTER ERROR HANDLING
+        // PURCHASED ARTICLES
         // ================================================================
         async function loadPurchasedArticles() {
             try {
@@ -11961,7 +11982,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL – FULL WITH BOOKS, ADS, CHALLENGES, SOCIAL EARNINGS, CAMPAIGNS, SPONSORSHIPS
+        // ADMIN PANEL – FULL WITH ALL TABS
         // ================================================================
         function renderAdm(sec) { switchAdm(sec, null); }
 
@@ -12321,6 +12342,7 @@
                                     👁️ ${c.impressions || 0} · 
                                     🖱️ ${c.clicks || 0}
                                     ${c.paymentStatus === 'pending' ? '· ⏳ Payment Pending' : c.paymentStatus === 'paid' ? '· 💰 Paid' : ''}
+                                    ${c.manualPaymentVerified ? '· ✅ Manual Payment Verified' : ''}
                                 </small>
                                 ${c.rejectionReason ? `<div style="font-size:.75rem;color:var(--danger);">${escapeHtml(c.rejectionReason)}</div>` : ''}
                             </div>
@@ -12331,6 +12353,10 @@
                                 ` : ''}
                                 ${c.status === 'approved' && c.paymentStatus === 'pending' ? `
                                     <button class="btn btn-gold btn-sm" onclick="markCampaignManualPaid('${c._id}')"><i class="fas fa-check-circle"></i> Mark Paid</button>
+                                ` : ''}
+                                ${c.status === 'pending_payment' ? `
+                                    <button class="btn btn-success btn-sm" onclick="verifyCampaignManualPayment('${c._id}')"><i class="fas fa-check"></i> Verify Manual Payment</button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectCampaignManualPayment('${c._id}')"><i class="fas fa-times"></i> Reject</button>
                                 ` : ''}
                                 ${c.status === 'active' || c.status === 'completed' ? `
                                     <button class="btn btn-ghost btn-sm" onclick="viewCampaignDetails('${c._id}')"><i class="fas fa-eye"></i> Details</button>
@@ -12358,6 +12384,27 @@
             try {
                 await apiCall(`/campaigns/admin/${campaignId}/reject`, { method: 'POST', body: { reason: reason || 'Not specified' } });
                 toast('Campaign rejected', 'info');
+                loadAdminCampaigns();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        async function verifyCampaignManualPayment(campaignId) {
+            if (!confirm('Verify this manual payment and activate the campaign?')) return;
+            showLoading('Verifying payment...');
+            try {
+                await apiCall(`/campaigns/admin/${campaignId}/verify-manual`, { method: 'POST', body: { reference: 'MANUAL-' +
+                            Date.now() } });
+                toast('✅ Manual payment verified! Campaign is now active.', 'success');
+                loadAdminCampaigns();
+            } catch (err) { toast(err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        async function rejectCampaignManualPayment(campaignId) {
+            const reason = prompt('Rejection reason:');
+            try {
+                await apiCall(`/campaigns/admin/${campaignId}/reject-manual`, { method: 'POST', body: { reason: reason ||
+                            'Not specified' } });
+                toast('Manual payment rejected', 'info');
                 loadAdminCampaigns();
             } catch (err) { toast(err.message, 'error'); }
         }
@@ -13757,13 +13804,14 @@
                         c.status === 'rejected' ? 'badge-danger' : 'badge-dark';
                     const isPaused = c.status === 'paused';
                     const needsPayment = c.status === 'approved' && c.paymentStatus === 'pending';
+                    const needsManualReview = c.status === 'pending_payment' && !c.manualPaymentVerified;
                     const ctr = c.impressions ? ((c.clicks / c.impressions) * 100).toFixed(2) : 0;
                     return `
                         <div class="card card-p mb-2" data-campaign-id="${c._id}">
                             <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
                                 <div>
                                     <strong>${escapeHtml(c.title)}</strong>
-                                    <span class="badge ${statusClass}">${c.status}${c.paymentStatus === 'paid' ? ' 💰' : ''}</span>
+                                    <span class="badge ${statusClass}">${c.status}${c.paymentStatus === 'paid' ? ' 💰' : ''}${c.manualPaymentVerified ? ' ✅' : ''}</span>
                                     <br>
                                     <small style="color:var(--text3);">
                                         <span><i class="fas fa-eye"></i> ${c.impressions || 0} impressions</span>
@@ -13778,6 +13826,10 @@
                                 <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
                                     ${needsPayment ? `
                                         <button class="campaign-pay-btn" onclick="payCampaign('${c._id}')"><i class="fas fa-credit-card"></i> Pay ₦${c.budget.toLocaleString()}</button>
+                                        <button class="btn btn-ghost btn-sm" onclick="openCampaignManualPayment('${c._id}')"><i class="fas fa-university"></i> Bank Transfer</button>
+                                    ` : ''}
+                                    ${needsManualReview ? `
+                                        <span class="badge badge-gold">⏳ Payment Review</span>
                                     ` : ''}
                                     ${c.status === 'active' || c.status === 'paused' ? `
                                         <button class="btn btn-${isPaused ? 'success' : 'warning'} btn-sm" onclick="toggleCampaign('${c._id}', ${isPaused})">
@@ -14214,7 +14266,9 @@
 
         console.log('🚀 ChangeX Academy — Production Ready with All Features');
         console.log('📚 Learn, Earn, and Grow with ChangeX!');
-        console.log('✅ Premium Course Upload — Users can create courses with lessons and submit for approval.');
+        console.log('✅ Upload Course Removed – replaced with fully integrated Upload Books system.');
+        console.log('✅ Premium Book Upload — Users can submit books with cover, PDF URL, price, affiliate.');
+        console.log('✅ Book Status Tracking — pending, approved, rejected with socket notifications.');
         console.log('✅ Social Earnings Config — Admin config with engagement weights and distribution trigger.');
         console.log('✅ Manual Payment Status — Users can track their bank transfer submissions.');
         console.log('✅ Platform Stats — Admin dashboard with total users, courses, revenue, posts, books, enrollments.');
@@ -14254,7 +14308,6 @@
         console.log('✅ Production-ready: All features optimized for growth, engagement, and profitability.');
         console.log('📊 Social Earnings: Daily pool distribution with admin config and real-time socket updates.');
         console.log('📌 Read More: Posts truncate at 200 characters with toggle.');
-        console.log('📌 Premium Book Upload: Only visible to premium users with pending status.');
         console.log('📌 All 11 ad placements supported in dropdown and rendering.');
         console.log('📌 Popup ads: Only shown to free users, once per session.');
         console.log('📌 Ad containers hidden for premium users.');
@@ -14264,6 +14317,12 @@
         console.log('📌 Top-up campaigns to add more budget.');
         console.log('📌 Fraud detection with IP blacklisting and unique impression tracking.');
         console.log('📌 Minimum withdrawal: ₦5,000.');
+        console.log('📌 Session expiry fixed: hard redirect to login on 401, button reset on error.');
+        console.log('📌 Upload Book visibility explicitly managed in updatePremiumUI().');
+        console.log('📌 Campaign pay button shows for approved campaigns with paymentStatus: pending.');
+        console.log('📌 Manual payment for campaigns: users can upload receipt and submit for admin review.');
+        console.log('📌 Admin can verify manual payments for campaigns and mark them paid.');
+        console.log('📌 Book upload: PDF URL and cover image URL support, with preview.');
     </script>
 </body>
 </html>
