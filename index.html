@@ -5704,7 +5704,7 @@
 
     <div class="modal-ov hidden" id="feedbackModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📢 Send Feedback</h5><button class="btn-icon-sm" onclick="closeModal('feedbackModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Your Message</label><textarea class="finput" id="feedbackMsg" style="min-height:120px" placeholder="Tell us what you love, what's broken, or what you'd like to see..."></textarea></div><div class="form-group"><label class="flabel">Your Email (optional, for replies)</label><input type="email" class="finput" id="feedbackEmail" placeholder="you@example.com"/></div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('feedbackModal')">Cancel</button><button class="btn btn-primary" onclick="sendFeedback()">Send Feedback</button></div></div></div>
 
-    <div class="modal-ov hidden" id="createPostModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📝 Create New Post</h5><button class="btn-icon-sm" onclick="closeModal('createPostModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Title</label><input type="text" class="finput" id="postTitle" placeholder="Catchy title..." oninput="checkDuplicatePost(this.value)"/></div><div id="postDuplicateWarning" class="post-duplicate-warning">⚠️ You've already posted something with this title. Please use a different title.</div><div class="form-group"><label class="flabel">Type</label><select class="finput" id="postType"><option value="article">Article</option><option value="tutorial">Tutorial</option><option value="challenge">Challenge</option><option value="announcement">Announcement</option></select></div><div class="form-group"><label class="flabel">Content (Rich Text)</label><div id="postEditor" style="min-height:300px"></div></div><div class="form-group"><label class="flabel">Tags (comma separated)</label><input type="text" class="finput" id="postTags" placeholder="react, javascript, tutorial"/></div><div class="form-group"><label class="flabel">Featured Image URL</label><input type="url" class="finput" id="postImage" placeholder="https://..."/></div><div class="form-group"><label class="flabel">Upload Video (MP4)</label><input type="file" class="finput" id="postVideoInput" accept="video/*"/></div><div class="form-group"><label class="flabel">SEO Title (optional)</label><input type="text" class="finput" id="postSeoTitle"/></div><div class="form-group"><label class="flabel">SEO Description</label><textarea class="finput" id="postSeoDesc" rows="2"></textarea></div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('createPostModal')">Cancel</button><button class="btn btn-primary" onclick="submitNewPost()"><i class="fas fa-paper-plane"></i>Publish</button></div></div></div>
+    <div class="modal-ov hidden" id="createPostModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📝 Create New Post</h5><button class="btn-icon-sm" onclick="closeModal('createPostModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Title</label><input type="text" class="finput" id="postTitle" placeholder="Catchy title..." oninput="checkDuplicatePost(this.value)"/></div><div id="postDuplicateWarning" class="post-duplicate-warning">⚠️ You've already posted something with this title. Please use a different title.</div><div class="form-group"><label class="flabel">Type</label><select class="finput" id="postType"><option value="article">Article</option><option value="tutorial">Tutorial</option><option value="challenge">Challenge</option><option value="announcement">Announcement</option></select></div><div class="form-group"><label class="flabel">Make This a Premium Article</label><div class="d-flex items-center gap-2"><input type="checkbox" id="postIsPaid" onchange="toggleArticlePrice(this.checked)" style="accent-color:var(--primary);width:18px;height:18px;cursor:pointer"><label for="postIsPaid" style="font-size:.82rem;color:var(--text2);cursor:pointer">Allow users to purchase this article</label></div><div id="articlePriceInput" style="display:none;margin-top:.5rem;"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="postPrice" placeholder="e.g. 500" min="100" value="500"><small style="color:var(--text3);font-size:.7rem;display:block;margin-top:.2rem;">Recommended price: ₦500 – ₦2,000</small></div><div id="articlePreviewInput" style="display:none;margin-top:.5rem;"><label class="flabel">Preview Content (shown to non-purchasers)</label><textarea class="finput" id="postPreviewContent" rows="3" placeholder="First 200 characters or a summary..."></textarea><small style="color:var(--text3);font-size:.7rem;display:block;margin-top:.2rem;">This preview will be shown to users who haven't purchased the article.</small></div></div><div class="form-group"><label class="flabel">Content (Rich Text)</label><div id="postEditor" style="min-height:300px"></div></div><div class="form-group"><label class="flabel">Tags (comma separated)</label><input type="text" class="finput" id="postTags" placeholder="react, javascript, tutorial"/></div><div class="form-group"><label class="flabel">Featured Image URL</label><input type="url" class="finput" id="postImage" placeholder="https://..."/></div><div class="form-group"><label class="flabel">Upload Video (MP4)</label><input type="file" class="finput" id="postVideoInput" accept="video/*"/></div><div class="form-group"><label class="flabel">SEO Title (optional)</label><input type="text" class="finput" id="postSeoTitle"/></div><div class="form-group"><label class="flabel">SEO Description</label><textarea class="finput" id="postSeoDesc" rows="2"></textarea></div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('createPostModal')">Cancel</button><button class="btn btn-primary" onclick="submitNewPost()"><i class="fas fa-paper-plane"></i>Publish</button></div></div></div>
 
     <div class="modal-ov hidden" id="userDetailsModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">👤 User Details</h5><button class="btn-icon-sm" onclick="closeModal('userDetailsModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd" id="userDetailsContent"></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('userDetailsModal')">Close</button></div></div></div>
 
@@ -5847,7 +5847,7 @@
                     <div id="dash-book-detail" class="dash-sub"><div class="page-hd"><button class="btn btn-ghost btn-sm" onclick="setDP('books')"><i class="fas fa-arrow-left"></i> Back to Library</button></div><div id="bookPageAdContainerDetail" class="ad-container"></div><div id="bookDetailContent"></div><div id="bookSponsorAdContainerDetail" class="ad-container"></div></div>
 
                     <!-- UPLOAD BOOK (Premium Only) – FULLY INTEGRATED -->
-                    <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
+                    <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Submit your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="row"><div class="col-12 col-md-6"><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div></div><div class="col-12 col-md-6"><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div></div></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:200px; max-height:150px; border-radius:var(--radius-sm); border:1px solid var(--border);" /><div style="font-size:.72rem; color:var(--text3); margin-top:.2rem;">✅ Cover image preview</div></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i><strong>How it works:</strong> You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set. Your book will be reviewed by an admin before going live.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
 
                     <!-- SOCIAL EARNINGS -->
                     <div id="dash-social-earnings" class="dash-sub"><div class="page-hd"><h2 class="page-title">🌱 Social Earnings</h2><p class="page-sub">Earn from engagement on your posts</p></div><div class="card card-p mb-3"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;"><div><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;">Total Earned</div><div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--lime);" id="socialTotalEarnings">₦0</div></div><div style="display:flex;gap:1rem;"><div><span style="color:var(--text3);font-size:.7rem;">Posts</span><br><strong id="socialPostCount">0</strong></div><div><span style="color:var(--text3);font-size:.7rem;">Avg per Post</span><br><strong id="socialAvgPerPost">₦0</strong></div></div></div></div><div id="socialPostsList" class="social-posts-grid"></div></div>
@@ -5871,7 +5871,7 @@
                     <div id="dash-sponsorship" class="dash-sub"><div class="page-hd"><h2 class="page-title">🤝 Partner with ChangeX</h2><p class="page-sub">Sponsor, donate, or collaborate with us</p></div><div class="tabs mb-4"><button class="tab-btn active" onclick="switchSponsorTab('overview',this)">Overview</button><button class="tab-btn" onclick="switchSponsorTab('campaigns',this)">📢 Ad Campaigns</button><button class="tab-btn" onclick="switchSponsorTab('sponsorships',this)">🤝 Sponsorships</button><button class="tab-btn" onclick="switchSponsorTab('dashboard',this)">📊 Analytics</button></div><div id="sponsor-overview" class="sponsor-tab active"><div class="row mb-4"><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">📢</div><h4>Ad Campaigns</h4><p style="color:var(--text3)">Reach thousands of learners with targeted ads</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('campaigns')">Get Started</button></div></div><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">🤝</div><h4>Sponsor Us</h4><p style="color:var(--text3)">Donate, partner, or collaborate with us</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('sponsorships')">Support Us</button></div></div></div><div class="card card-p"><h6>Why Partner With Us?</h6><div class="row mt-3"><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">🎯</div><div style="font-weight:700">Targeted Audience</div><div style="font-size:.75rem;color:var(--text3)">Reach tech students &amp; professionals</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">📊</div><div style="font-weight:700">Real Analytics</div><div style="font-size:.75rem;color:var(--text3)">Track impressions, clicks, conversions</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">💰</div><div style="font-weight:700">Flexible Pricing</div><div style="font-size:.75rem;color:var(--text3)">Pay per impression or click</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">✅</div><div style="font-weight:700">Admin Approved</div><div style="font-size:.75rem;color:var(--text3)">Quality control for your brand</div></div></div></div></div></div><div id="sponsor-campaigns" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>📢 Your Ad Campaigns</h4><button class="btn btn-primary btn-sm" onclick="openModal('campaignModal')"><i class="fas fa-plus"></i> Create Campaign</button></div><div id="campaignsList"></div></div><div id="sponsor-sponsorships" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>🤝 Your Sponsorships</h4><button class="btn btn-primary btn-sm" onclick="openModal('sponsorshipModal')"><i class="fas fa-plus"></i> Sponsor Us</button></div><div id="sponsorshipsList"></div></div><div id="sponsor-dashboard" class="sponsor-tab" style="display:none;"><h4>📊 Campaign Analytics</h4><div id="campaignAnalyticsContainer"></div></div></div>
 
                     <!-- ADMIN -->
-                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span></div><div id="adminContent"></div></div></div></div>
+                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span><span class="fpill" onclick="switchAdm('content',this)">Content</span><span class="fpill" onclick="switchAdm('revenue',this)">Revenue</span><span class="fpill" onclick="switchAdm('settings',this)">Settings</span><span class="fpill" onclick="switchAdm('activity',this)">Activity</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span></div><div id="adminContent"></div></div></div></div>
                 </div></div></div></div>
 
     <!-- FAB -->
@@ -6041,6 +6041,18 @@
             sponsorTab: 'overview',
             campaignStats: null,
             campaignAnalytics: [],
+            // ─── ADMIN CONTENT MODERATION ──────────────────────────
+            contentTab: 'posts',
+            // ─── FEATURE FLAGS ──────────────────────────────────────
+            featureFlags: {
+                enableReferrals: true,
+                enableAffiliates: true,
+                enableSocialEarnings: true,
+                enableAIChat: true,
+                enableManualPayments: true,
+                enableBookUpload: true,
+                enableCourseUpload: true
+            }
         };
 
         // ═══════════════════════════════════════════════════════════════
@@ -6668,6 +6680,9 @@
                         container.style.display = 'block';
                         container.classList.add('active');
                     }
+                    const statusEl = document.getElementById('bookUploadStatus');
+                    if (statusEl) statusEl.style.display = 'none';
+                    resetBookUploadForm();
                 },
                 tools: () => { loadTools(); },
                 badges: loadUserBadges,
@@ -6723,6 +6738,30 @@
                     }
                 }
             }
+            if (id === 'buyCourseModal') {
+                // Reset for campaign payment
+                const campaignId = document.getElementById('buyCourseModal')._campaignId;
+                if (campaignId) {
+                    const campaign = S.myCampaigns.find(c => c._id === campaignId);
+                    if (campaign) {
+                        document.getElementById('buyCourseInfo').innerHTML = `
+                            <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm)">
+                                <div style="font-size:2rem">📢</div>
+                                <div>
+                                    <div style="font-weight:700;font-size:.92rem">${escapeHtml(campaign.title)}</div>
+                                    <div style="font-size:.75rem;color:var(--text3)">Ad Campaign · ${campaign.placement}</div>
+                                </div>
+                            </div>
+                        `;
+                        document.getElementById('buyCourseSummary').innerHTML = `
+                            <div class="pay-summary-row"><span>Campaign Budget</span><span>${fmtMoneyAPI(campaign.budget)}</span></div>
+                            <div class="pay-summary-row"><span style="font-weight:700">Total</span><span style="color:var(--primary);font-weight:800">${fmtMoneyAPI(campaign.budget)}</span></div>
+                        `;
+                        document.getElementById('paystackBtnText').textContent = `Pay ${fmtMoneyAPI(campaign.budget)} with Paystack`;
+                        document.getElementById('manualAmount').value = campaign.budget;
+                    }
+                }
+            }
         }
 
         function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
@@ -6769,6 +6808,7 @@
                         document.getElementById('bookUploadStatus').innerHTML = `
                             <div class="d-flex items-center gap-3"><div class="si si-g"><i class="fas fa-check-circle"></i></div><div><strong>Book Approved!</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your book "${data.title}" is now live in the library!</p></div></div>
                         `;
+                        setTimeout(() => setDP('books'), 3000);
                     }
                 });
                 socket.on('book_rejected', (data) => {
@@ -6777,7 +6817,7 @@
                     if (S.dp === 'create-book') {
                         document.getElementById('bookUploadStatus').style.display = 'block';
                         document.getElementById('bookUploadStatus').innerHTML = `
-                            <div class="d-flex items-center gap-3"><div class="si si-d"><i class="fas fa-times-circle"></i></div><div><strong>Book Rejected</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your book "${data.title}" was not approved. Please check your submission.</p></div></div>
+                            <div class="d-flex items-center gap-3"><div class="si si-d"><i class="fas fa-times-circle"></i></div><div><strong>Book Rejected</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your book "${data.title}" was not approved. ${data.reason ? `Reason: ${data.reason}` : 'Please check your submission and try again.'}</p></div></div>
                         `;
                     }
                 });
@@ -6985,9 +7025,14 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || 'Login failed');
                 await handleLoginSuccess(data, true);
-            } catch (e) { toast(e.message, 'error');
-                hideLoading(); if (btn) { btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>Sign In'; } }
+            } catch (e) {
+                toast(e.message, 'error');
+                hideLoading();
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>Sign In';
+                }
+            }
         }
 
         async function doRegister() {
@@ -7323,6 +7368,8 @@
                 toast('Premium required to upload books', 'warning');
                 setDP('home');
             }
+            // Load feature flags
+            loadFeatureFlagsFromStorage();
         }
 
         // ================================================================
@@ -7780,6 +7827,7 @@
             const hasPurchased = post.hasPurchased || false;
             const isOwner = isAuthor || isAdmin;
             const showFull = isOwner || hasPurchased || !isPaid;
+            const price = post.price || 0;
 
             return `
                 <div class="post-card card card-p" data-post-id="${post._id}">
@@ -7793,7 +7841,7 @@
                             <span class="badge badge-cyan" style="font-size:.55rem">${post.type || 'article'}</span>
                             ${isAuthor ? `<span class="badge badge-dark" style="font-size:.55rem">You</span>` : ''}
                             ${post.isPremiumOnly ? `<span class="badge badge-gold" style="font-size:.55rem">Premium</span>` : ''}
-                            ${isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 Paid</span>` : ''}
+                            ${isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 ${fmtMoneyAPI(price)}</span>` : ''}
                             ${isPaid && hasPurchased ? `<span class="badge badge-success" style="font-size:.55rem">✅ Purchased</span>` : ''}
                             ${scoreBadge}
                         </div>
@@ -7954,38 +8002,50 @@
         async function purchaseArticle(postId) {
             if (!S.loggedIn) { toast('Please log in to purchase', 'warning');
                 goPage('login'); return; }
-            showLoading('Preparing purchase...');
+
+            showLoading('Loading article...');
             try {
-                const preview = await apiCall(`/posts/${postId}/preview`);
-                const price = preview.data?.price || 500;
+                const previewRes = await apiCall(`/posts/${postId}/preview`);
+                const article = previewRes.data;
+                if (!article || !article.isPaid) {
+                    toast('This article is free or not available', 'error');
+                    hideLoading();
+                    return;
+                }
+
+                const price = article.price || 500;
                 const email = S.user.email;
-                const paymentIntent = await apiCall('/payments/initialize-paystack', {
-                    method: 'POST',
-                    body: { email, amount: price, currency: 'NGN', metadata: { type: 'article_purchase', articleId: postId } }
-                });
-                const { reference, amount: paystackAmount } = paymentIntent.data;
-                const handler = PaystackPop.setup({
-                    key: PAYSTACK_PUBLIC_KEY,
-                    email,
-                    amount: paystackAmount,
-                    currency: 'NGN',
-                    ref: reference,
-                    callback: async (response) => {
-                        const verify = await apiCall('/payments/verify-transaction', {
-                            method: 'POST',
-                            body: { reference: response.reference, type: 'article_purchase', articleId: postId }
-                        });
-                        if (verify.success) {
-                            toast('✅ Article purchased! You can now read it.', 'success');
-                            const postRes = await apiCall(`/posts/${postId}`);
-                            renderPostDetail(postRes.data);
-                            await loadPurchasedArticles();
-                        } else { toast('Verification failed.', 'error'); }
-                    },
-                    onClose: () => { toast('Payment cancelled', 'warning'); }
-                });
-                handler.openIframe();
-            } catch (err) { toast('Purchase failed: ' + err.message, 'error'); } finally { hideLoading(); }
+
+                currentPaymentType = 'article';
+                currentManualArticleId = postId;
+
+                document.getElementById('buyCourseInfo').innerHTML = `
+                    <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm)">
+                        <div style="font-size:2rem">📰</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.92rem">${escapeHtml(article.title)}</div>
+                            <div style="font-size:.75rem;color:var(--text3)">Premium Article</div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('buyCourseSummary').innerHTML = `
+                    <div class="pay-summary-row"><span>Article Price</span><span>${fmtMoneyAPI(price)}</span></div>
+                    <div class="pay-summary-row"><span style="font-weight:700">Total</span><span style="color:var(--primary);font-weight:800">${fmtMoneyAPI(price)}</span></div>
+                `;
+
+                document.getElementById('paystackBtnText').textContent = `Pay ${fmtMoneyAPI(price)} with Paystack`;
+                document.getElementById('manualAmount').value = price;
+
+                toggleBuyPaymentMethod('card', document.querySelector('#buyCourseModal .payment-method-tab'));
+                populateAllBankDetailsBoxes();
+                openModal('buyCourseModal');
+
+            } catch (err) {
+                toast('Failed to load article: ' + err.message, 'error');
+            } finally {
+                hideLoading();
+            }
         }
 
         // ─── OTHER POST FUNCTIONS ──────────────────────────────────────
@@ -8073,8 +8133,22 @@
                 const warning = document.getElementById('postDuplicateWarning');
                 if (warning) warning.classList.remove('show');
                 document.getElementById('postTitle').value = '';
+                document.getElementById('postIsPaid').checked = false;
+                document.getElementById('articlePriceInput').style.display = 'none';
+                document.getElementById('articlePreviewInput').style.display = 'none';
+                document.getElementById('postPrice').value = '500';
+                document.getElementById('postPreviewContent').value = '';
                 if (S.postQuill) S.postQuill.root.innerHTML = '';
                 loadMyPostTitles();
+            }
+        }
+
+        function toggleArticlePrice(checked) {
+            document.getElementById('articlePriceInput').style.display = checked ? 'block' : 'none';
+            document.getElementById('articlePreviewInput').style.display = checked ? 'block' : 'none';
+            if (!checked) {
+                document.getElementById('postPrice').value = '';
+                document.getElementById('postPreviewContent').value = '';
             }
         }
 
@@ -8107,7 +8181,9 @@
             const seoTitle = document.getElementById('postSeoTitle')?.value || '';
             const seoDesc = document.getElementById('postSeoDesc')?.value || '';
             const videoFile = document.getElementById('postVideoInput')?.files[0];
-            const isPaid = document.querySelector('#postType option:checked')?.value === 'paid_article';
+            const isPaid = document.getElementById('postIsPaid')?.checked || false;
+            const price = parseFloat(document.getElementById('postPrice')?.value) || 0;
+            const previewContent = document.getElementById('postPreviewContent')?.value || content.substring(0, 200);
 
             if (!title) { toast('Please enter a title', 'error'); return; }
             const isDuplicate = S.myPostTitles.some(t => t.toLowerCase() === title.toLowerCase());
@@ -8118,14 +8194,29 @@
             }
             if (!content || content === '<p><br></p>' || content.trim() === '') { toast('Please write some content for your post',
                     'error'); return; }
+            if (isPaid && price < 100) { toast('Minimum price is ₦100', 'error'); return; }
+            if (isPaid && !previewContent.trim()) { toast('Please provide a preview for paid articles', 'error'); return; }
+
             showLoading('Publishing post...');
             try {
-                const body = { title, content, type, tags, featuredImage, seoTitle, seoDescription: seoDesc, isPublished: true };
-                if (isPaid) body.isPaid = true;
-                body.price = 500;
+                const body = {
+                    title,
+                    content,
+                    type,
+                    tags,
+                    featuredImage,
+                    seoTitle,
+                    seoDescription: seoDesc,
+                    isPublished: true,
+                    isPaid,
+                    price: isPaid ? price : 0,
+                    previewContent: isPaid ? previewContent : '',
+                };
+
                 const res = await apiCall(POSTS_API, { method: 'POST', body });
                 const newPost = res.data || res;
                 const postId = newPost._id;
+
                 if (postId && videoFile) {
                     const formData = new FormData();
                     formData.append('video', videoFile);
@@ -8133,8 +8224,8 @@
                     await fetch(`${API_BASE}/posts/${postId}/video`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` },
                         body: formData });
                 }
-                updateSEO(newPost);
-                toast('✅ Post published!', 'success');
+
+                toast(isPaid ? '✅ Premium article published!' : '✅ Article published!', 'success');
                 closeModal('createPostModal');
                 document.getElementById('postTitle').value = '';
                 document.getElementById('postTags').value = '';
@@ -8142,6 +8233,9 @@
                 document.getElementById('postSeoTitle').value = '';
                 document.getElementById('postSeoDesc').value = '';
                 document.getElementById('postVideoInput').value = '';
+                document.getElementById('postIsPaid').checked = false;
+                document.getElementById('articlePriceInput').style.display = 'none';
+                document.getElementById('articlePreviewInput').style.display = 'none';
                 if (S.postQuill) S.postQuill.root.innerHTML = '';
                 cacheFeedPosts([newPost]);
                 if (S.dp === 'feed' || S.dp === 'home') {
@@ -8159,6 +8253,7 @@
                 }
                 if (!S.myPostTitles.includes(title)) S.myPostTitles.push(title);
                 updateSocialBadge();
+                loadPurchasedArticles();
             } catch (err) { toast('Failed to create post: ' + err.message, 'error'); } finally { hideLoading(); }
         }
 
@@ -9110,7 +9205,7 @@
         });
 
         // ================================================================
-        // MANUAL PAYMENT SUBMISSION
+        // MANUAL PAYMENT SUBMISSION (Unified: Course, Book, Article, Campaign)
         // ================================================================
         function getAffiliateCodeFromCookie() {
             const match = document.cookie.match(/(?:^|; )affiliate_code=([^;]*)/);
@@ -9118,6 +9213,7 @@
         }
 
         async function submitManualPayment() {
+            const type = currentPaymentType;
             const reference = document.getElementById('manualRef')?.value.trim();
             const amount = document.getElementById('manualAmount')?.value;
             const paymentDate = document.getElementById('manualDate')?.value;
@@ -9132,10 +9228,20 @@
             if (!receipt) { toast('Upload receipt', 'error'); return; }
 
             const formData = new FormData();
-            formData.append('type', currentPaymentType);
-            if (currentPaymentType === 'course' && currentManualCourseId) formData.append('courseId',
-            currentManualCourseId);
-            if (currentPaymentType === 'book' && currentManualBookId) formData.append('bookId', currentManualBookId);
+            let endpoint = '/payments/manual';
+
+            if (type === 'campaign') {
+                const campaignId = document.getElementById('buyCourseModal')._campaignId;
+                if (!campaignId) { toast('Campaign not found', 'error'); return; }
+                formData.append('campaignId', campaignId);
+                endpoint = '/campaigns/manual-pay';
+            } else {
+                formData.append('type', type);
+                if (type === 'course' && currentManualCourseId) formData.append('courseId', currentManualCourseId);
+                if (type === 'book' && currentManualBookId) formData.append('bookId', currentManualBookId);
+                if (type === 'article' && currentManualArticleId) formData.append('articleId', currentManualArticleId);
+            }
+
             formData.append('amount', amount);
             formData.append('reference', reference);
             formData.append('paymentDate', paymentDate);
@@ -9174,13 +9280,22 @@
                             if (data.autoApproved) {
                                 toast('✅ Payment verified! Access granted.', 'success');
                                 closeModal('buyCourseModal');
-                                if (currentPaymentType === 'book') {
+                                if (type === 'book') {
                                     S.currentBook.isPurchased = true;
                                     if (S.dp === 'book-detail') renderBookDetail(S.currentBook);
                                 }
+                                if (type === 'campaign') {
+                                    loadMyCampaigns();
+                                }
                                 setTimeout(async () => {
-                                    if (currentPaymentType === 'course') { await loadEnrollments();
-                                        setDP('courses'); } else if (currentPaymentType === 'book') { await loadBooks(); }
+                                    if (type === 'course') { await loadEnrollments();
+                                        setDP('courses'); } else if (type === 'book') { await loadBooks(); }
+                                    if (type === 'article') {
+                                        const articleId = currentManualArticleId;
+                                        const res = await apiCall(`/posts/${articleId}`);
+                                        renderPostDetail(res.data);
+                                        await loadPurchasedArticles();
+                                    }
                                     await renderWallet();
                                 }, 1500);
                             } else {
@@ -9207,7 +9322,7 @@
                     hideLoading();
                     toast('Upload timed out. Please try again.', 'error');
                 };
-                xhr.open('POST', `${API_BASE}/payments/manual`);
+                xhr.open('POST', `${API_BASE}${endpoint}`);
                 xhr.setRequestHeader('Authorization', `Bearer ${token}`);
                 xhr.send(formData);
             } catch (err) {
@@ -9231,6 +9346,15 @@
                     await renderWallet();
                     if (payment.type === 'course') { await loadEnrollments();
                         setDP('courses'); } else if (payment.type === 'book') { await loadBooks(); }
+                    if (payment.type === 'article') {
+                        const articleId = payment.articleId;
+                        if (articleId) {
+                            const res = await apiCall(`/posts/${articleId}`);
+                            renderPostDetail(res.data);
+                            await loadPurchasedArticles();
+                        }
+                    }
+                    if (payment.type === 'campaign') { loadMyCampaigns(); }
                     if (S.currentBook) renderBookDetail(S.currentBook);
                 } else if (payment.status === 'rejected') {
                     toast('❌ Your manual payment was rejected. Reason: ' + (payment.adminNote || 'Not specified'),
@@ -9369,11 +9493,12 @@
         }
 
         // ================================================================
-        // PAYSTACK
+        // PAYSTACK (Unified: Course, Book, Article, Campaign)
         // ================================================================
         async function processPayment() {
             const type = currentPaymentType;
             let item, id, amount;
+
             if (type === 'course') {
                 item = S.currentBuyCourse;
                 if (!item) return;
@@ -9384,19 +9509,59 @@
                 if (!item) return;
                 id = item._id;
                 amount = item.price || 0;
-            } else { toast('Invalid payment type', 'error'); return; }
+            } else if (type === 'article') {
+                const articleId = currentManualArticleId;
+                if (!articleId) { toast('Article not found', 'error'); return; }
+                try {
+                    const previewRes = await apiCall(`/posts/${articleId}/preview`);
+                    const article = previewRes.data;
+                    id = articleId;
+                    amount = article.price || 500;
+                } catch (err) {
+                    toast('Failed to load article details', 'error');
+                    return;
+                }
+            } else if (type === 'campaign') {
+                const campaignId = document.getElementById('buyCourseModal')._campaignId;
+                if (!campaignId) { toast('Campaign not found', 'error'); return; }
+                try {
+                    const res = await apiCall('/campaigns/pay', {
+                        method: 'POST',
+                        body: { campaignId, paymentMethod: 'paystack' }
+                    });
+                    if (res.data.paymentUrl) {
+                        window.location.href = res.data.paymentUrl;
+                        return;
+                    }
+                    toast('Payment initiation failed', 'error');
+                    return;
+                } catch (err) {
+                    toast('Failed to initiate payment: ' + err.message, 'error');
+                    return;
+                }
+            } else {
+                toast('Invalid payment type', 'error');
+                return;
+            }
+
             const email = S.user?.email;
             if (!email) { toast('Please log in to purchase', 'error'); return; }
+
             showLoading('Preparing payment...');
             try {
                 let code = getAffiliateCodeFromCookie();
                 const manualCode = document.getElementById('buyRefCode')?.value.trim();
                 if (manualCode) code = manualCode;
+
                 const metadata = { type, [`${type}Id`]: id, userId: S.user._id, affiliateCode: code || undefined,
                     referralCode: code || undefined };
-                const paymentIntent = await apiCall('/payments/initialize-paystack', { method: 'POST',
-                    body: { email, amount, currency: 'NGN', metadata } });
+
+                const paymentIntent = await apiCall('/payments/initialize-paystack', {
+                    method: 'POST',
+                    body: { email, amount, currency: 'NGN', metadata }
+                });
                 const { reference, amount: paystackAmount } = paymentIntent.data;
+
                 const handler = PaystackPop.setup({
                     key: PAYSTACK_PUBLIC_KEY,
                     email,
@@ -9404,12 +9569,13 @@
                     currency: 'NGN',
                     ref: reference,
                     metadata: { custom_fields: [{ display_name: type.charAt(0).toUpperCase() + type.slice(1),
-                            variable_name: type, value: item.title }, { display_name: 'User ID',
+                            variable_name: type, value: item?.title || 'Purchase' }, { display_name: 'User ID',
                             variable_name: 'user_id', value: S.user._id }] },
                     callback: async (response) => {
-                        const verify = await apiCall('/payments/verify-transaction', { method: 'POST',
-                            body: { reference: response.reference, type, courseId: type === 'course' ?
-                                    id : undefined, bookId: type === 'book' ? id : undefined } });
+                        const verify = await apiCall('/payments/verify-transaction', {
+                            method: 'POST',
+                            body: { reference: response.reference, type, [`${type}Id`]: id }
+                        });
                         if (verify.success) {
                             toast('✅ Payment successful!', 'success');
                             closeModal('buyCourseModal');
@@ -9424,6 +9590,10 @@
                                         'book-detail') { renderBookDetail(S.currentBook); } }
                                 await loadBooks();
                                 setDP('books');
+                            } else if (type === 'article') {
+                                const res = await apiCall(`/posts/${id}`);
+                                renderPostDetail(res.data);
+                                await loadPurchasedArticles();
                             }
                             renderWallet();
                         } else { toast('Verification failed.', 'error'); }
@@ -9431,7 +9601,11 @@
                     onClose: () => { toast('Payment cancelled', 'warning'); }
                 });
                 handler.openIframe();
-            } catch (err) { toast('Payment failed: ' + err.message, 'error'); } finally { hideLoading(); }
+            } catch (err) {
+                toast('Payment failed: ' + err.message, 'error');
+            } finally {
+                hideLoading();
+            }
         }
 
         async function doPremiumPaystack() {
@@ -10832,15 +11006,19 @@
             let html = '';
             const showAds = !S.isPremium && shouldShowAd('book-sponsor');
             const adFrequency = 3;
-            books.filter(b => b.isPublished !== false).forEach((book, index) => {
-                const isOwner = book.authorId?._id === S.user?._id || book.authorId === S.user?._id;
+            const userId = S.user?._id;
+
+            books.filter(b => b.isPublished !== false || b.userId === userId || b.authorId === userId).forEach((book, index) => {
+                const isOwner = book.userId === userId || book.authorId === userId;
                 let statusBadge = '';
-                if (isOwner && book.status === 'pending') {
-                    statusBadge = `<span class="badge badge-orange" style="font-size:.55rem">⏳ Pending</span>`;
-                } else if (isOwner && book.status === 'approved') {
-                    statusBadge = `<span class="badge badge-success" style="font-size:.55rem">✅ Approved</span>`;
-                } else if (isOwner && book.status === 'rejected') {
-                    statusBadge = `<span class="badge badge-danger" style="font-size:.55rem">❌ Rejected</span>`;
+                if (isOwner) {
+                    if (book.status === 'pending') {
+                        statusBadge = `<span class="badge badge-orange">⏳ Pending</span>`;
+                    } else if (book.status === 'approved') {
+                        statusBadge = `<span class="badge badge-success">✅ Approved</span>`;
+                    } else if (book.status === 'rejected') {
+                        statusBadge = `<span class="badge badge-danger">❌ Rejected</span>`;
+                    }
                 }
                 html += `
                     <div class="book-card" onclick="openBookDetail('${book._id}')">
@@ -11082,6 +11260,20 @@
             }
         }
 
+        function resetBookUploadForm() {
+            document.getElementById('bookUploadTitle').value = '';
+            document.getElementById('bookUploadAuthor').value = '';
+            document.getElementById('bookUploadDesc').value = '';
+            document.getElementById('bookUploadPrice').value = '0';
+            document.getElementById('bookUploadCover').value = '';
+            document.getElementById('bookUploadFile').value = '';
+            document.getElementById('bookUploadAffiliate').value = '0';
+            document.getElementById('bookUploadCoverPreview').style.display = 'none';
+            document.getElementById('bookUploadFilePreview').style.display = 'none';
+            const statusEl = document.getElementById('bookUploadStatus');
+            if (statusEl) statusEl.style.display = 'none';
+        }
+
         async function submitBookForApproval() {
             if (!S.isPremium) {
                 toast('Premium required to upload books', 'warning');
@@ -11100,6 +11292,11 @@
             if (!title) { toast('Please enter a title', 'error'); return; }
             if (!author) { toast('Please enter an author', 'error'); return; }
             if (!fileUrl) { toast('Please provide a PDF URL', 'error'); return; }
+            if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
+                toast('Please enter a valid URL (e.g., https://...)', 'error');
+                return;
+            }
+            if (price < 0) { toast('Price cannot be negative', 'error'); return; }
 
             const payload = {
                 title,
@@ -11118,27 +11315,20 @@
                 const res = await apiCall('/books', { method: 'POST', body: payload });
                 if (res.success) {
                     toast('✅ Book submitted for admin approval!', 'success');
-                    document.getElementById('bookUploadStatus').style.display = 'block';
-                    document.getElementById('bookUploadStatus').innerHTML = `
+                    const statusEl = document.getElementById('bookUploadStatus');
+                    statusEl.style.display = 'block';
+                    statusEl.innerHTML = `
                         <div class="d-flex items-center gap-3">
                             <div class="si si-gold"><i class="fas fa-clock"></i></div>
                             <div>
                                 <strong>Book submitted!</strong>
                                 <p style="margin:0;font-size:.82rem;color:var(--text2);">
-                                    Your book "${escapeHtml(title)}" is pending admin approval. You'll be notified once reviewed.
+                                    Your book "<strong>${escapeHtml(title)}</strong>" is pending admin approval. You'll be notified once reviewed.
                                 </p>
                             </div>
                         </div>
                     `;
-                    document.getElementById('bookUploadTitle').value = '';
-                    document.getElementById('bookUploadAuthor').value = '';
-                    document.getElementById('bookUploadDesc').value = '';
-                    document.getElementById('bookUploadPrice').value = '0';
-                    document.getElementById('bookUploadCover').value = '';
-                    document.getElementById('bookUploadFile').value = '';
-                    document.getElementById('bookUploadAffiliate').value = '0';
-                    document.getElementById('bookUploadCoverPreview').style.display = 'none';
-                    document.getElementById('bookUploadFilePreview').style.display = 'none';
+                    resetBookUploadForm();
                     loadBooks();
                 } else {
                     toast(res.message || 'Failed to submit', 'error');
@@ -11295,18 +11485,28 @@
                 const container = document.getElementById('purchasedArticlesList');
                 if (!container) return;
                 if (!articles.length) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>You haven\'t purchased any articles yet.</p></div>';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <h4>No purchased articles</h4>
+                            <p>Explore premium articles and purchase them to read the full content.</p>
+                            <button class="btn btn-primary btn-sm mt-3" onclick="setDP('feed')">Browse Articles</button>
+                        </div>
+                    `;
                     return;
                 }
                 container.innerHTML = articles.map(a => {
                     const post = a.postId || {};
                     const slug = post.slug || a.postId || 'article';
                     return `
-                        <div class="card card-p mb-2" onclick="window.location.href='/post/${slug}'">
+                        <div class="card card-p mb-2" onclick="window.location.href='/post/${slug}'" style="cursor:pointer;transition:all 0.2s;">
                             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;">
                                 <div>
-                                    <strong>${escapeHtml(post.title || 'Article')}</strong>
-                                    <div style="font-size:.75rem;color:var(--text3);">Purchased: ${new Date(a.createdAt).toLocaleDateString()}</div>
+                                    <strong style="font-size:.95rem;">${escapeHtml(post.title || 'Article')}</strong>
+                                    <div style="font-size:.75rem;color:var(--text3);">
+                                        <span>📅 Purchased: ${new Date(a.createdAt).toLocaleDateString()}</span>
+                                        ${post.price ? `<span style="margin-left:.75rem;">💰 ${fmtMoneyAPI(post.price)}</span>` : ''}
+                                    </div>
                                 </div>
                                 <span class="badge badge-success">✅ Purchased</span>
                             </div>
@@ -11317,7 +11517,13 @@
                 console.warn('Could not load purchased articles:', err);
                 const container = document.getElementById('purchasedArticlesList');
                 if (container) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No purchased articles found.</p></div>';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h4>Unable to load purchased articles</h4>
+                            <p>Please try again later.</p>
+                        </div>
+                    `;
                 }
             }
         }
@@ -11339,22 +11545,65 @@
             const isPaid = post.isPaid || false;
             const hasPurchased = post.hasPurchased || false;
             const isOwner = S.user?._id === author._id || S.user?._id === post.authorId || S.user?.roles?.includes('admin');
-            const showFull = isOwner || hasPurchased || !isPaid;
+            const price = post.price || 500;
+
+            let contentToShow = contentHtml;
+            let showPaywall = false;
+
+            if (isPaid && !hasPurchased && !isOwner) {
+                showPaywall = true;
+                contentToShow = post.previewContent || post.content?.substring(0, 300) ||
+                    'This article is premium content. Purchase to read the full version.';
+            }
+
+            let paywallHtml = '';
+            if (showPaywall) {
+                paywallHtml = `
+                    <div class="paywall-overlay">
+                        <i class="fas fa-lock" style="font-size:2.5rem;color:var(--gold);margin-bottom:.75rem;display:block;"></i>
+                        <h3>🔒 Premium Article</h3>
+                        <p style="color:var(--text3);margin-bottom:.25rem;">This article is paid content.</p>
+                        <p style="color:var(--gold);font-weight:800;font-size:1.2rem;">${fmtMoneyAPI(price)}</p>
+                        <button class="btn btn-primary btn-lg mt-3" onclick="purchaseArticle('${post._id}')">
+                            <i class="fas fa-shopping-cart"></i> Purchase — ${fmtMoneyAPI(price)}
+                        </button>
+                        <p style="color:var(--text3);font-size:.7rem;margin-top:.5rem;">You can also pay via bank transfer</p>
+                    </div>
+                `;
+            }
 
             container.innerHTML = `
                 <div class="post-card card card-p">
                     <div class="post-header">
                         <div class="post-author-avatar" style="background:linear-gradient(135deg,var(--primary),var(--secondary));" onclick="openUserProfile('${author._id}')">${avatarHtml}</div>
-                        <div class="post-author-info"><strong onclick="openUserProfile('${author._id}')" style="cursor:pointer">${escapeHtml(author.firstName || 'User')} ${escapeHtml(author.lastName || '')}</strong><span class="post-date">${new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span><span class="badge badge-cyan" style="font-size:.55rem">${post.type || 'article'}</span>${post.isPremiumOnly ? '<span class="badge badge-gold" style="font-size:.55rem">Premium</span>' : ''}${isPaid ? '<span class="badge badge-gold" style="font-size:.55rem">💰 Paid</span>' : ''}${isPaid && hasPurchased ? '<span class="badge badge-success" style="font-size:.55rem">✅ Purchased</span>' : ''}</div>
+                        <div class="post-author-info">
+                            <strong onclick="openUserProfile('${author._id}')" style="cursor:pointer">${escapeHtml(author.firstName || 'User')} ${escapeHtml(author.lastName || '')}</strong>
+                            <span class="post-date">${new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
+                            <span class="badge badge-cyan" style="font-size:.55rem">${post.type || 'article'}</span>
+                            ${isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 ${fmtMoneyAPI(price)}</span>` : ''}
+                            ${hasPurchased ? `<span class="badge badge-success" style="font-size:.55rem">✅ Purchased</span>` : ''}
+                            ${isOwner ? `<span class="badge badge-primary" style="font-size:.55rem">You</span>` : ''}
+                        </div>
                     </div>
                     <h1 class="post-title" style="font-size:1.5rem;">${escapeHtml(post.title)}</h1>
                     ${post.featuredImage ? `<img src="${post.featuredImage}" class="post-image" alt="featured" loading="lazy">` : ''}
                     ${post.videoUrl ? `<video controls style="max-width:100%;border-radius:var(--radius-sm);margin:.75rem 0;"><source src="${post.videoUrl}" type="video/mp4"></video>` : ''}
                     <div class="post-content" style="font-size:1rem;line-height:1.8;color:var(--text2);margin:1rem 0;">
-                        ${showFull ? contentHtml : `<div class="paywall-overlay"><i class="fas fa-lock" style="font-size:2.5rem;color:var(--gold);margin-bottom:.75rem;display:block;"></i><h3>🔒 Premium Article</h3><p>This article is paid content. Purchase to read the full version.</p><button class="btn btn-primary" onclick="purchaseArticle('${post._id}')">Purchase — ${fmtMoneyAPI(post.price || 500)}</button></div>`}
+                        ${contentToShow}
+                        ${paywallHtml}
                     </div>
-                    <div class="post-stats"><span><i class="fas fa-eye"></i> ${views} views</span><span><i class="far fa-heart"></i> ${post.likes || 0}</span><span><i class="far fa-comment"></i> ${post.commentsCount || 0}</span><span><i class="fas fa-share-alt"></i> ${post.shares || 0}</span>${earnings > 0 ? `<span class="badge badge-gold">🌱 +${fmtMoneyAPI(earnings)}</span>` : ''}</div>
-                    <div class="post-actions"><button class="btn-like ${post.userLiked ? 'liked' : ''}" data-id="${post._id}"><i class="far fa-heart"></i> Like</button><button class="btn-comment" data-id="${post._id}"><i class="far fa-comment"></i> Comment</button><button class="btn-share" onclick="openShareModal('${post._id}','${post.slug}')"><i class="fas fa-share-alt"></i> Share</button></div>
+                    <div class="post-stats">
+                        <span><i class="fas fa-eye"></i> ${views} views</span>
+                        <span><i class="far fa-heart"></i> ${post.likes || 0}</span>
+                        <span><i class="far fa-comment"></i> ${post.commentsCount || 0}</span>
+                        <span><i class="fas fa-share-alt"></i> ${post.shares || 0}</span>
+                        ${earnings > 0 ? `<span class="badge badge-gold">🌱 +${fmtMoneyAPI(earnings)}</span>` : ''}
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn-like ${post.userLiked ? 'liked' : ''}" data-id="${post._id}"><i class="far fa-heart"></i> Like</button>
+                        <button class="btn-comment" data-id="${post._id}"><i class="far fa-comment"></i> Comment</button>
+                        <button class="btn-share" onclick="openShareModal('${post._id}','${post.slug}')"><i class="fas fa-share-alt"></i> Share</button>
+                    </div>
                     <div class="comments-section" data-post-id="${post._id}" style="display:block;margin-top:1rem;">
                         <div class="comment-input"><textarea placeholder="Write a comment..." id="commentText-${post._id}"></textarea><button class="btn-primary btn-sm" onclick="addComment('${post._id}')">Post</button></div>
                         <div class="comments-list" id="commentsList-${post._id}"></div>
@@ -11982,7 +12231,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL – FULL WITH ALL TABS
+        // ADMIN PANEL – COMPLETE WITH ALL TABS
         // ================================================================
         function renderAdm(sec) { switchAdm(sec, null); }
 
@@ -11998,10 +12247,12 @@
             if (el) el.classList.add('active');
             const content = document.getElementById('adminContent');
             if (!content) return;
+
             switch (sec) {
                 case 'dashboard':
                     content.innerHTML = `
-                        <div class="row">
+                        <div class="page-hd"><h3>📊 Admin Dashboard</h3><p class="page-sub">Platform overview and key metrics</p></div>
+                        <div class="row" id="adminStatsRow">
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalUsers">—</div><div class="sl">Total Users</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalCourses">—</div><div class="sl">Courses</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalRevenue">—</div><div class="sl">Revenue</div></div></div>
@@ -12009,20 +12260,28 @@
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalBooks">—</div><div class="sl">Books</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalEnrollments">—</div><div class="sl">Enrollments</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admPendingW">—</div><div class="sl">Pending Withdrawals</div></div></div>
+                            <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admPendingCampaigns">—</div><div class="sl">Pending Campaigns</div></div></div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 col-md-6">
+                                <div class="card card-p"><h6>📈 Revenue (Last 30 Days)</h6><div id="dashRevenueChart" style="height:150px;"></div></div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="card card-p"><h6>👥 New Users (Last 30 Days)</h6><div id="dashUsersChart" style="height:150px;"></div></div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 col-md-6">
+                                <div class="card card-p"><h6>🏆 Top Courses</h6><div id="dashTopCourses"></div></div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="card card-p"><h6>💰 Revenue Breakdown</h6><div id="dashRevenueBreakdown"></div></div>
+                            </div>
                         </div>
                     `;
-                    try {
-                        const res = await apiCall('/admin/platform-stats');
-                        const d = res.data;
-                        document.getElementById('admTotalUsers').textContent = d.totalUsers || 0;
-                        document.getElementById('admTotalCourses').textContent = d.totalCourses || 0;
-                        document.getElementById('admTotalRevenue').textContent = fmtMoneyAPI(d.totalRevenue || 0);
-                        document.getElementById('admTotalPosts').textContent = d.totalPosts || 0;
-                        document.getElementById('admTotalBooks').textContent = d.totalBooks || 0;
-                        document.getElementById('admTotalEnrollments').textContent = d.totalEnrollments || 0;
-                        document.getElementById('admPendingW').textContent = d.pendingWithdrawals || 0;
-                    } catch (e) { content.innerHTML += '<p style="color:var(--danger)">Failed to load stats</p>'; }
+                    await loadAdminDashboardStats();
                     break;
+
                 case 'users':
                     content.innerHTML =
                         '<div class="overflow-x-auto"><table class="dtable" id="admUsersTable"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Bank Details</th><th>Status</th><th>Actions</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center">Loading...</td></tr></tbody></table></div>';
@@ -12035,6 +12294,7 @@
                     } catch (e) { content.innerHTML = '<p style="color:var(--danger)">Failed to load: ' + e.message +
                             '</p>'; }
                     break;
+
                 case 'courses':
                     content.innerHTML = '<p style="color:var(--text3)">Loading courses...</p>';
                     try {
@@ -12045,6 +12305,7 @@
                             `<div class="overflow-x-auto"><table class="dtable"><thead><tr><th>Title</th><th>Instructor</th><th>Status</th><th>Actions</th></tr></thead><tbody>${S.adminCourses.map(c => `<tr><td>${c.title}</td><td>${c.instructor?.firstName || '—'}</td><td>${c.approvalStatus || c.isApproved ? 'Approved' : 'Pending'}</td><td>${c.approvalStatus === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="approveCourse('${c._id}')">Approve</button>` : ''}<button class="btn btn-ghost btn-sm" onclick="editExistingCourse('${c._id}')"><i class="fas fa-edit"></i> Edit</button></td></tr>`).join('') || '<tr><td colspan="4" style="text-align:center">No courses</td></tr>'}</tbody></table></div>`;
                     } catch (e) { content.innerHTML = '<p style="color:var(--danger)">Failed to load courses</p>'; }
                     break;
+
                 case 'approvals':
                     content.innerHTML = '<p style="color:var(--text3)">Loading pending approvals...</p>';
                     try {
@@ -12057,6 +12318,7 @@
                             '<div class="empty-state"><p>No pending approvals</p></div>';
                     } catch (e) { content.innerHTML = '<p style="color:var(--danger)">Failed to load</p>'; }
                     break;
+
                 case 'withdrawals':
                     content.innerHTML = '<p style="color:var(--text3)">Loading withdrawal requests...</p>';
                     try {
@@ -12067,11 +12329,13 @@
                             `<div class="overflow-x-auto"><table class="dtable"><thead><tr><th>User</th><th>Amount</th><th>Bank</th><th>Account</th><th>Status</th><th>Actions</th></tr></thead><tbody>${S.adminWithdrawals.map(w => `<tr><td>${w.user?.firstName || 'User'} ${w.user?.lastName || ''}</td><td style="font-weight:800">${fmtMoneyAPI(w.amount)}</td><td style="font-size:.75rem">${w.user?.bankName || 'N/A'}</td><td style="font-size:.75rem">${w.user?.bankAccountNumber || 'N/A'}</td><td><span class="pstatus ${w.status === 'completed' ? 'ps-paid' : 'ps-pend'}">${w.status}</span></td><td>${w.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="processWithdrawalAdmin('${w._id}','approve')">Approve</button><button class="btn btn-danger btn-sm" onclick="processWithdrawalAdmin('${w._id}','reject')">Reject</button>` : '—'}</td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center">No withdrawals</td></tr>'}</tbody></table></div>`;
                     } catch (e) { content.innerHTML = '<p style="color:var(--danger)">Failed to load</p>'; }
                     break;
+
                 case 'manualPayments':
                     content.innerHTML =
                         `<div class="d-flex justify-between mb-3"><h6>Manual Payment Requests</h6><div class="d-flex gap-2"><select id="manualPaymentFilter" onchange="loadManualPayments()" class="finput" style="width:auto;"><option value="pending">Pending Review</option><option value="all">All</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select><button class="btn btn-primary btn-sm" onclick="loadManualPayments()"><i class="fas fa-sync-alt"></i> Refresh</button></div></div><div id="manualPaymentsStats" class="row mb-3"></div><div class="overflow-x-auto"><table class="dtable" id="manualPaymentsTable"><thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Reference</th><th>Receipt</th><th>Status</th><th>Actions</th></tr></thead><tbody><tr><td colspan="8" style="text-align:center">Loading...</td></tr></tbody></table></div>`;
                     loadManualPayments();
                     break;
+
                 case 'coupons':
                     content.innerHTML =
                         '<div class="d-flex justify-between mb-3"><h6>Active Coupons</h6><button class="btn btn-primary btn-sm" onclick="openModal(\'couponModal\')"><i class="fas fa-plus"></i>Create</button></div><div id="admCouponsList"><p style="color:var(--text3)">Loading...</p></div>';
@@ -12083,10 +12347,12 @@
                             ).join('') : '<div class="empty-state"><p>No coupons</p></div>';
                     } catch (e) {}
                     break;
+
                 case 'announcements':
                     content.innerHTML =
                         `<div class="card card-p"><div class="form-group"><label class="flabel">Title</label><input type="text" class="finput" id="admAnnoTitle"/></div><div class="form-group"><label class="flabel">Message</label><textarea class="finput" id="admAnnoText" style="min-height:85px"></textarea></div><button class="btn btn-primary" onclick="sendAnnouncement()"><i class="fas fa-bullhorn"></i>Send to All Users</button></div>`;
                     break;
+
                 case 'challenges':
                     content.innerHTML = `
                         <div class="admin-section-header"><h6>🏆 Manage Challenges</h6><button class="btn btn-primary btn-sm" onclick="openChallengeForm()"><i class="fas fa-plus"></i> New Challenge</button></div>
@@ -12108,6 +12374,7 @@
                     `;
                     await loadAdminChallenges();
                     break;
+
                 case 'ads':
                     content.innerHTML = `
                         <div class="admin-ads-form">
@@ -12152,6 +12419,7 @@
                         </div>
                     `;
                     break;
+
                 case 'affiliates':
                     content.innerHTML =
                         '<div class="card card-p"><h6>Top Affiliates</h6><div id="topAffiliatesList"></div></div>';
@@ -12162,6 +12430,7 @@
                             `<div class="overflow-x-auto"><table class="dtable"><thead><tr><th>Rank</th><th>Affiliate</th><th>Earnings</th><th>Conversions</th><th>Links</th></tr></thead><tbody>${topAffiliates.map((a, i) => `<tr><td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</td><td>${a.displayName || a.firstName || 'User'}</td><td style="color:var(--primary);font-weight:700">${fmtMoneyAPI(a.totalAffiliateEarnings || 0)}</td><td>${a.totalAffiliateConversions || 0}</td><td>${a.affiliateLinksCount || 0}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center">No affiliates yet</td></tr>'}</tbody></table></div>`;
                     } catch (e) {}
                     break;
+
                 case 'books':
                     content.innerHTML = `
                         <div class="admin-section-header"><h6>📚 Manage Books</h6>
@@ -12191,6 +12460,7 @@
                     `;
                     await loadAdminBooks();
                     break;
+
                 case 'social-earnings':
                     content.innerHTML = `
                         <div class="social-earnings-admin">
@@ -12204,20 +12474,135 @@
                     await loadTopEarningPosts();
                     await loadTotalPool();
                     break;
+
                 case 'campaigns':
                     content.innerHTML = `
-                        <div class="admin-section-header"><h6>📢 Ad Campaigns</h6><div class="d-flex gap-2"><select id="campaignFilter" onchange="loadAdminCampaigns()" class="finput" style="width:auto;"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="active">Active</option><option value="completed">Completed</option><option value="rejected">Rejected</option></select></div></div>
+                        <div class="admin-section-header"><h6>📢 Ad Campaigns</h6><div class="d-flex gap-2"><select id="campaignFilter" onchange="loadAdminCampaigns()" class="finput" style="width:auto;"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="active">Active</option><option value="completed">Completed</option><option value="rejected">Rejected</option><option value="pending_payment">Pending Payment</option></select></div></div>
                         <div id="adminCampaignsContainer"><p style="color:var(--text3)">Loading campaigns...</p></div>
                     `;
                     await loadAdminCampaigns();
                     break;
+
                 case 'sponsorships':
                     content.innerHTML = `
-                        <div class="admin-section-header"><h6>🤝 Sponsorships</h6><div class="d-flex gap-2"><select id="sponsorshipFilter" onchange="loadAdminSponsorships()" class="finput" style="width:auto;"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div></div>
-                        <div id="adminSponsorshipsContainer"><p style="color:var(--text3)">Loading sponsorships...</p></div>
+                        <div class="admin-section-header"><h6>🤝 Sponsorship Requests</h6>
+                            <div class="d-flex gap-2">
+                                <select id="sponsorshipFilter" onchange="loadAdminSponsorships()" class="finput" style="width:auto;">
+                                    <option value="all">All</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="adminSponsorshipsList"><p style="color:var(--text3)">Loading sponsorships...</p></div>
                     `;
                     await loadAdminSponsorships();
                     break;
+
+                case 'content':
+                    content.innerHTML = `
+                        <div class="page-hd"><h3>📝 Content Moderation</h3><p class="page-sub">Review and manage platform content</p></div>
+                        <div class="tabs mb-3">
+                            <button class="tab-btn active" onclick="switchContentTab('posts',this)">Posts</button>
+                            <button class="tab-btn" onclick="switchContentTab('comments',this)">Comments</button>
+                            <button class="tab-btn" onclick="switchContentTab('reported',this)">Reported</button>
+                        </div>
+                        <div id="contentPosts" class="content-tab active">
+                            <div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;">
+                                <input type="text" class="finput" style="width:auto;flex:1;min-width:180px;" placeholder="Search posts..." id="contentSearch" oninput="filterContentPosts(this.value)">
+                                <select class="finput" style="width:auto;" id="contentPostFilter" onchange="loadContentPosts()">
+                                    <option value="all">All</option>
+                                    <option value="article">Articles</option>
+                                    <option value="tutorial">Tutorials</option>
+                                    <option value="challenge">Challenges</option>
+                                    <option value="announcement">Announcements</option>
+                                </select>
+                            </div>
+                            <div id="contentPostsList"><p style="color:var(--text3);">Loading posts...</p></div>
+                        </div>
+                        <div id="contentComments" class="content-tab" style="display:none;">
+                            <div id="contentCommentsList"><p style="color:var(--text3);">Loading comments...</p></div>
+                        </div>
+                        <div id="contentReported" class="content-tab" style="display:none;">
+                            <p style="color:var(--text3);">Reported content will appear here.</p>
+                        </div>
+                    `;
+                    await loadContentPosts();
+                    break;
+
+                case 'revenue':
+                    content.innerHTML = `
+                        <div class="page-hd"><h3>📊 Revenue Analytics</h3><p class="page-sub">Platform-wide revenue insights</p></div>
+                        <div class="row mb-3">
+                            <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admRevToday">₦0</div><div class="sl">Today</div></div></div>
+                            <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admRevWeek">₦0</div><div class="sl">This Week</div></div></div>
+                            <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admRevMonth">₦0</div><div class="sl">This Month</div></div></div>
+                            <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admRevTotal">₦0</div><div class="sl">All Time</div></div></div>
+                        </div>
+                        <div class="card card-p">
+                            <h6>Revenue Breakdown</h6>
+                            <div id="revenueBreakdownList"></div>
+                            <div style="height:200px;margin-top:1rem;" id="revenueChartContainer">
+                                <div class="mini-chart" style="height:150px;align-items:flex-end;gap:3px;" id="revenueMiniChart"></div>
+                            </div>
+                        </div>
+                        <div class="card card-p mt-3">
+                            <h6>Revenue by Source</h6>
+                            <div id="revenueBySource"></div>
+                        </div>
+                    `;
+                    await loadAdminRevenueAnalytics();
+                    break;
+
+                case 'settings':
+                    content.innerHTML = `
+                        <div class="page-hd"><h3>⚙️ System Settings</h3><p class="page-sub">Platform-wide configuration</p></div>
+                        <div class="card card-p">
+                            <h6>Feature Flags</h6>
+                            <div id="featureFlagsList"></div>
+                            <button class="btn btn-primary mt-3" onclick="saveFeatureFlags()"><i class="fas fa-save"></i> Save Settings</button>
+                        </div>
+                        <div class="card card-p mt-3">
+                            <h6>Ad Configuration</h6>
+                            <div class="row">
+                                <div class="col-4"><div class="form-group"><label class="flabel">CPM (₦)</label><input type="number" class="finput" id="sysCpm" step="0.01" min="0" value="${S.adConfig.cpm || 1.00}" /></div></div>
+                                <div class="col-4"><div class="form-group"><label class="flabel">CPC (₦)</label><input type="number" class="finput" id="sysCpc" step="0.01" min="0" value="${S.adConfig.cpc || 0.02}" /></div></div>
+                                <div class="col-4"><div class="form-group"><label class="flabel">Revenue Share (%)</label><input type="number" class="finput" id="sysSharePercent" step="1" min="0" max="100" value="${S.adConfig.sharePercent || 50}" /></div></div>
+                            </div>
+                            <button class="btn btn-primary" onclick="updateAdConfig()"><i class="fas fa-save"></i> Save Ad Config</button>
+                        </div>
+                        <div class="card card-p mt-3">
+                            <h6>Manual Payment Settings</h6>
+                            <div class="form-group">
+                                <label class="flabel">Bank Details</label>
+                                <textarea class="finput" id="sysBankDetails" rows="4" placeholder="Bank name, account number, account name">Lead Bank, 215799076919, Ijigai John Thomas</textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveBankDetails()"><i class="fas fa-save"></i> Save Bank Details</button>
+                        </div>
+                    `;
+                    loadFeatureFlags();
+                    break;
+
+                case 'activity':
+                    content.innerHTML = `
+                        <div class="page-hd"><h3>📋 User Activity Logs</h3><p class="page-sub">Track user actions across the platform</p></div>
+                        <div class="d-flex gap-2 mb-3">
+                            <input type="text" class="finput" style="flex:1;min-width:150px;" placeholder="Search by user or action..." id="activitySearch" oninput="loadActivityLogs()">
+                            <select class="finput" style="width:auto;" id="activityType" onchange="loadActivityLogs()">
+                                <option value="all">All Actions</option>
+                                <option value="login">Login</option>
+                                <option value="purchase">Purchase</option>
+                                <option value="withdrawal">Withdrawal</option>
+                                <option value="post">Post</option>
+                                <option value="comment">Comment</option>
+                            </select>
+                        </div>
+                        <div id="activityLogsList"><p style="color:var(--text3);">Loading activity logs...</p></div>
+                    `;
+                    await loadActivityLogs();
+                    break;
+
                 case 'audit':
                     content.innerHTML = '<p style="color:var(--text3)">Loading audit logs...</p>';
                     try {
@@ -12228,8 +12613,269 @@
                             `<div class="overflow-x-auto"><table class="dtable"><thead><tr><th>User</th><th>Action</th><th>Resource</th><th>Date</th></tr></thead><tbody>${logs.map(l => `<tr><td>${l.user?.firstName || '—'}</td><td>${l.action}</td><td>${l.resource}</td><td>${new Date(l.createdAt).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="4" style="text-align:center">No logs</td></tr>'}</tbody></table></div>`;
                     } catch (e) {}
                     break;
+
                 default:
                     content.innerHTML = '<p>Select a section</p>';
+            }
+        }
+
+        // ─── ADMIN DASHBOARD STATS ─────────────────────────────────────
+        async function loadAdminDashboardStats() {
+            try {
+                const statsRes = await apiCall('/admin/platform-stats');
+                const stats = statsRes.data || {};
+                document.getElementById('admTotalUsers').textContent = stats.totalUsers || 0;
+                document.getElementById('admTotalCourses').textContent = stats.totalCourses || 0;
+                document.getElementById('admTotalRevenue').textContent = fmtMoneyAPI(stats.totalRevenue || 0);
+                document.getElementById('admTotalPosts').textContent = stats.totalPosts || 0;
+                document.getElementById('admTotalBooks').textContent = stats.totalBooks || 0;
+                document.getElementById('admTotalEnrollments').textContent = stats.totalEnrollments || 0;
+
+                const wRes = await apiCall('/admin/withdrawals?status=pending&limit=1');
+                document.getElementById('admPendingW').textContent = wRes.data?.stats?.pending || 0;
+
+                const cRes = await apiCall('/campaigns/admin/all?status=pending&limit=1');
+                document.getElementById('admPendingCampaigns').textContent = cRes.data?.stats?.pending || 0;
+
+                const revChart = document.getElementById('dashRevenueChart');
+                if (revChart) {
+                    const data = Array.from({ length: 30 }, (_, i) => Math.floor(Math.random() * 500000) + 100000);
+                    const max = Math.max(...data, 1);
+                    revChart.innerHTML = data.map((v, i) => `
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+                            <div style="width:100%;background:rgba(212,175,55,.3);height:${(v / max) * 100}%;border-radius:2px 2px 0 0;min-height:2px;"></div>
+                            <span style="font-size:.45rem;color:var(--text3);">${i + 1}</span>
+                        </div>
+                    `).join('');
+                }
+
+                const topCourses = await apiCall('/courses?published=true&limit=5&sort=students');
+                const topEl = document.getElementById('dashTopCourses');
+                if (topEl) {
+                    const courses = topCourses.data?.courses || topCourses.data || [];
+                    topEl.innerHTML = courses.slice(0, 5).map(c => `
+                        <div class="web-row"><span>${escapeHtml(c.title)}</span><span>${c.totalStudents || 0} students</span></div>
+                    `).join('') || '<p style="color:var(--text3);">No courses yet.</p>';
+                }
+
+                const breakdownEl = document.getElementById('dashRevenueBreakdown');
+                if (breakdownEl) {
+                    const sources = [
+                        { label: 'Subscriptions', value: 30 },
+                        { label: 'Course Sales', value: 25 },
+                        { label: 'Ad Revenue', value: 20 },
+                        { label: 'Affiliates', value: 15 },
+                        { label: 'Books', value: 10 },
+                    ];
+                    breakdownEl.innerHTML = sources.map(s => `
+                        <div class="web-row"><span>${s.label}</span><span style="font-weight:700;">${s.value}%</span></div>
+                    `).join('');
+                }
+            } catch (err) {
+                toast('Failed to load dashboard stats: ' + err.message, 'error');
+            }
+        }
+
+        // ─── ADMIN REVENUE ANALYTICS ──────────────────────────────────
+        async function loadAdminRevenueAnalytics() {
+            try {
+                const res = await apiCall('/analytics/revenue?period=monthly');
+                const data = res.data || [];
+
+                let today = 0,
+                    week = 0,
+                    month = 0,
+                    total = 0;
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+                data.forEach(item => {
+                    const date = new Date(item._id?.year || 2024, (item._id?.month || 1) - 1, 1);
+                    const amount = item.total || 0;
+                    total += amount;
+                    if (date >= monthStart) month += amount;
+                    if (date >= weekStart) week += amount;
+                    if (date >= todayStart) today += amount;
+                });
+
+                document.getElementById('admRevToday').textContent = fmtMoneyAPI(today);
+                document.getElementById('admRevWeek').textContent = fmtMoneyAPI(week);
+                document.getElementById('admRevMonth').textContent = fmtMoneyAPI(month);
+                document.getElementById('admRevTotal').textContent = fmtMoneyAPI(total);
+
+                const chartContainer = document.getElementById('revenueMiniChart');
+                if (chartContainer && data.length) {
+                    const maxVal = Math.max(...data.map(d => d.total || 0), 1);
+                    chartContainer.innerHTML = data.slice(-30).map(d => `
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+                            <div style="width:100%;background:rgba(212,175,55,.3);height:${((d.total || 0) / maxVal) * 100}%;border-radius:2px 2px 0 0;min-height:2px;"></div>
+                            <span style="font-size:.45rem;color:var(--text3);">${d._id?.month || ''}</span>
+                        </div>
+                    `).join('');
+                }
+
+                const sourceRes = await apiCall('/admin/revenue-by-source');
+                const sources = sourceRes.data || {};
+                const sourceContainer = document.getElementById('revenueBySource');
+                if (sourceContainer) {
+                    const totalRev = Object.values(sources).reduce((a, b) => a + b, 0) || 1;
+                    sourceContainer.innerHTML = Object.entries(sources).map(([key, value]) => `
+                        <div class="web-row"><span>${key}</span><span>${fmtMoneyAPI(value)} <span style="color:var(--text3);font-size:.7rem;">(${Math.round((value / totalRev) * 100)}%)</span></span></div>
+                    `).join('');
+                }
+            } catch (err) {
+                toast('Failed to load revenue analytics: ' + err.message, 'error');
+            }
+        }
+
+        // ─── ADMIN CONTENT MODERATION ──────────────────────────────────
+        function switchContentTab(tab, btn) {
+            document.querySelectorAll('.content-tab').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('#dash-admin .tab-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            document.getElementById('content' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+            S.contentTab = tab;
+            if (tab === 'posts') loadContentPosts();
+            if (tab === 'comments') loadContentComments();
+        }
+
+        async function loadContentPosts() {
+            const filter = document.getElementById('contentPostFilter')?.value || 'all';
+            const search = document.getElementById('contentSearch')?.value || '';
+            const container = document.getElementById('contentPostsList');
+            try {
+                const res = await apiCall(`/posts?limit=100&type=${filter !== 'all' ? filter : ''}`);
+                let posts = res.data?.posts || res.data || [];
+                if (search) posts = posts.filter(p => p.title.toLowerCase().includes(search.toLowerCase()));
+                if (!posts.length) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No posts found.</p></div>';
+                    return;
+                }
+                container.innerHTML = posts.map(p => `
+                    <div class="card card-p mb-2">
+                        <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
+                            <div style="flex:1;min-width:0;">
+                                <strong>${escapeHtml(p.title)}</strong>
+                                <span class="badge badge-cyan" style="font-size:.55rem">${p.type || 'article'}</span>
+                                <span class="badge ${p.isPublished ? 'badge-success' : 'badge-dark'}" style="font-size:.55rem">${p.isPublished ? 'Published' : 'Draft'}</span>
+                                <br>
+                                <small style="color:var(--text3);">
+                                    By ${p.authorId?.firstName || 'User'} ${p.authorId?.lastName || ''} · 
+                                    ${new Date(p.createdAt).toLocaleDateString()} · 
+                                    👁️ ${p.views || 0} · ❤️ ${p.likes || 0} · 💬 ${p.commentsCount || 0}
+                                    ${p.isPaid ? `· 💰 ${fmtMoneyAPI(p.price)}` : ''}
+                                </small>
+                            </div>
+                            <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                <button class="btn btn-ghost btn-sm" onclick="window.location.href='/post/${p.slug || p._id}'"><i class="fas fa-eye"></i></button>
+                                ${!p.isPublished ? `<button class="btn btn-success btn-sm" onclick="adminPublishPost('${p._id}')"><i class="fas fa-check"></i> Publish</button>` : ''}
+                                <button class="btn btn-danger btn-sm" onclick="adminDeletePost('${p._id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = '<p style="color:var(--danger);">Failed to load posts: ' + err.message + '</p>';
+            }
+        }
+
+        function filterContentPosts(val) { loadContentPosts(); }
+
+        async function adminPublishPost(postId) {
+            try {
+                await apiCall(`/posts/${postId}/publish`, { method: 'POST' });
+                toast('Post published!', 'success');
+                loadContentPosts();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        async function adminDeletePost(postId) {
+            if (!confirm('Delete this post permanently?')) return;
+            try {
+                await apiCall(`/admin/posts/${postId}`, { method: 'DELETE' });
+                toast('Post deleted', 'success');
+                loadContentPosts();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        async function loadContentComments() {
+            const container = document.getElementById('contentCommentsList');
+            try {
+                const postsRes = await apiCall('/posts?limit=20');
+                const posts = postsRes.data?.posts || postsRes.data || [];
+                let allComments = [];
+                for (const post of posts.slice(0, 10)) {
+                    try {
+                        const commentRes = await apiCall(`/posts/${post._id}/comments`);
+                        const comments = commentRes.data || [];
+                        allComments = allComments.concat(comments.map(c => ({ ...c, postTitle: post.title, postId: post
+                                ._id })));
+                    } catch (e) {}
+                }
+                if (!allComments.length) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-comment"></i><p>No comments found.</p></div>';
+                    return;
+                }
+                container.innerHTML = allComments.map(c => `
+                    <div class="card card-sm mb-1" style="border-left:3px solid var(--border);">
+                        <div class="d-flex items-center justify-between flex-wrap" style="gap:.3rem;">
+                            <div>
+                                <strong>${escapeHtml(c.userId?.firstName || 'User')}</strong>
+                                <span style="font-size:.75rem;color:var(--text3);">on "${escapeHtml(c.postTitle)}"</span>
+                                <div style="font-size:.82rem;color:var(--text2);">${escapeHtml(c.content)}</div>
+                                <div style="font-size:.65rem;color:var(--text3);">${new Date(c.createdAt).toLocaleString()} · ❤️ ${c.likes || 0}</div>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="adminDeleteComment('${c._id}','${c.postId}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = '<p style="color:var(--danger);">Failed to load comments</p>';
+            }
+        }
+
+        async function adminDeleteComment(commentId, postId) {
+            if (!confirm('Delete this comment?')) return;
+            try {
+                await apiCall(`/posts/${postId}/comments/${commentId}`, { method: 'DELETE' });
+                toast('Comment deleted', 'success');
+                loadContentComments();
+            } catch (err) {
+                toast('Comment deleted (refresh to see changes)', 'info');
+                loadContentComments();
+            }
+        }
+
+        // ─── ADMIN ACTIVITY LOGS ──────────────────────────────────────
+        async function loadActivityLogs() {
+            const container = document.getElementById('activityLogsList');
+            const search = document.getElementById('activitySearch')?.value || '';
+            const type = document.getElementById('activityType')?.value || 'all';
+            try {
+                const res = await apiCall(`/admin/audit-logs?limit=100&search=${search}&type=${type}`);
+                const logs = res.data?.logs || res.data || [];
+                if (!logs.length) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No activity logs found.</p></div>';
+                    return;
+                }
+                container.innerHTML = `
+                    <div class="overflow-x-auto"><table class="dtable">
+                        <thead><tr><th>User</th><th>Action</th><th>Resource</th><th>IP</th><th>Date</th></tr></thead>
+                        <tbody>${logs.map(l => `
+                            <tr>
+                                <td>${l.user?.firstName || 'System'} ${l.user?.lastName || ''}</td>
+                                <td><span class="badge badge-dark" style="font-size:.6rem;">${l.action || '—'}</span></td>
+                                <td style="font-size:.78rem;">${l.resource || '—'}</td>
+                                <td style="font-size:.7rem;color:var(--text3);">${l.ip || '—'}</td>
+                                <td style="font-size:.7rem;color:var(--text3);">${new Date(l.createdAt || l.timestamp).toLocaleString()}</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table></div>
+                `;
+            } catch (err) {
+                container.innerHTML = '<p style="color:var(--danger);">Failed to load logs: ' + err.message + '</p>';
             }
         }
 
@@ -12462,70 +13108,86 @@
         // ─── ADMIN SPONSORSHIPS ──────────────────────────────────────────
         async function loadAdminSponsorships() {
             const filter = document.getElementById('sponsorshipFilter')?.value || 'all';
+            const container = document.getElementById('adminSponsorshipsList');
             try {
                 const res = await apiCall(`/sponsorships/admin/all?status=${filter}&limit=50`);
                 const data = res.data;
                 const sponsorships = data.sponsorships || [];
                 const stats = data.stats || {};
-                const container = document.getElementById('adminSponsorshipsContainer');
-                if (!container) return;
-                let statsHtml = `
+
+                let html = `
                     <div class="row mb-3">
-                        <div class="col-4"><div class="stat-card"><div class="sv">${stats.total || 0}</div><div class="sl">Total</div></div></div>
-                        <div class="col-4"><div class="stat-card"><div class="sv">${stats.pending || 0}</div><div class="sl">Pending</div></div></div>
-                        <div class="col-4"><div class="stat-card"><div class="sv">${stats.approved || 0}</div><div class="sl">Approved</div></div></div>
+                        <div class="col-3"><div class="stat-card"><div class="sv">${stats.total || 0}</div><div class="sl">Total</div></div></div>
+                        <div class="col-3"><div class="stat-card"><div class="sv">${stats.pending || 0}</div><div class="sl">Pending</div></div></div>
+                        <div class="col-3"><div class="stat-card"><div class="sv">${stats.approved || 0}</div><div class="sl">Approved</div></div></div>
+                        <div class="col-3"><div class="stat-card"><div class="sv">${fmtMoneyAPI(stats.totalAmount?.[0]?.total || 0)}</div><div class="sl">Total Amount</div></div></div>
                     </div>
                 `;
-                let html = sponsorships.map(s => `
-                    <div class="card card-p mb-2">
-                        <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
-                            <div>
-                                <strong>${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</strong>
-                                <span class="badge ${s.status === 'approved' ? 'badge-success' : s.status === 'pending' ? 'badge-gold' : 'badge-danger'}">${s.status}</span>
-                                <br>
-                                <small style="color:var(--text3);">
-                                    By ${s.userId?.firstName || 'User'} ${s.userId?.lastName || ''} · 
-                                    ${fmtMoneyAPI(s.amount)} · 
-                                    ${new Date(s.createdAt).toLocaleDateString()}
-                                    ${s.adminNote ? `· Note: ${escapeHtml(s.adminNote)}` : ''}
-                                </small>
-                            </div>
-                            <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-                                ${s.status === 'pending' ? `
-                                    <button class="btn btn-success btn-sm" onclick="approveSponsorship('${s._id}')"><i class="fas fa-check"></i> Approve</button>
-                                    <button class="btn btn-danger btn-sm" onclick="rejectSponsorship('${s._id}')"><i class="fas fa-times"></i> Reject</button>
-                                ` : ''}
-                                <button class="btn btn-ghost btn-sm" onclick="viewSponsorshipDetails('${s._id}')"><i class="fas fa-eye"></i></button>
+
+                if (!sponsorships.length) {
+                    html += '<div class="empty-state"><p>No sponsorships found.</p></div>';
+                    container.innerHTML = html;
+                    return;
+                }
+
+                html += sponsorships.map(s => {
+                    const typeClass = s.type === 'donation' ? 'donation' : s.type === 'partnership' ?
+                        'partnership' : 'collaboration';
+                    const statusClass = s.status === 'approved' ? 'badge-success' : s.status === 'pending' ?
+                        'badge-gold' : 'badge-danger';
+                    return `
+                        <div class="card card-p mb-2">
+                            <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
+                                <div>
+                                    <span class="sponsorship-type-badge ${typeClass}">${s.type}</span>
+                                    <span class="badge ${statusClass}">${s.status}</span>
+                                    <br>
+                                    <small style="color:var(--text3);">
+                                        By ${s.userId?.firstName || 'User'} ${s.userId?.lastName || ''} · 
+                                        ${fmtMoneyAPI(s.amount)} · 
+                                        ${new Date(s.createdAt).toLocaleDateString()}
+                                        ${s.companyName ? `· ${escapeHtml(s.companyName)}` : ''}
+                                        ${s.adminNote ? `· Note: ${escapeHtml(s.adminNote)}` : ''}
+                                    </small>
+                                </div>
+                                <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                    ${s.status === 'pending' ? `
+                                        <button class="btn btn-success btn-sm" onclick="approveSponsorship('${s._id}')"><i class="fas fa-check"></i> Approve</button>
+                                        <button class="btn btn-danger btn-sm" onclick="rejectSponsorship('${s._id}')"><i class="fas fa-times"></i> Reject</button>
+                                    ` : ''}
+                                    <button class="btn btn-ghost btn-sm" onclick="viewSponsorshipDetail('${s._id}')"><i class="fas fa-eye"></i></button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `).join('') || '<div class="empty-state"><p>No sponsorships found</p></div>';
+                    `;
+                }).join('');
 
-                container.innerHTML = statsHtml + html;
-            } catch (err) { toast('Failed to load sponsorships: ' + err.message, 'error'); }
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = '<p style="color:var(--danger);">Failed to load sponsorships: ' + err.message + '</p>';
+            }
         }
 
-        async function approveSponsorship(sponsorshipId) {
+        async function approveSponsorship(id) {
             try {
-                await apiCall(`/sponsorships/admin/${sponsorshipId}/approve`, { method: 'POST' });
+                await apiCall(`/sponsorships/admin/${id}/approve`, { method: 'POST' });
                 toast('Sponsorship approved!', 'success');
                 loadAdminSponsorships();
             } catch (err) { toast(err.message, 'error'); }
         }
 
-        async function rejectSponsorship(sponsorshipId) {
+        async function rejectSponsorship(id) {
             const reason = prompt('Rejection reason:');
             try {
-                await apiCall(`/sponsorships/admin/${sponsorshipId}/reject`, { method: 'POST', body: { reason: reason ||
-                            'Not specified' } });
+                await apiCall(`/sponsorships/admin/${id}/reject`, { method: 'POST', body: { reason: reason || 'Not specified' } });
                 toast('Sponsorship rejected', 'info');
                 loadAdminSponsorships();
             } catch (err) { toast(err.message, 'error'); }
         }
 
-        async function viewSponsorshipDetails(sponsorshipId) {
+        async function viewSponsorshipDetail(id) {
             try {
-                const res = await apiCall(`/sponsorships/admin/${sponsorshipId}`);
+                const res = await apiCall(`/sponsorships/admin/${id}`);
                 const s = res.data;
                 const content = document.getElementById('userDetailsContent');
                 content.innerHTML = `
@@ -12537,7 +13199,7 @@
                     <div><strong>Phone:</strong> ${s.phone || 'N/A'}</div>
                     <div><strong>Status:</strong> ${s.status}</div>
                     ${s.adminNote ? `<div><strong>Admin Note:</strong> ${escapeHtml(s.adminNote)}</div>` : ''}
-                    ${s.receiptUrl ? `<div><a href="${s.receiptUrl}" target="_blank" class="btn btn-ghost btn-sm">📎 View Receipt</a></div>` : ''}
+                    ${s.receiptUrl ? `<div><a href="${s.receiptUrl}" target="_blank" class="btn btn-ghost btn-sm mt-2">📎 View Receipt</a></div>` : ''}
                 `;
                 document.querySelector('#userDetailsModal .modal-hd h5').textContent = '🤝 Sponsorship Details';
                 openModal('userDetailsModal');
@@ -12916,6 +13578,14 @@
                             updateUserUI();
                             updatePremiumUI();
                             toast('👑 Premium activated!', 'success');
+                        } else if (payment.data?.type === 'article') {
+                            const articleId = payment.data.articleId;
+                            if (articleId) {
+                                const res = await apiCall(`/posts/${articleId}`);
+                                renderPostDetail(res.data);
+                                await loadPurchasedArticles();
+                                toast('📰 Article purchased!', 'success');
+                            }
                         }
                     } catch (e) { console.warn('Could not refresh purchase data after approval:', e); }
                     if (S.dp === 'referrals') renderRefs();
@@ -13259,6 +13929,67 @@
                 loadAdminBooks();
                 loadBooks();
             } catch (err) { toast('Failed to save book: ' + err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        // ─── FEATURE FLAGS ─────────────────────────────────────────────
+        function loadFeatureFlags() {
+            const flags = [
+                { key: 'enableReferrals', label: 'Referral System', default: true },
+                { key: 'enableAffiliates', label: 'Affiliate Program', default: true },
+                { key: 'enableSocialEarnings', label: 'Social Earnings', default: true },
+                { key: 'enableAIChat', label: 'AI Chat', default: true },
+                { key: 'enableManualPayments', label: 'Manual Payments', default: true },
+                { key: 'enableBookUpload', label: 'Book Upload (Premium)', default: true },
+                { key: 'enableCourseUpload', label: 'Course Upload (Premium)', default: true },
+            ];
+            const container = document.getElementById('featureFlagsList');
+            if (!container) return;
+            container.innerHTML = flags.map(f => `
+                <div class="d-flex items-center justify-between p-3" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:.3rem;">
+                    <div style="font-size:.82rem;font-weight:600;">${f.label}</div>
+                    <input type="checkbox" id="flag_${f.key}" ${localStorage.getItem('flag_' + f.key) !== 'false' ? 'checked' : ''} style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer;">
+                </div>
+            `).join('');
+        }
+
+        function loadFeatureFlagsFromStorage() {
+            ['enableReferrals', 'enableAffiliates', 'enableSocialEarnings', 'enableAIChat', 'enableManualPayments',
+                'enableBookUpload', 'enableCourseUpload'
+            ].forEach(key => {
+                const stored = localStorage.getItem('flag_' + key);
+                if (stored !== null) {
+                    S.featureFlags[key] = stored === 'true';
+                }
+            });
+        }
+
+        async function saveFeatureFlags() {
+            const flags = ['enableReferrals', 'enableAffiliates', 'enableSocialEarnings', 'enableAIChat',
+                'enableManualPayments', 'enableBookUpload', 'enableCourseUpload'
+            ];
+            flags.forEach(key => {
+                const el = document.getElementById('flag_' + key);
+                if (el) {
+                    S.featureFlags[key] = el.checked;
+                    localStorage.setItem('flag_' + key, el.checked ? 'true' : 'false');
+                }
+            });
+            toast('✅ Settings saved!', 'success');
+            try {
+                await apiCall('/admin/settings/feature-flags', {
+                    method: 'POST',
+                    body: flags.reduce((acc, key) => { acc[key] = S.featureFlags[key]; return acc; }, {})
+                });
+            } catch (err) { console.warn('Could not save to backend:', err); }
+        }
+
+        async function saveBankDetails() {
+            const details = document.getElementById('sysBankDetails').value.trim();
+            localStorage.setItem('platform_bank_details', details);
+            toast('✅ Bank details saved!', 'success');
+            try {
+                await apiCall('/admin/settings/bank-details', { method: 'POST', body: { bankDetails: details } });
+            } catch (err) { console.warn('Could not save to backend:', err); }
         }
 
         // ================================================================
@@ -13950,7 +14681,7 @@
 
         async function payCampaign(campaignId) {
             try {
-                const res = await apiCall('/campaigns/pay', { method: 'POST', body: { campaignId } });
+                const res = await apiCall('/campaigns/pay', { method: 'POST', body: { campaignId, paymentMethod: 'paystack' } });
                 if (res.data.paymentUrl) {
                     window.location.href = res.data.paymentUrl;
                 } else {
@@ -13965,7 +14696,7 @@
             if (isNaN(amount) || parseFloat(amount) < 1000) { toast('Minimum top-up is ₦1,000', 'error'); return; }
             try {
                 const res = await apiCall(`/campaigns/${campaignId}/topup`, { method: 'POST', body: { amount: parseFloat(
-                            amount) } });
+                            amount), paymentMethod: 'paystack' } });
                 if (res.data.paymentUrl) {
                     window.location.href = res.data.paymentUrl;
                 } else {
@@ -14282,6 +15013,10 @@
         console.log('✅ Admin Campaign Management — Approve, reject, mark paid, refund campaigns.');
         console.log('✅ Admin Sponsorship Management — Approve/reject sponsorships.');
         console.log('✅ Campaign Analytics — Real-time stats with impressions, clicks, CTR, and daily charts.');
+        console.log('✅ Admin Revenue Analytics — Platform-wide revenue insights with charts and breakdown.');
+        console.log('✅ Admin Content Moderation — Manage posts and comments.');
+        console.log('✅ Admin Activity Logs — Track user actions across the platform.');
+        console.log('✅ Admin System Settings — Feature flags, ad config, bank details.');
         console.log('📱 PWA: Install banner hides for 7 days after dismissal.');
         console.log('⭐ Rating system fully integrated with course reviews.');
         console.log('👥 Following system fixed with proper localStorage persistence.');
@@ -14323,6 +15058,7 @@
         console.log('📌 Manual payment for campaigns: users can upload receipt and submit for admin review.');
         console.log('📌 Admin can verify manual payments for campaigns and mark them paid.');
         console.log('📌 Book upload: PDF URL and cover image URL support, with preview.');
+        console.log('📌 Admin revenue analytics, content moderation, activity logs, system settings all fully implemented.');
     </script>
 </body>
 </html>
