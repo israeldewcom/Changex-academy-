@@ -25,13 +25,13 @@
     <link rel="apple-touch-startup-image" href="/logo.png" />
 
     <!-- PERFORMANCE -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
-    <link rel="preconnect" href="https://js.paystack.co" />
-    <link rel="preconnect" href="https://cdn.quilljs.com" />
-    <link rel="preload" href="/logo.png" as="image" />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" />
-    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://js.paystack.co">
+    <link rel="preconnect" href="https://cdn.quilljs.com">
+    <link rel="preload" href="/logo.png" as="image">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
 
     <title id="pageTitle">ChangeX Academy — Turn Tech Into Income</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
@@ -5622,130 +5622,6 @@
             color: var(--violet);
             border: 1px solid rgba(212, 175, 55, .2);
         }
-        /* ─── PREMIUM BOOK UPLOAD PAGE ────────────────────────────────── */
-        #dash-create-book .upload-zone {
-            min-height: 100px;
-        }
-        #dash-create-book .upload-zone input[type="file"] {
-            cursor: pointer;
-        }
-        #bookUploadStatus .si-gold {
-            background: rgba(212, 175, 55, 0.12);
-            color: var(--gold);
-        }
-        #bookUploadStatus .si-g {
-            background: rgba(52, 211, 153, 0.12);
-            color: var(--success);
-        }
-        #bookUploadStatus .si-d {
-            background: rgba(248, 113, 113, 0.12);
-            color: var(--danger);
-        }
-        #bookUploadStatus .si-primary {
-            background: rgba(212, 175, 55, 0.12);
-            color: var(--primary);
-        }
-        .book-upload-progress {
-            font-size: .8rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-top: .5rem;
-        }
-        /* ─── CONTENT MODERATION ──────────────────────────────────────── */
-        .content-tab {
-            display: none;
-        }
-        .content-tab.active {
-            display: block;
-        }
-        /* ─── REVENUE ANALYTICS ───────────────────────────────────────── */
-        #revenueMiniChart {
-            height: 150px;
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            padding: 0 4px;
-        }
-        #revenueMiniChart>div {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #revenueMiniChart>div>div {
-            width: 100%;
-            background: rgba(212, 175, 55, 0.3);
-            border-radius: 2px 2px 0 0;
-            min-height: 2px;
-        }
-        /* ─── USER DETAILS MODAL ──────────────────────────────────────── */
-        #userDetailsContent .web-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.3rem 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.82rem;
-        }
-        #userDetailsContent .web-row:last-child {
-            border-bottom: none;
-        }
-        /* ─── SPONSORSHIP TAB ─────────────────────────────────────────── */
-        #dash-sponsorship .sponsor-tab {
-            display: none;
-        }
-        #dash-sponsorship .sponsor-tab.active {
-            display: block;
-        }
-        /* ─── ADMIN TAB OVERFLOW FIX ──────────────────────────────────── */
-        #dash-admin .fpill {
-            font-size: .68rem;
-            padding: .2rem .6rem;
-        }
-        #dash-admin .fpill.active {
-            background: rgba(212, 175, 55, .15);
-            color: var(--primary);
-            border-color: rgba(212, 175, 55, .3);
-        }
-        /* ─── ACTIVITY LOGS ───────────────────────────────────────────── */
-        #activityLogsList .dtable td {
-            font-size: .75rem;
-            padding: .4rem .5rem;
-        }
-        #activityLogsList .dtable th {
-            font-size: .6rem;
-            padding: .4rem .5rem;
-        }
-        /* ─── SYSTEM SETTINGS ─────────────────────────────────────────── */
-        #featureFlagsList .d-flex {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: .6rem .85rem;
-            margin-bottom: .3rem;
-        }
-        /* ─── DASHBOARD CHARTS ────────────────────────────────────────── */
-        #dashRevenueChart,
-        #dashUsersChart {
-            height: 150px;
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            padding: 0 4px;
-        }
-        #dashRevenueChart>div,
-        #dashUsersChart>div {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #dashRevenueChart>div>div,
-        #dashUsersChart>div>div {
-            width: 100%;
-            background: rgba(212, 175, 55, 0.3);
-            border-radius: 2px 2px 0 0;
-            min-height: 2px;
-        }
     </style>
 </head>
 <body>
@@ -5828,10 +5704,7 @@
 
     <div class="modal-ov hidden" id="feedbackModal"><div class="modal-box"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📢 Send Feedback</h5><button class="btn-icon-sm" onclick="closeModal('feedbackModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Your Message</label><textarea class="finput" id="feedbackMsg" style="min-height:120px" placeholder="Tell us what you love, what's broken, or what you'd like to see..."></textarea></div><div class="form-group"><label class="flabel">Your Email (optional, for replies)</label><input type="email" class="finput" id="feedbackEmail" placeholder="you@example.com"/></div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('feedbackModal')">Cancel</button><button class="btn btn-primary" onclick="sendFeedback()">Send Feedback</button></div></div></div>
 
-    <div class="modal-ov hidden" id="createPostModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📝 Create New Post</h5><button class="btn-icon-sm" onclick="closeModal('createPostModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Title</label><input type="text" class="finput" id="postTitle" placeholder="Catchy title..." oninput="checkDuplicatePost(this.value)"/></div><div id="postDuplicateWarning" class="post-duplicate-warning">⚠️ You've already posted something with this title. Please use a different title.</div><div class="form-group"><label class="flabel">Type</label><select class="finput" id="postType"><option value="article">Article</option><option value="tutorial">Tutorial</option><option value="challenge">Challenge</option><option value="announcement">Announcement</option></select></div><div class="form-group"><label class="flabel">Content (Rich Text)</label><div id="postEditor" style="min-height:300px"></div></div><div class="form-group"><label class="flabel">Tags (comma separated)</label><input type="text" class="finput" id="postTags" placeholder="react, javascript, tutorial"/></div><div class="form-group"><label class="flabel">Featured Image URL</label><input type="url" class="finput" id="postImage" placeholder="https://..."/></div><div class="form-group"><label class="flabel">Upload Video (MP4)</label><input type="file" class="finput" id="postVideoInput" accept="video/*"/></div><div class="form-group"><label class="flabel">SEO Title (optional)</label><input type="text" class="finput" id="postSeoTitle"/></div><div class="form-group"><label class="flabel">SEO Description</label><textarea class="finput" id="postSeoDesc" rows="2"></textarea></div>
-            <!-- ─── PREMIUM ARTICLE TOGGLE ──────────────────────────────── -->
-            <div class="form-group"><label class="flabel">Make This a Premium Article</label><div class="d-flex items-center gap-2"><input type="checkbox" id="postIsPaid" onchange="toggleArticlePrice(this.checked)" style="accent-color:var(--primary);width:18px;height:18px;cursor:pointer;"><label for="postIsPaid" style="font-size:.82rem;color:var(--text2);cursor:pointer;">Allow users to purchase this article</label></div><div id="articlePriceInput" style="display:none;margin-top:.5rem;"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="postPrice" placeholder="e.g. 500" min="100" value="500" /><small style="color:var(--text3);font-size:.7rem;display:block;margin-top:.2rem;">Recommended price: ₦500 – ₦2,000</small></div><div id="articlePreviewInput" style="display:none;margin-top:.5rem;"><label class="flabel">Preview Content (shown to non-purchasers)</label><textarea class="finput" id="postPreviewContent" rows="3" placeholder="First 200 characters or a summary..."></textarea><small style="color:var(--text3);font-size:.7rem;display:block;margin-top:.2rem;">This preview will be shown to users who haven't purchased the article.</small></div></div>
-        </div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('createPostModal')">Cancel</button><button class="btn btn-primary" onclick="submitNewPost()"><i class="fas fa-paper-plane"></i>Publish</button></div></div></div>
+    <div class="modal-ov hidden" id="createPostModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">📝 Create New Post</h5><button class="btn-icon-sm" onclick="closeModal('createPostModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd"><div class="form-group"><label class="flabel">Title</label><input type="text" class="finput" id="postTitle" placeholder="Catchy title..." oninput="checkDuplicatePost(this.value)"/></div><div id="postDuplicateWarning" class="post-duplicate-warning">⚠️ You've already posted something with this title. Please use a different title.</div><div class="form-group"><label class="flabel">Type</label><select class="finput" id="postType"><option value="article">Article</option><option value="tutorial">Tutorial</option><option value="challenge">Challenge</option><option value="announcement">Announcement</option></select></div><div class="form-group"><label class="flabel">Content (Rich Text)</label><div id="postEditor" style="min-height:300px"></div></div><div class="form-group"><label class="flabel">Tags (comma separated)</label><input type="text" class="finput" id="postTags" placeholder="react, javascript, tutorial"/></div><div class="form-group"><label class="flabel">Featured Image URL</label><input type="url" class="finput" id="postImage" placeholder="https://..."/></div><div class="form-group"><label class="flabel">Upload Video (MP4)</label><input type="file" class="finput" id="postVideoInput" accept="video/*"/></div><div class="form-group"><label class="flabel">SEO Title (optional)</label><input type="text" class="finput" id="postSeoTitle"/></div><div class="form-group"><label class="flabel">SEO Description</label><textarea class="finput" id="postSeoDesc" rows="2"></textarea></div></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('createPostModal')">Cancel</button><button class="btn btn-primary" onclick="submitNewPost()"><i class="fas fa-paper-plane"></i>Publish</button></div></div></div>
 
     <div class="modal-ov hidden" id="userDetailsModal"><div class="modal-box modal-box-lg"><div class="sheet-handle d-md-none"></div><div class="modal-hd"><h5 style="margin:0">👤 User Details</h5><button class="btn-icon-sm" onclick="closeModal('userDetailsModal')"><i class="fas fa-times"></i></button></div><div class="modal-bd" id="userDetailsContent"></div><div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('userDetailsModal')">Close</button></div></div></div>
 
@@ -5882,10 +5755,8 @@
                         <li><span class="nav-item" id="nav-ai" onclick="setDP('ai')"><span class="nav-ico"><i class="fas fa-robot"></i></span>AI Tutor<span class="nav-badge nav-badge-o">AI</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Library</li>
                         <li><span class="nav-item" id="nav-books" onclick="setDP('books')"><span class="nav-ico"><i class="fas fa-book"></i></span>Books</span></li>
-                        <!-- ─── UPLOAD BOOK (Premium Only) ─────────────────── -->
-                        <li id="nav-create-book" class="premium-only"><span class="nav-item" onclick="setDP('create-book')"><span class="nav-ico"><i class="fas fa-upload"></i></span>Upload Book<span class="nav-badge nav-badge-premium">Premium</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Publish</li>
-                        <li><span class="nav-item" id="nav-purchased-articles" onclick="setDP('purchased-articles')"><span class="nav-ico"><i class="fas fa-file-alt"></i></span>Purchased Articles</span></li>
+                        <li id="nav-create-book" class="premium-only"><span class="nav-item" onclick="setDP('create-book')"><span class="nav-ico"><i class="fas fa-book"></i></span>Upload Book<span class="nav-badge nav-badge-premium">Premium</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Earn More</li>
                         <li><span class="nav-item" id="nav-social-earnings" onclick="setDP('social-earnings')"><span class="nav-ico"><i class="fas fa-seedling"></i></span>Social Earnings<span class="nav-badge nav-badge-gold" id="navSocialBadge">0</span></span></li>
                         <li><span class="nav-item" id="nav-sponsorship" onclick="setDP('sponsorship')"><span class="nav-ico"><i class="fas fa-handshake"></i></span>Sponsorship<span class="nav-badge nav-badge-gold">🤝</span></span></li>
@@ -5894,6 +5765,7 @@
                         <li><span class="nav-item" id="nav-tools" onclick="setDP('tools')"><span class="nav-ico"><i class="fas fa-tools"></i></span>Tools</span></li>
                         <li><span class="nav-item" id="nav-badges" onclick="setDP('badges')"><span class="nav-ico"><i class="fas fa-medal"></i></span>Badges</span></li>
                         <li><span class="nav-item" id="nav-manual-payments" onclick="setDP('manual-payments')"><span class="nav-ico"><i class="fas fa-credit-card"></i></span>Manual Payments</span></li>
+                        <li><span class="nav-item" id="nav-purchased-articles" onclick="setDP('purchased-articles')"><span class="nav-ico"><i class="fas fa-file-alt"></i></span>Purchased Articles</span></li>
                         <li id="adminNavLi" style="display:none"><span class="nav-item" id="nav-admin" onclick="setDP('admin')" style="color:var(--danger)"><span class="nav-ico"><i class="fas fa-shield-alt"></i></span>Admin Panel<span class="nav-badge nav-badge-d">⚡</span></span></li>
                         <li><span class="nav-item" onclick="openModal('feedbackModal')"><span class="nav-ico"><i class="fas fa-comment-dots"></i></span>Feedback</span></li>
                         <li><span class="nav-item" onclick="doLogout()"><span class="nav-ico"><i class="fas fa-sign-out-alt"></i></span>Logout</span></li>
@@ -5972,65 +5844,7 @@
                     <div id="dash-book-detail" class="dash-sub"><div class="page-hd"><button class="btn btn-ghost btn-sm" onclick="setDP('books')"><i class="fas fa-arrow-left"></i> Back to Library</button></div><div id="bookPageAdContainerDetail" class="ad-container"></div><div id="bookDetailContent"></div><div id="bookSponsorAdContainerDetail" class="ad-container"></div></div>
 
                     <!-- UPLOAD BOOK (Premium Only) – COMPLETE FORM WITH ALL FIELDS -->
-                    <div id="dash-create-book" class="dash-sub premium-only" style="display:none;">
-                        <div class="page-hd">
-                            <h2 class="page-title">📚 Upload Book</h2>
-                            <p class="page-sub">Submit your book for admin approval. Premium users only.</p>
-                        </div>
-                        <div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div>
-                        <div class="card card-p">
-                            <div class="form-group">
-                                <label class="flabel">Book Title *</label>
-                                <input type="text" class="finput" id="bookUploadTitle" placeholder="e.g. JavaScript: The Complete Guide" />
-                            </div>
-                            <div class="form-group">
-                                <label class="flabel">Author *</label>
-                                <input type="text" class="finput" id="bookUploadAuthor" placeholder="e.g. John Doe" />
-                            </div>
-                            <div class="form-group">
-                                <label class="flabel">Description</label>
-                                <textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Brief description of your book..."></textarea>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-md-6">
-                                    <div class="form-group">
-                                        <label class="flabel">Price (₦)</label>
-                                        <input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" />
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <div class="form-group">
-                                        <label class="flabel">Affiliate Commission (%)</label>
-                                        <input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="flabel">Cover Image URL</label>
-                                <input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" />
-                                <div id="bookUploadCoverPreview" style="display:none; margin-top:.5rem;">
-                                    <img id="bookUploadCoverPreviewImg" style="max-width:200px; max-height:150px; border-radius:var(--radius-sm); border:1px solid var(--border);" />
-                                    <div style="font-size:.72rem; color:var(--text3); margin-top:.2rem;">✅ Cover image preview</div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="flabel">Book PDF URL *</label>
-                                <input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" />
-                                <div id="bookUploadFilePreview" style="display:none; margin-top:.3rem;">
-                                    <span class="badge badge-success">✅ PDF URL provided</span>
-                                </div>
-                            </div>
-                            <div class="info-box">
-                                <i class="fas fa-info-circle" style="color:var(--primary)"></i>
-                                <strong>How it works:</strong> You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set. Your book will be reviewed by an admin before going live.
-                            </div>
-                            <div class="d-flex gap-2 mt-3">
-                                <button class="btn btn-primary btn-lg w-full" onclick="submitBookForApproval()">
-                                    <i class="fas fa-paper-plane"></i> Submit for Approval
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
 
                     <!-- SOCIAL EARNINGS -->
                     <div id="dash-social-earnings" class="dash-sub"><div class="page-hd"><h2 class="page-title">🌱 Social Earnings</h2><p class="page-sub">Earn from engagement on your posts</p></div><div class="card card-p mb-3"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;"><div><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;">Total Earned</div><div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--lime);" id="socialTotalEarnings">₦0</div></div><div style="display:flex;gap:1rem;"><div><span style="color:var(--text3);font-size:.7rem;">Posts</span><br><strong id="socialPostCount">0</strong></div><div><span style="color:var(--text3);font-size:.7rem;">Avg per Post</span><br><strong id="socialAvgPerPost">₦0</strong></div></div></div></div><div id="socialPostsList" class="social-posts-grid"></div></div>
@@ -6054,35 +5868,14 @@
                     <div id="dash-sponsorship" class="dash-sub"><div class="page-hd"><h2 class="page-title">🤝 Partner with ChangeX</h2><p class="page-sub">Sponsor, donate, or collaborate with us</p></div><div class="tabs mb-4"><button class="tab-btn active" onclick="switchSponsorTab('overview',this)">Overview</button><button class="tab-btn" onclick="switchSponsorTab('campaigns',this)">📢 Ad Campaigns</button><button class="tab-btn" onclick="switchSponsorTab('sponsorships',this)">🤝 Sponsorships</button><button class="tab-btn" onclick="switchSponsorTab('dashboard',this)">📊 Analytics</button></div><div id="sponsor-overview" class="sponsor-tab active"><div class="row mb-4"><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">📢</div><h4>Ad Campaigns</h4><p style="color:var(--text3)">Reach thousands of learners with targeted ads</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('campaigns')">Get Started</button></div></div><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">🤝</div><h4>Sponsor Us</h4><p style="color:var(--text3)">Donate, partner, or collaborate with us</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('sponsorships')">Support Us</button></div></div></div><div class="card card-p"><h6>Why Partner With Us?</h6><div class="row mt-3"><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">🎯</div><div style="font-weight:700">Targeted Audience</div><div style="font-size:.75rem;color:var(--text3)">Reach tech students &amp; professionals</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">📊</div><div style="font-weight:700">Real Analytics</div><div style="font-size:.75rem;color:var(--text3)">Track impressions, clicks, conversions</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">💰</div><div style="font-weight:700">Flexible Pricing</div><div style="font-size:.75rem;color:var(--text3)">Pay per impression or click</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">✅</div><div style="font-weight:700">Admin Approved</div><div style="font-size:.75rem;color:var(--text3)">Quality control for your brand</div></div></div></div></div></div><div id="sponsor-campaigns" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>📢 Your Ad Campaigns</h4><button class="btn btn-primary btn-sm" onclick="openModal('campaignModal')"><i class="fas fa-plus"></i> Create Campaign</button></div><div id="campaignsList"></div></div><div id="sponsor-sponsorships" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>🤝 Your Sponsorships</h4><button class="btn btn-primary btn-sm" onclick="openModal('sponsorshipModal')"><i class="fas fa-plus"></i> Sponsor Us</button></div><div id="sponsorshipsList"></div></div><div id="sponsor-dashboard" class="sponsor-tab" style="display:none;"><h4>📊 Campaign Analytics</h4><div id="campaignAnalyticsContainer"></div></div></div>
 
                     <!-- ADMIN -->
-                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem">
-                        <span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span>
-                        <span class="fpill" onclick="switchAdm('users',this)">Users</span>
-                        <span class="fpill" onclick="switchAdm('courses',this)">Courses</span>
-                        <span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span>
-                        <span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span>
-                        <span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span>
-                        <span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span>
-                        <span class="fpill" onclick="switchAdm('announcements',this)">Announce</span>
-                        <span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span>
-                        <span class="fpill" onclick="switchAdm('ads',this)">Ads</span>
-                        <span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span>
-                        <span class="fpill" onclick="switchAdm('books',this)">Books</span>
-                        <span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span>
-                        <span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span>
-                        <span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span>
-                        <span class="fpill" onclick="switchAdm('content',this)">Content</span>
-                        <span class="fpill" onclick="switchAdm('revenue',this)">Revenue</span>
-                        <span class="fpill" onclick="switchAdm('settings',this)">Settings</span>
-                        <span class="fpill" onclick="switchAdm('activity',this)">Activity</span>
-                        <span class="fpill" onclick="switchAdm('audit',this)">Audit</span>
-                    </div><div id="adminContent"></div></div></div></div>
+                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span><span class="fpill" onclick="switchAdm('content',this)">Content</span><span class="fpill" onclick="switchAdm('revenue',this)">Revenue</span><span class="fpill" onclick="switchAdm('settings',this)">Settings</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span></div><div id="adminContent"></div></div></div></div>
                 </div></div></div></div>
 
     <!-- FAB -->
     <div class="fab" id="fab" style="display:none"><button onclick="initNewCourse()"><i class="fas fa-plus"></i></button></div>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT – PRODUCTION READY WITH ALL FEATURES              -->
+    <!-- JAVASCRIPT – PRODUCTION READY WITH ALL ENHANCEMENTS -->
     <!-- ============================================================ -->
     <script>
         // ═══════════════════════════════════════════════════════════════
@@ -6104,6 +5897,7 @@
         let currentManualCourseId = null;
         let currentManualBookId = null;
         let currentManualArticleId = null;
+        let currentManualCampaignId = null;
         let videoAdActive = false;
         let videoAdTimeout = null;
         let lastMidrollAdTime = 0;
@@ -6239,19 +6033,12 @@
             purchasedArticles: [],
             premCourseLessons: [],
             analyticsData: null,
+            // ─── SPONSORSHIP / CAMPAIGN STATE ──────────────────────
             myCampaigns: [],
             mySponsorships: [],
             sponsorTab: 'overview',
             campaignStats: null,
             campaignAnalytics: [],
-            // ─── ADMIN CONTENT MODERATION ──────────────────────────────
-            contentTab: 'posts',
-            // ─── REVENUE ANALYTICS ────────────────────────────────────
-            revenueData: null,
-            // ─── ACTIVITY LOGS ────────────────────────────────────────
-            activityLogs: [],
-            // ─── FEATURE FLAGS ──────────────────────────────────────────
-            featureFlags: {},
         };
 
         // ═══════════════════════════════════════════════════════════════
@@ -6905,6 +6692,10 @@
             checkPlanExpiry();
             updatePremiumUI();
             updateSocialBadge();
+            if (pg === 'settings') {
+                const subStatus = document.getElementById('subStatusCard');
+                if (subStatus) renderSubStatus();
+            }
         }
 
         function openSidebar() { document.getElementById('sidebar')?.classList.add('open');
@@ -6982,7 +6773,7 @@
                     if (S.dp === 'create-book') {
                         document.getElementById('bookUploadStatus').style.display = 'block';
                         document.getElementById('bookUploadStatus').innerHTML = `
-                            <div class="d-flex items-center gap-3"><div class="si si-d"><i class="fas fa-times-circle"></i></div><div><strong>Book Rejected</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your book "${data.title}" was not approved. ${data.reason ? `Reason: ${data.reason}` : 'Please check your submission and try again.'}</p></div></div>
+                            <div class="d-flex items-center gap-3"><div class="si si-d"><i class="fas fa-times-circle"></i></div><div><strong>Book Rejected</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your book "${data.title}" was not approved. Please check your submission.</p></div></div>
                         `;
                     }
                 });
@@ -7099,6 +6890,10 @@
                     toast(`💸 Refund processed for campaign "${data.title}" - ₦${data.amount}`, 'info');
                     if (S.dp === 'admin' && S.admSec === 'campaigns') loadAdminCampaigns();
                 });
+                socket.on('campaign_manual_payment', (data) => {
+                    toast(`📋 Manual payment submitted for campaign "${data.title}"`, 'info');
+                    if (S.dp === 'admin' && S.admSec === 'campaigns') loadAdminCampaigns();
+                });
                 socket.on('sponsorship_pending', (data) => {
                     toast(`🤝 New sponsorship from ${data.userName} (${data.type})`, 'info');
                     if (S.dp === 'admin' && S.admSec === 'sponsorships') loadAdminSponsorships();
@@ -7110,15 +6905,6 @@
                 socket.on('sponsorship_rejected', (data) => {
                     toast(`❌ Your sponsorship (${data.type}) was rejected`, 'error');
                     if (S.dp === 'sponsorship') loadMySponsorships();
-                });
-                // ─── Content Moderation Socket Events ────────────────────
-                socket.on('post_reported', (data) => {
-                    toast(`📢 Post reported: ${data.postTitle} by ${data.reporterName}`, 'info');
-                    if (S.dp === 'admin' && S.admSec === 'content') loadContentPosts();
-                });
-                socket.on('comment_reported', (data) => {
-                    toast(`📢 Comment reported: "${data.commentContent}"`, 'info');
-                    if (S.dp === 'admin' && S.admSec === 'content') loadContentComments();
                 });
             } catch (e) { console.warn('Socket init failed:', e.message); }
         }
@@ -7969,11 +7755,6 @@
             const hasPurchased = post.hasPurchased || false;
             const isOwner = isAuthor || isAdmin;
             const showFull = isOwner || hasPurchased || !isPaid;
-            const price = post.price || 0;
-            const paidBadge = isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 ${fmtMoneyAPI(price)}</span>` :
-                '';
-            const lockIcon = isPaid && !isPurchased && !isOwner ?
-                '<i class="fas fa-lock" style="font-size:.7rem;color:var(--gold);margin-left:.3rem;"></i>' : '';
 
             return `
                 <div class="post-card card card-p" data-post-id="${post._id}">
@@ -7987,10 +7768,9 @@
                             <span class="badge badge-cyan" style="font-size:.55rem">${post.type || 'article'}</span>
                             ${isAuthor ? `<span class="badge badge-dark" style="font-size:.55rem">You</span>` : ''}
                             ${post.isPremiumOnly ? `<span class="badge badge-gold" style="font-size:.55rem">Premium</span>` : ''}
-                            ${paidBadge}
+                            ${isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 ${fmtMoneyAPI(post.price || 0)}</span>` : ''}
                             ${isPaid && hasPurchased ? `<span class="badge badge-success" style="font-size:.55rem">✅ Purchased</span>` : ''}
                             ${scoreBadge}
-                            ${lockIcon}
                         </div>
                         <div style="margin-left:auto;display:flex;gap:.2rem">
                             ${isAuthor || isAdmin ? `<button class="post-delete-btn" onclick="deletePost('${post._id}')" title="Delete post"><i class="fas fa-trash"></i></button>` : ''}
@@ -8005,7 +7785,7 @@
                             <span class="post-preview">${escapeHtml(previewText)}</span>
                             ${needsReadMore ? `<span class="post-full" style="display:none;">${contentHtml}</span><button class="btn-readmore" onclick="togglePostContent('${post._id}')">Read more</button>` : ''}
                         ` : `
-                            <div class="paywall-overlay"><i class="fas fa-lock" style="font-size:2rem;color:var(--gold);margin-bottom:.5rem;display:block;"></i><h3>🔒 Premium Article</h3><p>This article is paid. Purchase to read the full content.</p><button class="btn btn-primary" onclick="purchaseArticle('${post._id}')">Purchase — ${fmtMoneyAPI(price)}</button></div>
+                            <div class="paywall-overlay"><i class="fas fa-lock" style="font-size:2rem;color:var(--gold);margin-bottom:.5rem;display:block;"></i><h3>🔒 Premium Article</h3><p>This article is paid. Purchase to read the full content.</p><button class="btn btn-primary" onclick="purchaseArticle('${post._id}')">Purchase — ${fmtMoneyAPI(post.price || 500)}</button></div>
                         `}
                     </div>
                     <div class="post-stats">
@@ -8154,10 +7934,14 @@
             try {
                 const preview = await apiCall(`/posts/${postId}/preview`);
                 const article = preview.data;
-                if (!article || !article.isPaid) { toast('This article is free or not available', 'error');
-                    hideLoading(); return; }
+                if (!article || !article.isPaid) {
+                    toast('This article is free or not available', 'error');
+                    hideLoading();
+                    return;
+                }
                 const price = article.price || 500;
                 const email = S.user.email;
+
                 currentPaymentType = 'article';
                 currentManualArticleId = postId;
 
@@ -8170,16 +7954,24 @@
                         </div>
                     </div>
                 `;
+
                 document.getElementById('buyCourseSummary').innerHTML = `
                     <div class="pay-summary-row"><span>Article Price</span><span>${fmtMoneyAPI(price)}</span></div>
                     <div class="pay-summary-row"><span style="font-weight:700">Total</span><span style="color:var(--primary);font-weight:800">${fmtMoneyAPI(price)}</span></div>
                 `;
+
                 document.getElementById('paystackBtnText').textContent = `Pay ${fmtMoneyAPI(price)} with Paystack`;
                 document.getElementById('manualAmount').value = price;
+
                 toggleBuyPaymentMethod('card', document.querySelector('#buyCourseModal .payment-method-tab'));
                 populateAllBankDetailsBoxes();
                 openModal('buyCourseModal');
-            } catch (err) { toast('Failed to load article: ' + err.message, 'error'); } finally { hideLoading(); }
+
+            } catch (err) {
+                toast('Failed to load article: ' + err.message, 'error');
+            } finally {
+                hideLoading();
+            }
         }
 
         // ─── OTHER POST FUNCTIONS ──────────────────────────────────────
@@ -8270,7 +8062,7 @@
                 document.getElementById('postIsPaid').checked = false;
                 document.getElementById('articlePriceInput').style.display = 'none';
                 document.getElementById('articlePreviewInput').style.display = 'none';
-                document.getElementById('postPrice').value = '500';
+                document.getElementById('postPrice').value = '';
                 document.getElementById('postPreviewContent').value = '';
                 if (S.postQuill) S.postQuill.root.innerHTML = '';
                 loadMyPostTitles();
@@ -8315,6 +8107,8 @@
             const seoTitle = document.getElementById('postSeoTitle')?.value || '';
             const seoDesc = document.getElementById('postSeoDesc')?.value || '';
             const videoFile = document.getElementById('postVideoInput')?.files[0];
+
+            // ─── Premium Article Fields ──────────────────────────────────
             const isPaid = document.getElementById('postIsPaid')?.checked || false;
             const price = parseFloat(document.getElementById('postPrice')?.value) || 0;
             const previewContent = document.getElementById('postPreviewContent')?.value || content.substring(0, 200);
@@ -8331,7 +8125,7 @@
             if (isPaid && price < 100) { toast('Minimum price is ₦100', 'error'); return; }
             if (isPaid && !previewContent.trim()) { toast('Please provide a preview for paid articles', 'error'); return; }
 
-            showLoading('Publishing article...');
+            showLoading('Publishing post...');
             try {
                 const body = {
                     title,
@@ -8356,6 +8150,7 @@
                     await fetch(`${API_BASE}/posts/${postId}/video`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` },
                         body: formData });
                 }
+                updateSEO(newPost);
                 toast(isPaid ? '✅ Premium article published!' : '✅ Article published!', 'success');
                 closeModal('createPostModal');
                 document.getElementById('postTitle').value = '';
@@ -8387,7 +8182,7 @@
                 if (!S.myPostTitles.includes(title)) S.myPostTitles.push(title);
                 updateSocialBadge();
                 loadPurchasedArticles();
-            } catch (err) { toast('Failed to publish: ' + err.message, 'error'); } finally { hideLoading(); }
+            } catch (err) { toast('Failed to create post: ' + err.message, 'error'); } finally { hideLoading(); }
         }
 
         // ================================================================
@@ -9365,6 +9160,13 @@
             if (type === 'course' && currentManualCourseId) formData.append('courseId', currentManualCourseId);
             if (type === 'book' && currentManualBookId) formData.append('bookId', currentManualBookId);
             if (type === 'article' && currentManualArticleId) formData.append('articleId', currentManualArticleId);
+            if (type === 'campaign') {
+                const campaignId = document.getElementById('buyCourseModal')._campaignId;
+                if (campaignId) formData.append('campaignId', campaignId);
+                // Use the campaign-specific endpoint for manual payment
+                formData.append('campaignId', campaignId);
+                // We'll handle campaign manual payment separately
+            }
             formData.append('amount', amount);
             formData.append('reference', reference);
             formData.append('paymentDate', paymentDate);
@@ -9377,6 +9179,13 @@
                 progressEl.textContent = 'Uploading receipt... 0%'; }
 
             showLoading('Submitting payment...');
+
+            // ─── Determine endpoint ─────────────────────────────────────────
+            let endpoint = '/payments/manual';
+            if (type === 'campaign') {
+                endpoint = '/campaigns/manual-pay';
+            }
+
             try {
                 const token = localStorage.getItem('cx_accessToken');
                 const xhr = new XMLHttpRequest();
@@ -9407,13 +9216,14 @@
                                     S.currentBook.isPurchased = true;
                                     if (S.dp === 'book-detail') renderBookDetail(S.currentBook);
                                 }
-                                if (type === 'article') {
-                                    loadPostBySlug(currentManualArticleId || '');
-                                    loadPurchasedArticles();
+                                if (type === 'campaign') {
+                                    toast('✅ Campaign payment verified! It will go live shortly.', 'success');
+                                    if (S.dp === 'sponsorship') loadMyCampaigns();
                                 }
                                 setTimeout(async () => {
                                     if (type === 'course') { await loadEnrollments();
-                                        setDP('courses'); } else if (type === 'book') { await loadBooks(); }
+                                        setDP('courses'); } else if (type === 'book') { await loadBooks(); } else if (
+                                        type === 'campaign') { await loadMyCampaigns(); }
                                     await renderWallet();
                                 }, 1500);
                             } else {
@@ -9440,7 +9250,7 @@
                     hideLoading();
                     toast('Upload timed out. Please try again.', 'error');
                 };
-                xhr.open('POST', `${API_BASE}/payments/manual`);
+                xhr.open('POST', `${API_BASE}${endpoint}`);
                 xhr.setRequestHeader('Authorization', `Bearer ${token}`);
                 xhr.send(formData);
             } catch (err) {
@@ -9464,7 +9274,7 @@
                     await renderWallet();
                     if (payment.type === 'course') { await loadEnrollments();
                         setDP('courses'); } else if (payment.type === 'book') { await loadBooks(); }
-                    if (payment.type === 'article') { loadPurchasedArticles(); }
+                    if (payment.type === 'campaign') { await loadMyCampaigns(); }
                     if (S.currentBook) renderBookDetail(S.currentBook);
                 } else if (payment.status === 'rejected') {
                     toast('❌ Your manual payment was rejected. Reason: ' + (payment.adminNote || 'Not specified'),
@@ -9555,6 +9365,7 @@
         async function processPayment() {
             const type = currentPaymentType;
             let item, id, amount;
+
             if (type === 'course') {
                 item = S.currentBuyCourse;
                 if (!item) return;
@@ -9567,26 +9378,29 @@
                 amount = item.price || 0;
             } else if (type === 'article') {
                 const articleId = currentManualArticleId;
-                if (!articleId) { toast('Invalid article', 'error'); return; }
                 const previewRes = await apiCall(`/posts/${articleId}/preview`);
                 const article = previewRes.data;
-                if (!article) { toast('Article not found', 'error'); return; }
                 id = articleId;
                 amount = article.price || 500;
             } else if (type === 'campaign') {
                 const campaignId = document.getElementById('buyCourseModal')._campaignId;
                 const campaign = S.myCampaigns.find(c => c._id === campaignId);
                 if (!campaign) { toast('Campaign not found', 'error'); return; }
-                id = campaign._id;
-                amount = campaign.budget;
+                // Initialize campaign payment
                 const res = await apiCall('/campaigns/pay', {
                     method: 'POST',
-                    body: { campaignId: id, paymentMethod: 'paystack' }
+                    body: { campaignId: campaignId, paymentMethod: 'paystack' }
                 });
-                if (res.data.paymentUrl) { window.location.href = res.data.paymentUrl; return; }
+                if (res.data.paymentUrl) {
+                    window.location.href = res.data.paymentUrl;
+                    return;
+                }
                 toast('Payment initiation failed', 'error');
                 return;
-            } else { toast('Invalid payment type', 'error'); return; }
+            } else {
+                toast('Invalid payment type', 'error');
+                return;
+            }
 
             const email = S.user?.email;
             if (!email) { toast('Please log in to purchase', 'error'); return; }
@@ -9608,14 +9422,14 @@
                     currency: 'NGN',
                     ref: reference,
                     metadata: { custom_fields: [{ display_name: type.charAt(0).toUpperCase() + type.slice(1),
-                            variable_name: type, value: item?.title || article?.title || 'Article' },
-                        { display_name: 'User ID', variable_name: 'user_id', value: S.user._id }
-                        ] },
+                            variable_name: type, value: item?.title || article?.title || 'Item' }, { display_name: 'User ID',
+                            variable_name: 'user_id', value: S.user._id }] },
                     callback: async (response) => {
                         const verify = await apiCall('/payments/verify-transaction', { method: 'POST',
                             body: { reference: response.reference, type, courseId: type === 'course' ?
                                     id : undefined, bookId: type === 'book' ? id : undefined,
-                                articleId: type === 'article' ? id : undefined } });
+                                articleId: type === 'article' ? id : undefined,
+                                campaignId: type === 'campaign' ? id : undefined } });
                         if (verify.success) {
                             toast('✅ Payment successful!', 'success');
                             closeModal('buyCourseModal');
@@ -9631,8 +9445,12 @@
                                 await loadBooks();
                                 setDP('books');
                             } else if (type === 'article') {
-                                loadPostBySlug(article?.slug || id);
+                                loadPostBySlug(item?.slug || id);
                                 await loadPurchasedArticles();
+                            } else if (type === 'campaign') {
+                                toast('🚀 Campaign payment successful! It will go live shortly.', 'success');
+                                await loadMyCampaigns();
+                                setDP('sponsorship');
                             }
                             renderWallet();
                         } else { toast('Verification failed.', 'error'); }
@@ -10096,7 +9914,6 @@
                     <div class="web-row"><span>Book Earnings</span><span style="color:var(--cyan);font-weight:700">${fmtMoneyAPI(breakdown.bookEarnings || 0)}</span></div>
                     <div class="web-row"><span>Ad Revenue</span><span style="color:var(--gold);font-weight:700">${fmtMoneyAPI(breakdown.adRevenue || 0)}</span></div>
                     <div class="web-row"><span>Campaign Revenue</span><span style="color:var(--orange);font-weight:700">${fmtMoneyAPI(breakdown.campaignRevenue || 0)}</span></div>
-                    <div class="web-row"><span>Article Sales</span><span style="color:var(--violet);font-weight:700">${fmtMoneyAPI(breakdown.articleSales || 0)}</span></div>
                     <div class="web-row" style="border-top:2px solid var(--border);font-weight:800;font-size:.9rem"><span>Total Earnings</span><span style="color:var(--lime)">${fmtMoneyAPI(breakdown.totalEarnings || 0)}</span></div>
                 `;
 
@@ -10166,6 +9983,7 @@
                 return;
             }
             const amt = Number(document.getElementById('withdrawAmt')?.value);
+            // Minimum withdrawal is ₦5,000
             if (!amt || amt < 5000) { toast('Minimum withdrawal is ₦5,000', 'error'); return; }
             if (amt > S.walletBal) { toast('Insufficient balance', 'error'); return; }
             closeModal('withdrawModal');
@@ -11104,13 +10922,15 @@
                     '<div class="empty-state"><i class="fas fa-book"></i><h4>No books available</h4><p>Check back soon for new additions!</p></div>';
                 return;
             }
-            const userId = S.user?._id;
+            if (!S.isPremium && !S.bookAds.length) loadBookPageAds();
+
             let html = '';
             const showAds = !S.isPremium && shouldShowAd('book-sponsor');
             const adFrequency = 3;
-            books.filter(b => b.isPublished !== false || b.authorId === userId || b.userId === userId).forEach((book,
-            index) => {
-                const isOwner = book.authorId === userId || book.userId === userId;
+            const userId = S.user?._id;
+
+            books.filter(b => b.isPublished !== false || b.userId === userId || b.authorId === userId).forEach((book, index) => {
+                const isOwner = book.userId === userId || book.authorId === userId;
                 let statusBadge = '';
                 if (isOwner) {
                     if (book.status === 'pending') {
@@ -11223,9 +11043,6 @@
                             <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin:.75rem 0;">
                                 <span class="badge badge-dark">📥 ${book.downloads || 0} downloads</span>
                                 <span class="badge badge-dark">👁️ ${book.views || 0} views</span>
-                                ${book.status === 'pending' && (book.authorId === S.user?._id || book.userId === S.user?._id) ? '<span class="badge badge-orange">⏳ Pending Admin Review</span>' : ''}
-                                ${book.status === 'approved' && (book.authorId === S.user?._id || book.userId === S.user?._id) ? '<span class="badge badge-success">✅ Approved</span>' : ''}
-                                ${book.status === 'rejected' && (book.authorId === S.user?._id || book.userId === S.user?._id) ? '<span class="badge badge-danger">❌ Rejected</span>' : ''}
                             </div>
                             ${canDownload ? `<div><button class="book-download-btn" onclick="downloadBook('${book._id}')"><i class="fas fa-download"></i> Download Now</button><div id="bookDownloadProgress-${book._id}" class="book-download-progress"><div class="prog"><div class="prog-fill pf-primary" id="bookProgBar-${book._id}" style="width:0%"></div></div><div class="prog-label" id="bookProgLabel-${book._id}">Starting download...</div></div></div>` : `<div><button class="book-purchase-btn" onclick="openBuyBook('${book._id}')"><i class="fas fa-shopping-cart"></i> Purchase — ${fmtMoneyAPI(book.price)}</button><p style="font-size:.75rem;color:var(--text3);margin-top:.5rem;">Purchase this book to download the PDF.</p></div>`}
                             ${affiliateHtml}
@@ -11374,8 +11191,6 @@
             document.getElementById('bookUploadAffiliate').value = '0';
             document.getElementById('bookUploadCoverPreview').style.display = 'none';
             document.getElementById('bookUploadFilePreview').style.display = 'none';
-            const statusEl = document.getElementById('bookUploadStatus');
-            if (statusEl) statusEl.style.display = 'none';
         }
 
         async function submitBookForApproval() {
@@ -11393,8 +11208,8 @@
             const fileUrl = document.getElementById('bookUploadFile').value.trim();
             const affiliatePercent = parseFloat(document.getElementById('bookUploadAffiliate').value) || 0;
 
-            if (!title) { toast('Please enter a book title', 'error'); return; }
-            if (!author) { toast('Please enter the author name', 'error'); return; }
+            if (!title) { toast('Please enter a title', 'error'); return; }
+            if (!author) { toast('Please enter an author', 'error'); return; }
             if (!fileUrl) { toast('Please provide a PDF URL', 'error'); return; }
             if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
                 toast('Please enter a valid URL (e.g., https://...)', 'error');
@@ -11419,30 +11234,33 @@
                 const res = await apiCall('/books', { method: 'POST', body: payload });
                 if (res.success) {
                     toast('✅ Book submitted for admin approval!', 'success');
-                    const statusEl = document.getElementById('bookUploadStatus');
-                    statusEl.style.display = 'block';
-                    statusEl.innerHTML = `
+                    document.getElementById('bookUploadStatus').style.display = 'block';
+                    document.getElementById('bookUploadStatus').innerHTML = `
                         <div class="d-flex items-center gap-3">
                             <div class="si si-gold"><i class="fas fa-clock"></i></div>
                             <div>
                                 <strong>Book submitted!</strong>
                                 <p style="margin:0;font-size:.82rem;color:var(--text2);">
-                                    Your book "<strong>${escapeHtml(title)}</strong>" is pending admin approval. 
-                                    You'll be notified once it's reviewed.
+                                    Your book "<strong>${escapeHtml(title)}</strong>" is pending admin approval. You'll be notified once reviewed.
                                 </p>
                             </div>
                         </div>
                     `;
                     resetBookUploadForm();
                     loadBooks();
+                    updateBookStatusBadge();
                 } else {
-                    toast(res.message || 'Failed to submit book', 'error');
+                    toast(res.message || 'Failed to submit', 'error');
                 }
             } catch (err) {
                 toast('Error: ' + err.message, 'error');
             } finally {
                 hideLoading();
             }
+        }
+
+        function updateBookStatusBadge() {
+            if (S.dp === 'books') loadBooks();
         }
 
         // ─── ADMIN BOOKS ──────────────────────────────────────────────
@@ -11590,8 +11408,7 @@
                 const container = document.getElementById('purchasedArticlesList');
                 if (!container) return;
                 if (!articles.length) {
-                    container.innerHTML =
-                        '<div class="empty-state"><i class="fas fa-file-alt"></i><p>You haven\'t purchased any articles yet.</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>You haven\'t purchased any articles yet.</p></div>';
                     return;
                 }
                 container.innerHTML = articles.map(a => {
@@ -11635,23 +11452,65 @@
             const isPaid = post.isPaid || false;
             const hasPurchased = post.hasPurchased || false;
             const isOwner = S.user?._id === author._id || S.user?._id === post.authorId || S.user?.roles?.includes('admin');
-            const showFull = isOwner || hasPurchased || !isPaid;
             const price = post.price || 500;
+            const showFull = isOwner || hasPurchased || !isPaid;
+
+            let contentToShow = contentHtml;
+            let showPaywall = false;
+            if (isPaid && !hasPurchased && !isOwner) {
+                showPaywall = true;
+                contentToShow = post.previewContent || post.content?.substring(0, 300) ||
+                    'This article is premium content. Purchase to read the full version.';
+            }
+
+            let paywallHtml = '';
+            if (showPaywall) {
+                paywallHtml = `
+                    <div class="paywall-overlay">
+                        <i class="fas fa-lock" style="font-size:2.5rem;color:var(--gold);margin-bottom:.75rem;display:block;"></i>
+                        <h3>🔒 Premium Article</h3>
+                        <p style="color:var(--text3);margin-bottom:.25rem;">This article is paid content.</p>
+                        <p style="color:var(--gold);font-weight:800;font-size:1.2rem;">${fmtMoneyAPI(price)}</p>
+                        <button class="btn btn-primary btn-lg mt-3" onclick="purchaseArticle('${post._id}')">
+                            <i class="fas fa-shopping-cart"></i> Purchase — ${fmtMoneyAPI(price)}
+                        </button>
+                        <p style="color:var(--text3);font-size:.7rem;margin-top:.5rem;">You can also pay via bank transfer</p>
+                    </div>
+                `;
+            }
 
             container.innerHTML = `
                 <div class="post-card card card-p">
                     <div class="post-header">
                         <div class="post-author-avatar" style="background:linear-gradient(135deg,var(--primary),var(--secondary));" onclick="openUserProfile('${author._id}')">${avatarHtml}</div>
-                        <div class="post-author-info"><strong onclick="openUserProfile('${author._id}')" style="cursor:pointer">${escapeHtml(author.firstName || 'User')} ${escapeHtml(author.lastName || '')}</strong><span class="post-date">${new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span><span class="badge badge-cyan" style="font-size:.55rem">${post.type || 'article'}</span>${post.isPremiumOnly ? '<span class="badge badge-gold" style="font-size:.55rem">Premium</span>' : ''}${isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 ${fmtMoneyAPI(price)}</span>` : ''}${isPaid && hasPurchased ? '<span class="badge badge-success" style="font-size:.55rem">✅ Purchased</span>' : ''}</div>
+                        <div class="post-author-info">
+                            <strong onclick="openUserProfile('${author._id}')" style="cursor:pointer">${escapeHtml(author.firstName || 'User')} ${escapeHtml(author.lastName || '')}</strong>
+                            <span class="post-date">${new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
+                            <span class="badge badge-cyan" style="font-size:.55rem">${post.type || 'article'}</span>
+                            ${isPaid ? `<span class="badge badge-gold" style="font-size:.55rem">💰 ${fmtMoneyAPI(price)}</span>` : ''}
+                            ${hasPurchased ? `<span class="badge badge-success" style="font-size:.55rem">✅ Purchased</span>` : ''}
+                            ${isOwner ? `<span class="badge badge-primary" style="font-size:.55rem">You</span>` : ''}
+                        </div>
                     </div>
                     <h1 class="post-title" style="font-size:1.5rem;">${escapeHtml(post.title)}</h1>
                     ${post.featuredImage ? `<img src="${post.featuredImage}" class="post-image" alt="featured" loading="lazy">` : ''}
                     ${post.videoUrl ? `<video controls style="max-width:100%;border-radius:var(--radius-sm);margin:.75rem 0;"><source src="${post.videoUrl}" type="video/mp4"></video>` : ''}
                     <div class="post-content" style="font-size:1rem;line-height:1.8;color:var(--text2);margin:1rem 0;">
-                        ${showFull ? contentHtml : `<div class="paywall-overlay"><i class="fas fa-lock" style="font-size:2.5rem;color:var(--gold);margin-bottom:.75rem;display:block;"></i><h3>🔒 Premium Article</h3><p>This article is paid content. Purchase to read the full version.</p><button class="btn btn-primary" onclick="purchaseArticle('${post._id}')">Purchase — ${fmtMoneyAPI(price)}</button></div>`}
+                        ${contentToShow}
+                        ${paywallHtml}
                     </div>
-                    <div class="post-stats"><span><i class="fas fa-eye"></i> ${views} views</span><span><i class="far fa-heart"></i> ${post.likes || 0}</span><span><i class="far fa-comment"></i> ${post.commentsCount || 0}</span><span><i class="fas fa-share-alt"></i> ${post.shares || 0}</span>${earnings > 0 ? `<span class="badge badge-gold">🌱 +${fmtMoneyAPI(earnings)}</span>` : ''}</div>
-                    <div class="post-actions"><button class="btn-like ${post.userLiked ? 'liked' : ''}" data-id="${post._id}"><i class="far fa-heart"></i> Like</button><button class="btn-comment" data-id="${post._id}"><i class="far fa-comment"></i> Comment</button><button class="btn-share" onclick="openShareModal('${post._id}','${post.slug}')"><i class="fas fa-share-alt"></i> Share</button></div>
+                    <div class="post-stats">
+                        <span><i class="fas fa-eye"></i> ${views} views</span>
+                        <span><i class="far fa-heart"></i> ${post.likes || 0}</span>
+                        <span><i class="far fa-comment"></i> ${post.commentsCount || 0}</span>
+                        <span><i class="fas fa-share-alt"></i> ${post.shares || 0}</span>
+                        ${earnings > 0 ? `<span class="badge badge-gold">🌱 +${fmtMoneyAPI(earnings)}</span>` : ''}
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn-like ${post.userLiked ? 'liked' : ''}" data-id="${post._id}"><i class="far fa-heart"></i> Like</button>
+                        <button class="btn-comment" data-id="${post._id}"><i class="far fa-comment"></i> Comment</button>
+                        <button class="btn-share" onclick="openShareModal('${post._id}','${post.slug}')"><i class="fas fa-share-alt"></i> Share</button>
+                    </div>
                     <div class="comments-section" data-post-id="${post._id}" style="display:block;margin-top:1rem;">
                         <div class="comment-input"><textarea placeholder="Write a comment..." id="commentText-${post._id}"></textarea><button class="btn-primary btn-sm" onclick="addComment('${post._id}')">Post</button></div>
                         <div class="comments-list" id="commentsList-${post._id}"></div>
@@ -12298,8 +12157,7 @@
             switch (sec) {
                 case 'dashboard':
                     content.innerHTML = `
-                        <div class="page-hd"><h3>📊 Admin Dashboard</h3><p class="page-sub">Platform overview and key metrics</p></div>
-                        <div class="row" id="adminStatsRow">
+                        <div class="row">
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalUsers">—</div><div class="sl">Total Users</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalCourses">—</div><div class="sl">Courses</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalRevenue">—</div><div class="sl">Revenue</div></div></div>
@@ -12596,24 +12454,6 @@
                     `;
                     loadFeatureFlags();
                     break;
-                case 'activity':
-                    content.innerHTML = `
-                        <div class="page-hd"><h3>📋 User Activity Logs</h3><p class="page-sub">Track user actions across the platform</p></div>
-                        <div class="d-flex gap-2 mb-3">
-                            <input type="text" class="finput" style="flex:1;min-width:150px;" placeholder="Search by user or action..." id="activitySearch" oninput="loadActivityLogs()">
-                            <select class="finput" style="width:auto;" id="activityType" onchange="loadActivityLogs()">
-                                <option value="all">All Actions</option>
-                                <option value="login">Login</option>
-                                <option value="purchase">Purchase</option>
-                                <option value="withdrawal">Withdrawal</option>
-                                <option value="post">Post</option>
-                                <option value="comment">Comment</option>
-                            </select>
-                        </div>
-                        <div id="activityLogsList"><p style="color:var(--text3);">Loading activity logs...</p></div>
-                    `;
-                    await loadActivityLogs();
-                    break;
                 case 'audit':
                     content.innerHTML = '<p style="color:var(--text3)">Loading audit logs...</p>';
                     try {
@@ -12852,8 +12692,7 @@
                         s.type === 'collaboration' ? 'collaboration' :
                         s.type === 'brand' ? 'brand' : 'media';
                     const statusClass = s.status === 'approved' ? 'badge-success' :
-                        s.status === 'pending' ? 'badge-gold' :
-                        s.status === 'rejected' ? 'badge-danger' : 'badge-dark';
+                        s.status === 'pending' ? 'badge-gold' : 'badge-danger';
                     return `
                         <div class="card card-p mb-2">
                             <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
@@ -12885,26 +12724,27 @@
             } catch (err) { toast('Failed to load sponsorships: ' + err.message, 'error'); }
         }
 
-        async function approveSponsorship(id) {
+        async function approveSponsorship(sponsorshipId) {
             try {
-                await apiCall(`/sponsorships/admin/${id}/approve`, { method: 'POST' });
+                await apiCall(`/sponsorships/admin/${sponsorshipId}/approve`, { method: 'POST' });
                 toast('Sponsorship approved!', 'success');
                 loadAdminSponsorships();
             } catch (err) { toast(err.message, 'error'); }
         }
 
-        async function rejectSponsorship(id) {
+        async function rejectSponsorship(sponsorshipId) {
             const reason = prompt('Rejection reason:');
             try {
-                await apiCall(`/sponsorships/admin/${id}/reject`, { method: 'POST', body: { reason: reason || 'Not specified' } });
+                await apiCall(`/sponsorships/admin/${sponsorshipId}/reject`, { method: 'POST', body: { reason: reason ||
+                            'Not specified' } });
                 toast('Sponsorship rejected', 'info');
                 loadAdminSponsorships();
             } catch (err) { toast(err.message, 'error'); }
         }
 
-        async function viewSponsorshipDetail(id) {
+        async function viewSponsorshipDetail(sponsorshipId) {
             try {
-                const res = await apiCall(`/sponsorships/admin/${id}`);
+                const res = await apiCall(`/sponsorships/admin/${sponsorshipId}`);
                 const s = res.data;
                 const content = document.getElementById('userDetailsContent');
                 content.innerHTML = `
@@ -12923,13 +12763,12 @@
             } catch (err) { toast('Failed to load details: ' + err.message, 'error'); }
         }
 
-        // ─── ADMIN CONTENT MODERATION ──────────────────────────────────
+        // ─── ADMIN CONTENT ──────────────────────────────────────────────
         function switchContentTab(tab, btn) {
             document.querySelectorAll('.content-tab').forEach(t => t.style.display = 'none');
             document.querySelectorAll('#dash-admin .tab-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
             document.getElementById('content' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
-            S.contentTab = tab;
             if (tab === 'posts') loadContentPosts();
             if (tab === 'comments') loadContentComments();
         }
@@ -13041,11 +12880,12 @@
             }
         }
 
-        // ─── ADMIN REVENUE ANALYTICS ──────────────────────────────────
+        // ─── ADMIN REVENUE ANALYTICS ────────────────────────────────────
         async function loadAdminRevenueAnalytics() {
             try {
                 const res = await apiCall('/analytics/revenue?period=monthly');
                 const data = res.data || [];
+
                 let today = 0,
                     week = 0,
                     month = 0,
@@ -13092,6 +12932,51 @@
             } catch (err) {
                 toast('Failed to load revenue analytics: ' + err.message, 'error');
             }
+        }
+
+        // ─── ADMIN SETTINGS / FEATURE FLAGS ─────────────────────────────
+        function loadFeatureFlags() {
+            const flags = [
+                { key: 'enableReferrals', label: 'Referral System', default: true },
+                { key: 'enableAffiliates', label: 'Affiliate Program', default: true },
+                { key: 'enableSocialEarnings', label: 'Social Earnings', default: true },
+                { key: 'enableAIChat', label: 'AI Chat', default: true },
+                { key: 'enableManualPayments', label: 'Manual Payments', default: true },
+                { key: 'enableBookUpload', label: 'Book Upload (Premium)', default: true },
+                { key: 'enableCourseUpload', label: 'Course Upload (Premium)', default: true },
+            ];
+            const container = document.getElementById('featureFlagsList');
+            if (!container) return;
+            container.innerHTML = flags.map(f => `
+                <div class="d-flex items-center justify-between p-3" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:.3rem;">
+                    <div style="font-size:.82rem;font-weight:600;">${f.label}</div>
+                    <input type="checkbox" id="flag_${f.key}" ${localStorage.getItem('flag_' + f.key) !== 'false' ? 'checked' : ''} style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer;">
+                </div>
+            `).join('');
+        }
+
+        async function saveFeatureFlags() {
+            const flags = ['enableReferrals', 'enableAffiliates', 'enableSocialEarnings', 'enableAIChat',
+                'enableManualPayments', 'enableBookUpload', 'enableCourseUpload'
+            ];
+            flags.forEach(key => {
+                const el = document.getElementById('flag_' + key);
+                localStorage.setItem('flag_' + key, el.checked ? 'true' : 'false');
+            });
+            toast('✅ Settings saved!', 'success');
+            try {
+                await apiCall('/admin/settings/feature-flags', { method: 'POST', body: flags.reduce((acc, key) => { acc[
+                            key] = localStorage.getItem('flag_' + key) === 'true'; return acc; }, {}) });
+            } catch (err) { console.warn('Could not save to backend:', err); }
+        }
+
+        async function saveBankDetails() {
+            const details = document.getElementById('sysBankDetails').value.trim();
+            localStorage.setItem('platform_bank_details', details);
+            toast('✅ Bank details saved!', 'success');
+            try {
+                await apiCall('/admin/settings/bank-details', { method: 'POST', body: { bankDetails: details } });
+            } catch (err) { console.warn('Could not save to backend:', err); }
         }
 
         // ─── ADMIN DASHBOARD STATS ──────────────────────────────────────
@@ -13151,93 +13036,6 @@
             }
         }
 
-        // ─── ADMIN ACTIVITY LOGS ────────────────────────────────────────
-        async function loadActivityLogs() {
-            const container = document.getElementById('activityLogsList');
-            const search = document.getElementById('activitySearch')?.value || '';
-            const type = document.getElementById('activityType')?.value || 'all';
-            try {
-                const res = await apiCall(`/admin/audit-logs?limit=100&search=${search}&type=${type}`);
-                const logs = res.data?.logs || res.data || [];
-                if (!logs.length) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No activity logs found.</p></div>';
-                    return;
-                }
-                container.innerHTML = `
-                    <div class="overflow-x-auto"><table class="dtable">
-                        <thead><tr><th>User</th><th>Action</th><th>Resource</th><th>IP</th><th>Date</th></tr></thead>
-                        <tbody>${logs.map(l => `
-                            <tr>
-                                <td>${l.user?.firstName || 'System'} ${l.user?.lastName || ''}</td>
-                                <td><span class="badge badge-dark" style="font-size:.6rem;">${l.action || '—'}</span></td>
-                                <td style="font-size:.78rem;">${l.resource || '—'}</td>
-                                <td style="font-size:.7rem;color:var(--text3);">${l.ip || '—'}</td>
-                                <td style="font-size:.7rem;color:var(--text3);">${new Date(l.createdAt || l.timestamp).toLocaleString()}</td>
-                            </tr>
-                        `).join('')}</tbody>
-                    </table></div>
-                `;
-            } catch (err) {
-                container.innerHTML = '<p style="color:var(--danger);">Failed to load logs: ' + err.message + '</p>';
-            }
-        }
-
-        // ─── ADMIN FEATURE FLAGS ────────────────────────────────────────
-        function loadFeatureFlags() {
-            const flags = [
-                { key: 'enableReferrals', label: 'Referral System', default: true },
-                { key: 'enableAffiliates', label: 'Affiliate Program', default: true },
-                { key: 'enableSocialEarnings', label: 'Social Earnings', default: true },
-                { key: 'enableAIChat', label: 'AI Chat', default: true },
-                { key: 'enableManualPayments', label: 'Manual Payments', default: true },
-                { key: 'enableBookUpload', label: 'Book Upload (Premium)', default: true },
-                { key: 'enableCourseUpload', label: 'Course Upload (Premium)', default: true },
-            ];
-            const container = document.getElementById('featureFlagsList');
-            if (!container) return;
-            container.innerHTML = flags.map(f => `
-                <div class="d-flex items-center justify-between p-3" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:.3rem;">
-                    <div style="font-size:.82rem;font-weight:600;">${f.label}</div>
-                    <input type="checkbox" id="flag_${f.key}" ${localStorage.getItem('flag_' + f.key) !== 'false' ? 'checked' : ''} style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer;">
-                </div>
-            `).join('');
-        }
-
-        async function saveFeatureFlags() {
-            const flags = ['enableReferrals', 'enableAffiliates', 'enableSocialEarnings', 'enableAIChat', 'enableManualPayments',
-                'enableBookUpload', 'enableCourseUpload'
-            ];
-            flags.forEach(key => {
-                const el = document.getElementById('flag_' + key);
-                localStorage.setItem('flag_' + key, el.checked ? 'true' : 'false');
-            });
-            toast('✅ Settings saved!', 'success');
-            try {
-                await apiCall('/admin/settings/feature-flags', { method: 'POST', body: flags.reduce((acc, key) => { acc[
-                            key] = localStorage.getItem('flag_' + key) === 'true'; return acc; }, {}) });
-            } catch (err) { console.warn('Could not save to backend:', err); }
-        }
-
-        async function saveBankDetails() {
-            const details = document.getElementById('sysBankDetails').value.trim();
-            localStorage.setItem('platform_bank_details', details);
-            toast('✅ Bank details saved!', 'success');
-            try {
-                await apiCall('/admin/settings/bank-details', { method: 'POST', body: { bankDetails: details } });
-            } catch (err) { console.warn('Could not save to backend:', err); }
-        }
-
-        async function updateAdConfig() {
-            const cpm = parseFloat(document.getElementById('sysCpm').value) || 1.00;
-            const cpc = parseFloat(document.getElementById('sysCpc').value) || 0.02;
-            const sharePercent = parseFloat(document.getElementById('sysSharePercent').value) || 50;
-            try {
-                await apiCall('/admin/ads/config', { method: 'PUT', body: { cpm, cpc, sharePercent } });
-                S.adConfig = { cpm, cpc, sharePercent };
-                toast('Ad config updated!', 'success');
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
         // ─── ADMIN AD IMAGE UPLOAD ──────────────────────────────────────
         async function uploadAdImage(input) {
             const file = input.files[0];
@@ -13262,16 +13060,19 @@
         }
 
         // ─── ADMIN CHALLENGES ──────────────────────────────────────────
+        let adminChallengeFilter = 'all',
+            editingChallengeId = null;
+
         function openChallengeForm(challengeId = null) {
             const container = document.getElementById('challengeFormContainer');
             if (!container) return;
             if (challengeId) {
-                S.editingChallengeId = challengeId;
+                editingChallengeId = challengeId;
                 document.getElementById('challengeFormTitle').textContent = '✏️ Edit Challenge';
                 document.getElementById('challengeSaveBtnText').textContent = 'Update Challenge';
                 loadChallengeData(challengeId);
             } else {
-                S.editingChallengeId = null;
+                editingChallengeId = null;
                 document.getElementById('challengeFormTitle').textContent = '🏆 Create New Challenge';
                 document.getElementById('challengeSaveBtnText').textContent = 'Create Challenge';
                 resetChallengeForm();
@@ -13404,8 +13205,7 @@
             const container = document.getElementById('adminChallengesContainer');
             if (!container) return;
             let filtered = challenges;
-            if (S.adminChallengeFilter !== 'all') { filtered = challenges.filter(c => c.status === S
-                    .adminChallengeFilter); }
+            if (adminChallengeFilter !== 'all') { filtered = challenges.filter(c => c.status === adminChallengeFilter); }
             if (!filtered || !filtered.length) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-trophy"></i><p>No challenges found</p></div>';
                 return;
@@ -13433,7 +13233,7 @@
         }
 
         function filterAdminChallenges(filter, el) {
-            S.adminChallengeFilter = filter;
+            adminChallengeFilter = filter;
             document.querySelectorAll('#adminChallengesList .fpill').forEach(p => p.classList.remove('active'));
             if (el) el.classList.add('active');
             loadAdminChallenges();
@@ -13540,6 +13340,17 @@
             } catch (err) { toast('Failed to delete: ' + err.message, 'error'); }
         }
 
+        async function updateAdConfig() {
+            const cpm = parseFloat(document.getElementById('admCpm').value) || 1.00;
+            const cpc = parseFloat(document.getElementById('admCpc').value) || 0.02;
+            const sharePercent = parseFloat(document.getElementById('admSharePercent').value) || 50;
+            try {
+                await apiCall('/admin/ads/config', { method: 'PUT', body: { cpm, cpc, sharePercent } });
+                S.adConfig = { cpm, cpc, sharePercent };
+                toast('Ad config updated!', 'success');
+            } catch (err) { toast('Failed to update config: ' + err.message, 'error'); }
+        }
+
         // ─── ADMIN MANUAL PAYMENTS ──────────────────────────────────────
         async function loadManualPayments() {
             const filter = document.getElementById('manualPaymentFilter')?.value || 'pending';
@@ -13559,8 +13370,8 @@
                     return;
                 }
                 tbody.innerHTML = payments.map(p =>
-                    `<tr><td style="font-size:.75rem">${new Date(p.createdAt).toLocaleString()}</td><td><strong>${p.userId?.firstName || '?'} ${p.userId?.lastName || ''}</strong><br><small style="color:var(--text3)">${p.userId?.email || ''}</small></td><td><span class="badge ${p.type === 'course' ? 'badge-cyan' : p.type === 'book' ? 'badge-primary' : p.type === 'article' ? 'badge-violet' : 'badge-gold'}">${p.type}</span></td><td style="font-weight:700;color:var(--primary)">₦${p.amount.toLocaleString()}</td><td><code style="font-size:.7rem">${p.reference}</code></td><td><a href="${p.receiptUrl}" target="_blank" class="btn btn-ghost btn-sm" style="font-size:.7rem"><i class="fas fa-eye"></i> View</a></td><td><span class="pstatus ${p.status === 'approved' ? 'ps-paid' : p.status === 'rejected' ? 'ps-fail' : 'ps-pend'}">${p.status}</span></td><td>${p.status === 'pending_review' ? `<button class="btn btn-success btn-sm" onclick="approveManualPayment('${p._id}')" style="margin-right:.3rem"><i class="fas fa-check"></i> Approve</button><button class="btn btn-danger btn-sm" onclick="rejectManualPayment('${p._id}')"><i class="fas fa-times"></i> Reject</button>` : p.status === 'approved' ? '<span class="badge badge-success">Approved</span>' : '<span class="badge badge-danger">Rejected</span>'}</td></tr>`
-                ).join('');
+                    `<tr><td style="font-size:.75rem">${new Date(p.createdAt).toLocaleString()}</td><td><strong>${p.userId?.firstName || '?'} ${p.userId?.lastName || ''}</strong><br><small style="color:var(--text3)">${p.userId?.email || ''}</small></td><td><span class="badge ${p.type === 'course' ? 'badge-cyan' : p.type === 'book' ? 'badge-primary' : p.type === 'campaign' ? 'badge-gold' : 'badge-gold'}">${p.type}</span></td><td style="font-weight:700;color:var(--primary)">₦${p.amount.toLocaleString()}</td><td><code style="font-size:.7rem">${p.reference}</code></td><td><a href="${p.receiptUrl}" target="_blank" class="btn btn-ghost btn-sm" style="font-size:.7rem"><i class="fas fa-eye"></i> View</a></td><td><span class="pstatus ${p.status === 'approved' ? 'ps-paid' : p.status === 'rejected' ? 'ps-fail' : 'ps-pend'}">${p.status}</span></td><td>${p.status === 'pending_review' ? `<button class="btn btn-success btn-sm" onclick="approveManualPayment('${p._id}')" style="margin-right:.3rem"><i class="fas fa-check"></i> Approve</button><button class="btn btn-danger btn-sm" onclick="rejectManualPayment('${p._id}')"><i class="fas fa-times"></i> Reject</button>` : p.status === 'approved' ? '<span class="badge badge-success">Approved</span>' : '<span class="badge badge-danger">Rejected</span>'}</td></tr>`
+                    ).join('');
             } catch (err) {
                 console.error('Failed to load manual payments:', err);
                 const tbody = document.querySelector('#manualPaymentsTable tbody');
@@ -13591,15 +13402,15 @@
                             await loadEnrollments();
                             if (S.dp === 'courses') renderCourseGrid(S.courseFilter);
                             toast('📚 Course access granted!', 'success');
-                        } else if (payment.data?.type === 'article') {
-                            loadPurchasedArticles();
-                            toast('📰 Article purchase approved!', 'success');
                         } else if (payment.data?.type === 'subscription') {
                             S.isPremium = true;
                             S.user.isPremium = true;
                             updateUserUI();
                             updatePremiumUI();
                             toast('👑 Premium activated!', 'success');
+                        } else if (payment.data?.type === 'campaign') {
+                            await loadMyCampaigns();
+                            toast('🚀 Campaign payment verified! It will go live shortly.', 'success');
                         }
                     } catch (e) { console.warn('Could not refresh purchase data after approval:', e); }
                     if (S.dp === 'referrals') renderRefs();
@@ -13635,6 +13446,7 @@
                     'error'); }
         }
 
+        // ─── ADMIN SHOW USER POSTS ──────────────────────────────────────
         async function showUserPosts(userId) {
             try {
                 const res = await apiCall(`/admin/users/${userId}/posts`);
@@ -13758,7 +13570,7 @@
             } catch (err) { toast('Failed to load user details: ' + err.message, 'error'); }
         }
 
-        // ─── ADMIN BOOKS FORM ──────────────────────────────────────────
+        // ─── ADMIN BOOKS (additional functions for upload, etc.) ──────
         let editingBookId = null;
 
         function openBookForm(bookId = null) {
@@ -13998,7 +13810,7 @@
                 const list = Array.isArray(data.data) ? data.data : [];
                 S.landingCourses = list;
                 document.getElementById('landingCourseGrid').innerHTML = list.length ? list.map((c, i) =>
-                    `<div style="flex:1;min-width:240px"><div class="l-cc" onclick="goPage('register')"><div class="l-cc-thumb" style="background:linear-gradient(135deg,var(--card2),var(--card3))">${c.thumbnail || c.emoji || '📚'}<div class="l-cc-badge"><span class="badge ${i === 0 ? 'badge-primary' : 'badge-gold'}" style="font-size:.62rem">${i === 0 ? '🔥 Bestseller' : '🌟 Hot'}</span></div></div><div class="l-cc-body"><div class="l-cc-title">${c.title || 'Course'}</div><div class="l-cc-meta"><span class="stars">★★★★★</span><span>${c.rating || 4.9}</span>·<span>${c.totalLessons || 0} lessons</span></div><div class="l-cc-price">${fmtMoneyAPI(c.displayPrice || c.price || 0)}</div></div></div>`
+                    `<div style="flex:1;min-width:240px"><div class="l-cc" onclick="goPage('register')"><div class="l-cc-thumb" style="background:linear-gradient(135deg,var(--card2),var(--card3))">${c.thumbnail || c.emoji || '📚'}<div class="l-cc-badge"><span class="badge ${i === 0 ? 'badge-primary' : 'badge-gold'}" style="font-size:.62rem">${i === 0 ? '🔥 Bestseller' : '🌟 Hot'}</span></div></div><div class="l-cc-body"><div class="l-cc-title">${c.title || 'Course'}</div><div class="l-cc-meta"><span class="stars">★★★★★</span><span>${c.rating || 4.9}</span>·<span>${c.totalLessons || 0} lessons</span></div><div class="l-cc-price">${fmtMoneyAPI(c.displayPrice || c.price || 0)}</div></div>`
                     ).join('') : '<div class="empty-state"><p>Loading courses...</p></div>';
             } catch (e) { document.getElementById('landingCourseGrid').innerHTML =
                     '<div class="empty-state"><p>Loading courses...</p></div>'; }
@@ -14507,8 +14319,14 @@
                                 </div>
                                 <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
                                     ${needsPayment ? `
-                                        <button class="campaign-pay-btn" onclick="openCampaignPaymentModal('${c._id}', 'paystack')"><i class="fas fa-credit-card"></i> Pay ₦${c.budget.toLocaleString()}</button>
-                                        <button class="btn btn-ghost btn-sm" onclick="openCampaignPaymentModal('${c._id}', 'manual')"><i class="fas fa-university"></i> Bank Transfer</button>
+                                        <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem;">
+                                            <button class="campaign-pay-btn" onclick="openCampaignPaymentModal('${c._id}', 'paystack')">
+                                                <i class="fas fa-credit-card"></i> Pay ₦${c.budget.toLocaleString()} with Card
+                                            </button>
+                                            <button class="btn btn-ghost btn-sm" onclick="openCampaignPaymentModal('${c._id}', 'manual')">
+                                                <i class="fas fa-university"></i> Bank Transfer
+                                            </button>
+                                        </div>
                                     ` : ''}
                                     ${c.status === 'active' || c.status === 'paused' ? `
                                         <button class="btn btn-${isPaused ? 'success' : 'warning'} btn-sm" onclick="toggleCampaign('${c._id}', ${isPaused})">
@@ -14528,6 +14346,43 @@
                     `;
                 }).join('');
             } catch (err) { toast('Failed to load campaigns: ' + err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        // ─── CAMPAIGN PAYMENT MODAL (Reuses buyCourseModal) ────────────
+        function openCampaignPaymentModal(campaignId, method) {
+            const campaign = S.myCampaigns.find(c => c._id === campaignId);
+            if (!campaign) { toast('Campaign not found', 'error'); return; }
+
+            currentPaymentType = 'campaign';
+            currentManualCampaignId = campaignId;
+
+            document.getElementById('buyCourseInfo').innerHTML = `
+                <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm)">
+                    <div style="font-size:2rem">📢</div>
+                    <div>
+                        <div style="font-weight:700;font-size:.92rem">${escapeHtml(campaign.title)}</div>
+                        <div style="font-size:.75rem;color:var(--text3);">Ad Campaign · ${campaign.placement}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('buyCourseSummary').innerHTML = `
+                <div class="pay-summary-row"><span>Campaign Budget</span><span>${fmtMoneyAPI(campaign.budget)}</span></div>
+                <div class="pay-summary-row"><span style="font-weight:700">Total</span><span style="color:var(--primary);font-weight:800">${fmtMoneyAPI(campaign.budget)}</span></div>
+            `;
+
+            document.getElementById('paystackBtnText').textContent = `Pay ${fmtMoneyAPI(campaign.budget)} with Paystack`;
+            document.getElementById('manualAmount').value = campaign.budget;
+            document.getElementById('buyRefCode').value = '';
+
+            if (method === 'manual') {
+                toggleBuyPaymentMethod('manual', document.querySelector('#buyCourseModal .payment-method-tab:last-child'));
+            } else {
+                toggleBuyPaymentMethod('card', document.querySelector('#buyCourseModal .payment-method-tab:first-child'));
+            }
+
+            document.getElementById('buyCourseModal')._campaignId = campaignId;
+            openModal('buyCourseModal');
         }
 
         // ─── TOGGLE CAMPAIGN PRICING ────────────────────────────────────
@@ -14607,37 +14462,37 @@
             } catch (err) { toast('Error: ' + err.message, 'error'); } finally { hideLoading(); }
         }
 
-        // ─── OPEN CAMPAIGN PAYMENT MODAL ──────────────────────────────
-        function openCampaignPaymentModal(campaignId, method) {
-            const campaign = S.myCampaigns.find(c => c._id === campaignId);
-            if (!campaign) { toast('Campaign not found', 'error'); return; }
-            currentPaymentType = 'campaign';
-            document.getElementById('buyCourseModal')._campaignId = campaignId;
-            document.getElementById('buyCourseInfo').innerHTML = `
-                <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm)">
-                    <div style="font-size:2rem">📢</div>
-                    <div>
-                        <div style="font-weight:700;font-size:.92rem">${escapeHtml(campaign.title)}</div>
-                        <div style="font-size:.75rem;color:var(--text3)">Ad Campaign · ${campaign.placement}</div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('buyCourseSummary').innerHTML = `
-                <div class="pay-summary-row"><span>Campaign Budget</span><span>${fmtMoneyAPI(campaign.budget)}</span></div>
-                <div class="pay-summary-row"><span style="font-weight:700">Total</span><span style="color:var(--primary);font-weight:800">${fmtMoneyAPI(campaign.budget)}</span></div>
-            `;
-            document.getElementById('paystackBtnText').textContent = `Pay ${fmtMoneyAPI(campaign.budget)} with Paystack`;
-            document.getElementById('manualAmount').value = campaign.budget;
-            document.getElementById('buyRefCode').value = '';
-            if (method === 'manual') {
-                toggleBuyPaymentMethod('manual', document.querySelector('#buyCourseModal .payment-method-tab:last-child'));
-            } else {
-                toggleBuyPaymentMethod('card', document.querySelector('#buyCourseModal .payment-method-tab:first-child'));
-            }
-            openModal('buyCourseModal');
+        async function toggleCampaign(campaignId, pause) {
+            try {
+                await apiCall(`/campaigns/${campaignId}/toggle`, {
+                    method: 'PUT',
+                    body: { pause }
+                });
+                toast(pause ? 'Campaign paused' : 'Campaign resumed', 'success');
+                loadMyCampaigns();
+            } catch (err) { toast(err.message, 'error'); }
         }
 
-        // ─── TOP UP CAMPAIGN ────────────────────────────────────────────
+        async function deleteCampaign(campaignId) {
+            if (!confirm('Delete this campaign? This action cannot be undone.')) return;
+            try {
+                await apiCall(`/campaigns/${campaignId}`, { method: 'DELETE' });
+                toast('Campaign deleted', 'success');
+                loadMyCampaigns();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        async function payCampaign(campaignId) {
+            try {
+                const res = await apiCall('/campaigns/pay', { method: 'POST', body: { campaignId } });
+                if (res.data.paymentUrl) {
+                    window.location.href = res.data.paymentUrl;
+                } else {
+                    toast('Could not initiate payment.', 'error');
+                }
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
         async function topUpCampaign(campaignId) {
             const amount = prompt('Enter amount to top up (₦):', '5000');
             if (!amount) return;
@@ -14653,7 +14508,6 @@
             } catch (err) { toast(err.message, 'error'); }
         }
 
-        // ─── VIEW CAMPAIGN STATS ────────────────────────────────────────
         async function viewCampaignStats(campaignId) {
             showLoading('Loading stats...');
             try {
@@ -14823,27 +14677,6 @@
             }
         }
 
-        // ─── TOGGLE CAMPAIGN ────────────────────────────────────────────
-        async function toggleCampaign(campaignId, pause) {
-            try {
-                await apiCall(`/campaigns/${campaignId}/toggle`, {
-                    method: 'PUT',
-                    body: { pause }
-                });
-                toast(pause ? 'Campaign paused' : 'Campaign resumed', 'success');
-                loadMyCampaigns();
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
-        async function deleteCampaign(campaignId) {
-            if (!confirm('Delete this campaign? This action cannot be undone.')) return;
-            try {
-                await apiCall(`/campaigns/${campaignId}`, { method: 'DELETE' });
-                toast('Campaign deleted', 'success');
-                loadMyCampaigns();
-            } catch (err) { toast(err.message, 'error'); }
-        }
-
         // ================================================================
         // APP INIT
         // ================================================================
@@ -14967,21 +14800,57 @@
 
         console.log('🚀 ChangeX Academy — Production Ready with All Features');
         console.log('📚 Learn, Earn, and Grow with ChangeX!');
-        console.log('📚 Premium Book Upload — Users can upload books for admin approval. Only visible to premium users.');
-        console.log('📚 Book Status Badges — Pending, Approved, Rejected shown to owners.');
-        console.log('📚 Book Detail — Shows status badge for owners, download button for purchased/free books.');
-        console.log('📚 Admin Book Management — Approve/reject books, add/edit/delete books.');
-        console.log('📚 Premium Articles — Create paid articles with paywall and purchase flow.');
-        console.log('📚 Purchased Articles List — Users can see all articles they\'ve bought.');
-        console.log('📚 Campaign Payment Flow — Users pay after admin approval, unified with course/book payments.');
-        console.log('📚 Campaign Manual Payment — Users can submit bank transfer receipts for campaigns.');
-        console.log('📚 Campaign Stats — View impressions, clicks, CTR, daily charts.');
-        console.log('📚 Admin Campaign Management — Approve/reject, mark paid, refund campaigns.');
-        console.log('📚 Admin Sponsorship Management — Approve/reject sponsorships.');
-        console.log('📚 Admin Content Moderation — List, search, publish/delete posts and comments.');
-        console.log('📚 Admin Revenue Analytics — Chart with daily/weekly/monthly revenue.');
-        console.log('📚 Admin Activity Logs — Searchable user action logs.');
-        📚 ✅ Fully production ready.
+        console.log('✅ Premium Course Upload — Users can create courses with lessons and submit for approval.');
+        console.log('✅ Social Earnings Config — Admin config with engagement weights and distribution trigger.');
+        console.log('✅ Manual Payment Status — Users can track their bank transfer submissions.');
+        console.log('✅ Platform Stats — Admin dashboard with total users, courses, revenue, posts, books, enrollments.');
+        console.log('✅ User Badges — Achievements system with earned badges display.');
+        console.log('✅ Revenue Split Management — Instructors can split revenue with co-instructors.');
+        console.log('✅ Analytics Dashboard — Course analytics with funnel charts and engagement metrics.');
+        console.log('✅ Cohort Management — Create and manage student cohorts.');
+        console.log('✅ Purchase Article List — Users can see all purchased articles.');
+        console.log('✅ Articles Paywall — Paid articles with purchase flow and access control.');
+        console.log('✅ Sponsorship & Ad Campaign Platform — Users submit campaigns, pay, track performance.');
+        console.log('✅ Admin Campaign Management — Approve, reject, mark paid, refund campaigns.');
+        console.log('✅ Admin Sponsorship Management — Approve/reject sponsorships.');
+        console.log('✅ Campaign Analytics — Real-time stats with impressions, clicks, CTR, and daily charts.');
+        console.log('✅ Book Upload for Premium Users — Submit books for admin approval with status tracking.');
+        console.log('📱 PWA: Install banner hides for 7 days after dismissal.');
+        console.log('⭐ Rating system fully integrated with course reviews.');
+        console.log('👥 Following system fixed with proper localStorage persistence.');
+        console.log('🔍 SEO meta tags dynamically updated for posts and courses.');
+        console.log('📖 Book downloads permanently unlocked after purchase approval.');
+        console.log('👁️ Course views and book views are actively tracked.');
+        console.log('💰 Course completion bonus: ₦100.');
+        console.log('🎨 Gold, White & Black premium theme applied.');
+        console.log('📢 Hybrid Ads: Custom Admin Ads + Adsterra fallback with 50% creator revenue share.');
+        console.log('📢 Ads appear between posts (every 3 for free, 6 for premium) AND after every 4 courses in Explore.');
+        console.log('📢 Ads also appear in: Video (pre/mid-roll), Sidebar, Books, Lesson inline, Challenges.');
+        console.log('🗑️ Admin can delete any post.');
+        console.log('📤 Book upload: Premium users can submit books for admin approval.');
+        console.log('📤 Admin can directly add books with immediate publishing.');
+        console.log('🔗 Affiliate links now use hash-based routing for SPA compatibility.');
+        console.log('🏦 Bank details updated: Lead Bank & Taj Bank for manual transfers.');
+        console.log('⚡ Performance: Lazy loading, debounce, throttle, batch DOM updates, request deduplication.');
+        console.log('🔥 Landing page hero stats hardcoded for marketing impact.');
+        console.log('📊 Leaderboard shows correct user data (no more zeros).');
+        console.log('👤 Profile earnings hidden when viewing other users\' profiles.');
+        console.log('📢 Ad Frequency: Free users see ads every 3 posts, Premium users every 6 posts.');
+        console.log('📚 Book purchase approval automatically converts purchase button to download.');
+        console.log('🌱 Social Earnings fully integrated with wallet breakdown and dedicated page.');
+        console.log('✅ Production-ready: All features optimized for growth, engagement, and profitability.');
+        console.log('📊 Social Earnings: Daily pool distribution with admin config and real-time socket updates.');
+        console.log('📌 Read More: Posts truncate at 200 characters with toggle.');
+        console.log('📌 Premium Book Upload: Only visible to premium users with pending status.');
+        console.log('📌 All 11 ad placements supported in dropdown and rendering.');
+        console.log('📌 Popup ads: Only shown to free users, once per session.');
+        console.log('📌 Ad containers hidden for premium users.');
+        console.log('📌 Sponsorship Tab: Users can create ad campaigns, sponsor the platform, and track analytics.');
+        console.log('📌 Campaign Payment Flow: Users pay after admin approval — campaign goes live on payment.');
+        console.log('📌 Escrow-based budget tracking with real-time deductions.');
+        console.log('📌 Top-up campaigns to add more budget.');
+        console.log('📌 Fraud detection with IP blacklisting and unique impression tracking.');
+        console.log('📌 Minimum withdrawal: ₦5,000.');
     </script>
 </body>
 </html>
