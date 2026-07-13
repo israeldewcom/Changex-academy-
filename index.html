@@ -807,6 +807,21 @@
             color: var(--danger);
             border: 1px solid rgba(248, 113, 113, .15);
         }
+        .badge-author {
+            background: rgba(212, 175, 55, .12);
+            color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, .2);
+        }
+        .badge-advertiser {
+            background: rgba(52, 211, 153, .12);
+            color: var(--success);
+            border: 1px solid rgba(52, 211, 153, .2);
+        }
+        .badge-publish {
+            background: rgba(212, 175, 55, .12);
+            color: var(--primary);
+            border: 1px solid rgba(212, 175, 55, .2);
+        }
         .card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -2095,6 +2110,14 @@
         }
         .nav-badge-pink {
             background: var(--secondary);
+            color: #000;
+        }
+        .nav-badge-gold {
+            background: var(--gold);
+            color: #000;
+        }
+        .nav-badge-premium {
+            background: linear-gradient(135deg, var(--gold), var(--primary));
             color: #000;
         }
         .nav-sec {
@@ -5620,6 +5643,37 @@
             color: var(--violet);
             border: 1px solid rgba(212, 175, 55, .2);
         }
+
+        /* ─── BADGE DISPLAY ───────────────────────────────────────────── */
+        .badge-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            text-align: center;
+            transition: all .2s;
+        }
+        .badge-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+        .badge-card .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: .5rem;
+            display: block;
+        }
+        .badge-card .badge-name {
+            font-weight: 700;
+            font-size: .88rem;
+        }
+        .badge-card .badge-desc {
+            font-size: .7rem;
+            color: var(--text3);
+        }
+        .badge-card.locked {
+            opacity: 0.5;
+            filter: grayscale(0.5);
+        }
     </style>
 </head>
 <body>
@@ -5755,14 +5809,16 @@
                         <li><span class="nav-item" id="nav-my-library" onclick="setDP('my-library')"><span class="nav-ico"><i class="fas fa-book-open"></i></span>My Library</span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Publish</li>
                         <li id="nav-create-book" class="premium-only"><span class="nav-item" onclick="setDP('create-book')"><span class="nav-ico"><i class="fas fa-book"></i></span>Upload Book<span class="nav-badge nav-badge-premium">Premium</span></span></li>
+                        <li id="nav-create-article" class="premium-only"><span class="nav-item" onclick="setDP('create-article')"><span class="nav-ico"><i class="fas fa-newspaper"></i></span>Paid Article<span class="nav-badge nav-badge-premium">Premium</span></span></li>
+                        <li><span class="nav-item" id="nav-sponsorship" onclick="setDP('sponsorship')"><span class="nav-ico"><i class="fas fa-bullhorn"></i></span>Ad Campaigns<span class="nav-badge nav-badge-v" id="navCampaignBadge">0</span></span></li>
+                        <li><span class="nav-item" id="nav-my-articles" onclick="setDP('my-articles')"><span class="nav-ico"><i class="fas fa-file-alt"></i></span>My Articles<span class="nav-badge" id="navArticleBadge">0</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Earn More</li>
                         <li><span class="nav-item" id="nav-social-earnings" onclick="setDP('social-earnings')"><span class="nav-ico"><i class="fas fa-seedling"></i></span>Social Earnings<span class="nav-badge nav-badge-gold" id="navSocialBadge">0</span></span></li>
-                        <li><span class="nav-item" id="nav-sponsorship" onclick="setDP('sponsorship')"><span class="nav-ico"><i class="fas fa-handshake"></i></span>Sponsorship<span class="nav-badge nav-badge-gold">🤝</span></span></li>
+                        <li><span class="nav-item" id="nav-manual-payments" onclick="setDP('manual-payments')"><span class="nav-ico"><i class="fas fa-credit-card"></i></span>Manual Payments<span class="nav-badge nav-badge-o" id="navManualBadge">0</span></span></li>
                         <li class="nav-sec" style="margin-top:.3rem">Account</li>
                         <li><span class="nav-item" id="nav-settings" onclick="setDP('settings')"><span class="nav-ico"><i class="fas fa-cog"></i></span>Settings</span></li>
                         <li><span class="nav-item" id="nav-tools" onclick="setDP('tools')"><span class="nav-ico"><i class="fas fa-tools"></i></span>Tools</span></li>
                         <li><span class="nav-item" id="nav-badges" onclick="setDP('badges')"><span class="nav-ico"><i class="fas fa-medal"></i></span>Badges</span></li>
-                        <li><span class="nav-item" id="nav-manual-payments" onclick="setDP('manual-payments')"><span class="nav-ico"><i class="fas fa-credit-card"></i></span>Manual Payments</span></li>
                         <li><span class="nav-item" id="nav-purchased-articles" onclick="setDP('purchased-articles')"><span class="nav-ico"><i class="fas fa-file-alt"></i></span>Purchased Articles</span></li>
                         <li id="adminNavLi" style="display:none"><span class="nav-item" id="nav-admin" onclick="setDP('admin')" style="color:var(--danger)"><span class="nav-ico"><i class="fas fa-shield-alt"></i></span>Admin Panel<span class="nav-badge nav-badge-d">⚡</span></span></li>
                         <li><span class="nav-item" onclick="openModal('feedbackModal')"><span class="nav-ico"><i class="fas fa-comment-dots"></i></span>Feedback</span></li>
@@ -5838,8 +5894,14 @@
                     <!-- BOOK DETAIL -->
                     <div id="dash-book-detail" class="dash-sub"><div class="page-hd"><button class="btn btn-ghost btn-sm" onclick="setDP('books')"><i class="fas fa-arrow-left"></i> Back to Library</button></div><div id="bookPageAdContainerDetail" class="ad-container"></div><div id="bookDetailContent"></div><div id="bookSponsorAdContainerDetail" class="ad-container"></div></div>
 
-                    <!-- UPLOAD BOOK (Premium Only) – COMPLETE FORM WITH ALL FIELDS -->
+                    <!-- UPLOAD BOOK (Premium Only) -->
                     <div id="dash-create-book" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">📚 Upload Book</h2><p class="page-sub">Publish your book for admin approval. Premium users only.</p></div><div id="bookUploadStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Book Title *</label><input type="text" class="finput" id="bookUploadTitle" placeholder="Enter book title" /></div><div class="form-group"><label class="flabel">Author *</label><input type="text" class="finput" id="bookUploadAuthor" placeholder="Author name" /></div><div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="bookUploadDesc" rows="3" placeholder="Book description..."></textarea></div><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="bookUploadPrice" placeholder="0 for free" min="0" value="0" /></div><div class="form-group"><label class="flabel">Cover Image URL</label><input type="url" class="finput" id="bookUploadCover" placeholder="https://example.com/cover.jpg" oninput="previewBookCover(this.value)" /></div><div id="bookUploadCoverPreview" style="display:none;"><img id="bookUploadCoverPreviewImg" style="max-width:150px;border-radius:var(--radius-sm);border:1px solid var(--border);" /></div><div class="form-group"><label class="flabel">Book PDF URL *</label><input type="url" class="finput" id="bookUploadFile" placeholder="https://example.com/book.pdf" oninput="previewBookFile(this.value)" /></div><div id="bookUploadFilePreview" style="display:none;"><span class="badge badge-success">✅ PDF URL provided</span></div><div class="form-group"><label class="flabel">Affiliate Commission (%)</label><input type="number" class="finput" id="bookUploadAffiliate" placeholder="e.g. 15" min="0" max="50" value="0" /></div><div class="info-box"><i class="fas fa-info-circle" style="color:var(--primary)"></i>You earn <strong>80%</strong> of each sale. Platform takes 20%. Affiliates earn the percentage you set.</div><button class="btn btn-primary btn-lg w-full mt-3" onclick="submitBookForApproval()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div>
+
+                    <!-- CREATE PAID ARTICLE (Premium Only) -->
+                    <div id="dash-create-article" class="dash-sub premium-only" style="display:none;"><div class="page-hd"><h2 class="page-title">✍️ Create Paid Article</h2><p class="page-sub">Publish premium content and earn from every purchase</p></div><div id="articleStatus" style="display:none;" class="card card-p mb-3"></div><div class="card card-p"><div class="form-group"><label class="flabel">Title *</label><input type="text" class="finput" id="articleTitle" placeholder="Catchy title"></div><div class="form-group"><label class="flabel">Excerpt (short description)</label><textarea class="finput" id="articleExcerpt" rows="2" placeholder="Brief summary..."></textarea></div><div class="form-group"><label class="flabel">Content *</label><div id="articleEditor" style="min-height:300px"></div></div><div class="form-group"><label class="flabel">Featured Image URL</label><input type="url" class="finput" id="articleImage" placeholder="https://example.com/image.jpg"></div><div class="form-group"><label class="flabel">Tags (comma separated)</label><input type="text" class="finput" id="articleTags" placeholder="javascript, react, tutorial"></div><div class="form-group"><label class="flabel">Make it a paid article?</label><div style="display:flex;gap:.5rem;align-items:center;margin-top:.3rem;"><input type="checkbox" id="articleIsPaid" onchange="toggleArticlePriceField()" style="accent-color:var(--primary);width:16px;height:16px;"><label for="articleIsPaid" style="color:var(--text2);">Yes, charge for access</label></div></div><div id="articlePriceField" style="display:none;"><div class="form-group"><label class="flabel">Price (₦)</label><input type="number" class="finput" id="articlePrice" placeholder="e.g. 500" min="100" value="500"></div></div><div class="form-group"><label class="flabel">SEO Title (optional)</label><input type="text" class="finput" id="articleSeoTitle"></div><div class="form-group"><label class="flabel">SEO Description</label><textarea class="finput" id="articleSeoDesc" rows="2"></textarea></div><div style="background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.15);border-radius:var(--radius-sm);padding:.75rem;font-size:.8rem;color:var(--text2);margin-bottom:1rem;"><i class="fas fa-info-circle" style="color:var(--primary)"></i> Paid articles require admin approval before going live. You earn <strong>80%</strong> of each sale.</div><div class="d-flex gap-2"><button class="btn btn-ghost" onclick="saveArticleDraft()"><i class="fas fa-save"></i> Save Draft</button><button class="btn btn-primary" onclick="submitArticle()"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div></div></div>
+
+                    <!-- MY ARTICLES -->
+                    <div id="dash-my-articles" class="dash-sub"><div class="page-hd"><h2 class="page-title">📝 My Articles</h2><p class="page-sub">Manage your published and pending articles</p></div><div id="myArticlesList"></div></div>
 
                     <!-- MY LIBRARY (Purchased Books) -->
                     <div id="dash-my-library" class="dash-sub"><div class="page-hd"><h2 class="page-title">📚 My Library</h2><p class="page-sub">Books you've purchased – download them anytime</p></div><div id="myLibraryBooks" class="courses-grid"></div></div>
@@ -5866,7 +5928,7 @@
                     <div id="dash-sponsorship" class="dash-sub"><div class="page-hd"><h2 class="page-title">🤝 Partner with ChangeX</h2><p class="page-sub">Sponsor, donate, or collaborate with us</p></div><div class="tabs mb-4"><button class="tab-btn active" onclick="switchSponsorTab('overview',this)">Overview</button><button class="tab-btn" onclick="switchSponsorTab('campaigns',this)">📢 Ad Campaigns</button><button class="tab-btn" onclick="switchSponsorTab('sponsorships',this)">🤝 Sponsorships</button><button class="tab-btn" onclick="switchSponsorTab('dashboard',this)">📊 Analytics</button></div><div id="sponsor-overview" class="sponsor-tab active"><div class="row mb-4"><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">📢</div><h4>Ad Campaigns</h4><p style="color:var(--text3)">Reach thousands of learners with targeted ads</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('campaigns')">Get Started</button></div></div><div class="col-12 col-md-6"><div class="card card-p text-center"><div style="font-size:2.5rem">🤝</div><h4>Sponsor Us</h4><p style="color:var(--text3)">Donate, partner, or collaborate with us</p><button class="btn btn-primary btn-sm" onclick="switchSponsorTab('sponsorships')">Support Us</button></div></div></div><div class="card card-p"><h6>Why Partner With Us?</h6><div class="row mt-3"><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">🎯</div><div style="font-weight:700">Targeted Audience</div><div style="font-size:.75rem;color:var(--text3)">Reach tech students &amp; professionals</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">📊</div><div style="font-weight:700">Real Analytics</div><div style="font-size:.75rem;color:var(--text3)">Track impressions, clicks, conversions</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">💰</div><div style="font-weight:700">Flexible Pricing</div><div style="font-size:.75rem;color:var(--text3)">Pay per impression or click</div></div></div><div class="col-12 col-md-3"><div style="text-align:center"><div style="font-size:2rem">✅</div><div style="font-weight:700">Admin Approved</div><div style="font-size:.75rem;color:var(--text3)">Quality control for your brand</div></div></div></div></div></div><div id="sponsor-campaigns" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>📢 Your Ad Campaigns</h4><button class="btn btn-primary btn-sm" onclick="openModal('campaignModal')"><i class="fas fa-plus"></i> Create Campaign</button></div><div id="campaignsList"></div></div><div id="sponsor-sponsorships" class="sponsor-tab" style="display:none;"><div class="d-flex items-center justify-between mb-3 flex-wrap" style="gap:.5rem;"><h4>🤝 Your Sponsorships</h4><button class="btn btn-primary btn-sm" onclick="openModal('sponsorshipModal')"><i class="fas fa-plus"></i> Sponsor Us</button></div><div id="sponsorshipsList"></div></div><div id="sponsor-dashboard" class="sponsor-tab" style="display:none;"><h4>📊 Campaign Analytics</h4><div id="campaignAnalyticsContainer"></div></div></div>
 
                     <!-- ADMIN -->
-                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span><span class="fpill" onclick="switchAdm('content',this)">Content</span><span class="fpill" onclick="switchAdm('revenue',this)">Revenue</span><span class="fpill" onclick="switchAdm('settings',this)">Settings</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span></div><div id="adminContent"></div></div></div></div>
+                    <div id="dash-admin" class="dash-sub"><div class="admin-hd"><div class="si si-d" style="width:44px;height:44px;font-size:1.1rem"><i class="fas fa-shield-alt"></i></div><div><h4 style="margin:0">Admin Panel</h4><p style="font-size:.78rem;color:var(--text2);margin:.12rem 0 0">Super admin · All actions logged · Actions affect user dashboards live</p></div><div style="margin-left:0"><span class="badge badge-danger">SUPER ADMIN</span></div></div><div class="row"><div class="col-12"><div style="display:flex;gap:.28rem;flex-wrap:wrap;overflow-x:auto;margin-bottom:.75rem;padding-bottom:.2rem"><span class="fpill active" onclick="switchAdm('dashboard',this)">Dashboard</span><span class="fpill" onclick="switchAdm('users',this)">Users</span><span class="fpill" onclick="switchAdm('courses',this)">Courses</span><span class="fpill" onclick="switchAdm('approvals',this)">Approvals</span><span class="fpill" onclick="switchAdm('withdrawals',this)">Payouts</span><span class="fpill" onclick="switchAdm('manualPayments',this)">Manual Pay</span><span class="fpill" onclick="switchAdm('coupons',this)">Coupons</span><span class="fpill" onclick="switchAdm('announcements',this)">Announce</span><span class="fpill" onclick="switchAdm('challenges',this)">Challenges</span><span class="fpill" onclick="switchAdm('ads',this)">Ads</span><span class="fpill" onclick="switchAdm('affiliates',this)">Affiliates</span><span class="fpill" onclick="switchAdm('books',this)">Books</span><span class="fpill" onclick="switchAdm('social-earnings',this)">Social Earnings</span><span class="fpill" onclick="switchAdm('campaigns',this)">Campaigns</span><span class="fpill" onclick="switchAdm('sponsorships',this)">Sponsorships</span><span class="fpill" onclick="switchAdm('content',this)">Content</span><span class="fpill" onclick="switchAdm('revenue',this)">Revenue</span><span class="fpill" onclick="switchAdm('settings',this)">Settings</span><span class="fpill" onclick="switchAdm('audit',this)">Audit</span><span class="fpill" onclick="switchAdm('articles',this)">📝 Articles</span></div><div id="adminContent"></div></div></div></div>
                 </div></div></div></div>
 
     <!-- FAB -->
@@ -5905,6 +5967,7 @@
             feedSentinelObserver = null,
             feedAds = [],
             feedAdIndex = 0;
+        let articleQuill = null;
 
         // ═══════════════════════════════════════════════════════════════
         // APPLICATION STATE
@@ -6035,6 +6098,8 @@
             sponsorTab: 'overview',
             campaignStats: null,
             campaignAnalytics: [],
+            myArticles: [],
+            articleBadgeCount: 0,
         };
 
         // ================================================================
@@ -6671,6 +6736,24 @@
                     if (statusEl) statusEl.style.display = 'none';
                     resetBookUploadForm();
                 },
+                'create-article': () => {
+                    if (!S.isPremium) {
+                        toast('Premium required to create paid articles', 'warning');
+                        openModal('premiumModal');
+                        setDP('home');
+                        return;
+                    }
+                    const container = document.getElementById('dash-create-article');
+                    if (container) {
+                        container.style.display = 'block';
+                        container.classList.add('active');
+                    }
+                    const statusEl = document.getElementById('articleStatus');
+                    if (statusEl) statusEl.style.display = 'none';
+                    resetArticleForm();
+                    setTimeout(initArticleQuill, 300);
+                },
+                'my-articles': loadMyArticles,
                 'my-library': () => { loadMyLibrary(); },
                 tools: () => { loadTools(); },
                 badges: loadUserBadges,
@@ -6690,6 +6773,7 @@
             checkPlanExpiry();
             updatePremiumUI();
             updateSocialBadge();
+            updateNavBadges();
             if (pg === 'settings') {
                 const subStatus = document.getElementById('subStatusCard');
                 if (subStatus) renderSubStatus();
@@ -6774,6 +6858,30 @@
                             <div class="d-flex items-center gap-3"><div class="si si-d"><i class="fas fa-times-circle"></i></div><div><strong>Book Rejected</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your book "${data.title}" was not approved. Please check your submission.</p></div></div>
                         `;
                     }
+                });
+                socket.on('article_approved', (data) => {
+                    toast(`✅ Your article "${data.title}" has been approved!`, 'success');
+                    if (S.dp === 'my-articles') loadMyArticles();
+                    if (S.dp === 'create-article') {
+                        document.getElementById('articleStatus').style.display = 'block';
+                        document.getElementById('articleStatus').innerHTML = `
+                            <div class="d-flex items-center gap-3"><div class="si si-g"><i class="fas fa-check-circle"></i></div><div><strong>Article Approved!</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your article "${data.title}" is now published!</p></div></div>
+                        `;
+                    }
+                });
+                socket.on('article_rejected', (data) => {
+                    toast(`❌ Your article "${data.title}" was rejected${data.reason ? ': ' + data.reason : ''}`, 'error');
+                    if (S.dp === 'my-articles') loadMyArticles();
+                    if (S.dp === 'create-article') {
+                        document.getElementById('articleStatus').style.display = 'block';
+                        document.getElementById('articleStatus').innerHTML = `
+                            <div class="d-flex items-center gap-3"><div class="si si-d"><i class="fas fa-times-circle"></i></div><div><strong>Article Rejected</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">${data.reason ? 'Reason: ' + escapeHtml(data.reason) : 'Please check your submission.'}</p></div></div>
+                        `;
+                    }
+                });
+                socket.on('article_pending', (data) => {
+                    toast(`📝 New article pending: "${data.title}" by ${data.userName}`, 'info');
+                    if (S.dp === 'admin' && S.admSec === 'articles') loadAdminArticles();
                 });
                 socket.on('disconnect', () => { console.log('Socket disconnected'); });
                 socket.on('new_post', (post) => {
@@ -7276,6 +7384,7 @@
             if (followersCountEl) followersCountEl.textContent = S.followersCount || 0;
             updatePremiumUI();
             updateSocialBadge();
+            updateNavBadges();
             if (S.dp === 'feed' || S.dp === 'home' || S.dp === 'explore' || S.dp === 'books') {
                 loadSidebarAd();
                 loadBottomAd();
@@ -7289,8 +7398,17 @@
             });
             const navCreateBook = document.getElementById('nav-create-book');
             if (navCreateBook) navCreateBook.style.display = isPremium ? '' : 'none';
+            const navCreateArticle = document.getElementById('nav-create-article');
+            if (navCreateArticle) navCreateArticle.style.display = isPremium ? '' : 'none';
             if (isPremium && S.dp === 'create-book') {
                 const container = document.getElementById('dash-create-book');
+                if (container) {
+                    container.style.display = 'block';
+                    container.classList.add('active');
+                }
+            }
+            if (isPremium && S.dp === 'create-article') {
+                const container = document.getElementById('dash-create-article');
                 if (container) {
                     container.style.display = 'block';
                     container.classList.add('active');
@@ -7305,9 +7423,31 @@
             document.querySelectorAll('.ad-container').forEach(container => {
                 container.style.display = isPremium ? 'none' : '';
             });
-            if ((S.dp === 'create-book') && !isPremium) {
+            if ((S.dp === 'create-book' || S.dp === 'create-article') && !isPremium) {
                 toast('Premium required', 'warning');
                 setDP('home');
+            }
+        }
+
+        function updateNavBadges() {
+            const campaignBadge = document.getElementById('navCampaignBadge');
+            if (campaignBadge) {
+                const count = (S.myCampaigns || []).filter(c => c.status === 'pending' || c.status === 'pending_payment')
+                    .length;
+                campaignBadge.textContent = count || 0;
+            }
+            const articleBadge = document.getElementById('navArticleBadge');
+            if (articleBadge) {
+                const count = (S.myArticles || []).filter(a => a.status === 'pending').length;
+                articleBadge.textContent = count || 0;
+            }
+            const manualBadge = document.getElementById('navManualBadge');
+            if (manualBadge) {
+                try {
+                    const payments = JSON.parse(localStorage.getItem('cx_manual_payments') || '[]');
+                    const count = payments.filter(p => p.status === 'pending_review').length;
+                    manualBadge.textContent = count || 0;
+                } catch (e) { manualBadge.textContent = '0'; }
             }
         }
 
@@ -7500,7 +7640,148 @@
         }
 
         // ================================================================
-        // POSTS MODULE – ENHANCED WITH READ MORE, NESTED COMMENTS, OPTIMISTIC LIKES
+        // ARTICLE FUNCTIONS
+        // ================================================================
+        function resetArticleForm() {
+            document.getElementById('articleTitle').value = '';
+            document.getElementById('articleExcerpt').value = '';
+            document.getElementById('articleImage').value = '';
+            document.getElementById('articleTags').value = '';
+            document.getElementById('articleIsPaid').checked = false;
+            document.getElementById('articlePriceField').style.display = 'none';
+            document.getElementById('articlePrice').value = '500';
+            document.getElementById('articleSeoTitle').value = '';
+            document.getElementById('articleSeoDesc').value = '';
+            if (articleQuill) articleQuill.root.innerHTML = '';
+        }
+
+        function initArticleQuill() {
+            if (articleQuill) { try { articleQuill.focus(); } catch (e) {} return; }
+            const el = document.getElementById('articleEditor');
+            if (!el || typeof Quill === 'undefined') { setTimeout(initArticleQuill, 300); return; }
+            try {
+                articleQuill = new Quill('#articleEditor', { theme: 'snow', placeholder: 'Write your article content here...',
+                    modules: { toolbar: [
+                            ['bold', 'italic', 'underline'], [{ 'header': [1, 2, 3, false] }],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link', 'image', 'code-block'],
+                            ['clean']
+                        ] } });
+            } catch (e) { console.warn('Article Quill init error:', e);
+                setTimeout(initArticleQuill, 500); }
+        }
+
+        function toggleArticlePriceField() {
+            const isPaid = document.getElementById('articleIsPaid').checked;
+            document.getElementById('articlePriceField').style.display = isPaid ? 'block' : 'none';
+        }
+
+        async function saveArticleDraft() {
+            const title = document.getElementById('articleTitle').value.trim();
+            if (!title) { toast('Enter a title', 'error'); return; }
+            const content = articleQuill ? articleQuill.root.innerHTML : '';
+            const payload = {
+                title,
+                content,
+                excerpt: document.getElementById('articleExcerpt').value.trim(),
+                featuredImage: document.getElementById('articleImage').value.trim(),
+                tags: document.getElementById('articleTags').value.trim(),
+                isPaid: document.getElementById('articleIsPaid').checked,
+                price: parseFloat(document.getElementById('articlePrice').value) || 500,
+                seoTitle: document.getElementById('articleSeoTitle').value.trim(),
+                seoDescription: document.getElementById('articleSeoDesc').value.trim(),
+                status: 'draft',
+            };
+            showLoading('Saving draft...');
+            try {
+                await apiCall('/articles/create', { method: 'POST', body: payload });
+                toast('✅ Draft saved!', 'success');
+            } catch (err) { toast(err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        async function submitArticle() {
+            const title = document.getElementById('articleTitle').value.trim();
+            if (!title) { toast('Enter a title', 'error'); return; }
+            const content = articleQuill ? articleQuill.root.innerHTML : '';
+            if (!content || content === '<p><br></p>') { toast('Write content', 'error'); return; }
+            const payload = {
+                title,
+                content,
+                excerpt: document.getElementById('articleExcerpt').value.trim(),
+                featuredImage: document.getElementById('articleImage').value.trim(),
+                tags: document.getElementById('articleTags').value.trim(),
+                isPaid: document.getElementById('articleIsPaid').checked,
+                price: parseFloat(document.getElementById('articlePrice').value) || 500,
+                seoTitle: document.getElementById('articleSeoTitle').value.trim(),
+                seoDescription: document.getElementById('articleSeoDesc').value.trim(),
+            };
+            showLoading('Submitting article...');
+            try {
+                const res = await apiCall('/articles/create', { method: 'POST', body: payload });
+                if (res.success) {
+                    toast('✅ Article submitted for admin approval!', 'success');
+                    document.getElementById('articleStatus').style.display = 'block';
+                    document.getElementById('articleStatus').innerHTML = `
+                        <div class="d-flex items-center gap-3"><div class="si si-gold"><i class="fas fa-clock"></i></div><div><strong>Article submitted!</strong><p style="margin:0;font-size:.82rem;color:var(--text2);">Your article "${title}" is pending admin approval.</p></div></div>
+                    `;
+                    resetArticleForm();
+                }
+            } catch (err) { toast(err.message, 'error'); } finally { hideLoading(); }
+        }
+
+        async function loadMyArticles() {
+            try {
+                const res = await apiCall('/articles/my');
+                const articles = res.data || [];
+                S.myArticles = articles;
+                const container = document.getElementById('myArticlesList');
+                if (!container) return;
+                if (!articles.length) {
+                    container.innerHTML =
+                        '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No articles yet. Create your first paid article!</p><button class="btn btn-primary btn-sm mt-3" onclick="setDP(\'create-article\')"><i class="fas fa-plus"></i> Create Article</button></div>';
+                    return;
+                }
+                container.innerHTML = articles.map(a => {
+                    const statusClass = a.status === 'published' ? 'badge-success' :
+                        a.status === 'pending' ? 'badge-gold' :
+                        a.status === 'rejected' ? 'badge-danger' : 'badge-dark';
+                    const isPaid = a.isPaid ? '💰 Paid' : 'Free';
+                    return `
+                        <div class="card card-p mb-2">
+                            <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
+                                <div>
+                                    <strong>${escapeHtml(a.title)}</strong>
+                                    <span class="badge ${statusClass}">${a.status}</span>
+                                    <span class="badge ${a.isPaid ? 'badge-gold' : 'badge-dark'}">${isPaid}</span>
+                                    <br>
+                                    <small style="color:var(--text3);">
+                                        👁️ ${a.views || 0} views · 🛒 ${a.purchases || 0} purchases · 💰 ${fmtMoneyAPI(a.earnings || 0)} earned
+                                        · ${new Date(a.createdAt).toLocaleDateString()}
+                                    </small>
+                                    ${a.rejectionReason ? `<div style="font-size:.75rem;color:var(--danger);">Reason: ${escapeHtml(a.rejectionReason)}</div>` : ''}
+                                </div>
+                                <div style="display:flex;gap:.3rem;">
+                                    ${a.status === 'published' ? `<button class="btn btn-ghost btn-sm" onclick="viewArticle('${a._id}')"><i class="fas fa-eye"></i></button>` : ''}
+                                    ${a.status === 'rejected' ? `<button class="btn btn-ghost btn-sm" onclick="editArticle('${a._id}')"><i class="fas fa-edit"></i></button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                const pendingCount = articles.filter(a => a.status === 'pending').length;
+                document.getElementById('navArticleBadge').textContent = pendingCount;
+            } catch (err) { toast('Failed to load articles: ' + err.message, 'error'); }
+        }
+
+        function viewArticle(articleId) {
+            toast('Article view coming soon!', 'info');
+        }
+
+        function editArticle(articleId) {
+            toast('Edit article coming soon!', 'info');
+        }
+
+        // ================================================================
+        // POSTS MODULE
         // ================================================================
         const POSTS_API = '/posts';
         const CHALLENGES_API = '/challenges';
@@ -7573,7 +7854,7 @@
         }
 
         // ================================================================
-        // FEED RENDER WITH HYBRID ADS + READ MORE + NESTED COMMENTS + PERSONALIZED
+        // FEED RENDER
         // ================================================================
         async function loadFeed(page = 1) {
             const filter = S.feedFilter || 'personalized';
@@ -7825,7 +8106,7 @@
             }
         }
 
-        // ─── COMMENTS WITH NESTED REPLIES ─────────────────────────────
+        // ─── COMMENTS ──────────────────────────────────────────────────
         async function loadComments(postId) {
             const section = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
             if (!section) return;
@@ -8106,7 +8387,6 @@
             const seoDesc = document.getElementById('postSeoDesc')?.value || '';
             const videoFile = document.getElementById('postVideoInput')?.files[0];
 
-            // ─── Premium Article Fields ──────────────────────────────────
             const isPaid = document.getElementById('postIsPaid')?.checked || false;
             const price = parseFloat(document.getElementById('postPrice')?.value) || 0;
             const previewContent = document.getElementById('postPreviewContent')?.value || content.substring(0, 200);
@@ -8644,7 +8924,7 @@
         }
 
         // ================================================================
-        // SOCIAL EARNINGS – FULL INTEGRATION
+        // SOCIAL EARNINGS
         // ================================================================
         async function renderSocialEarnings() {
             showLoading('Loading social earnings...');
@@ -8900,7 +9180,7 @@
         }
 
         // ================================================================
-        // EXPLORE COURSES – WITH ADS AFTER EVERY 4 COURSES FOR FREE USERS
+        // EXPLORE COURSES
         // ================================================================
         async function renderExplore() {
             showLoading('Loading courses...');
@@ -9913,6 +10193,7 @@
                     <div class="web-row"><span>Book Earnings</span><span style="color:var(--cyan);font-weight:700">${fmtMoneyAPI(breakdown.bookEarnings || 0)}</span></div>
                     <div class="web-row"><span>Ad Revenue</span><span style="color:var(--gold);font-weight:700">${fmtMoneyAPI(breakdown.adRevenue || 0)}</span></div>
                     <div class="web-row"><span>Campaign Revenue</span><span style="color:var(--orange);font-weight:700">${fmtMoneyAPI(breakdown.campaignRevenue || 0)}</span></div>
+                    <div class="web-row"><span>Article Earnings</span><span style="color:var(--gold);font-weight:700">${fmtMoneyAPI(breakdown.articleEarnings || 0)}</span></div>
                     <div class="web-row" style="border-top:2px solid var(--border);font-weight:800;font-size:.9rem"><span>Total Earnings</span><span style="color:var(--lime)">${fmtMoneyAPI(breakdown.totalEarnings || 0)}</span></div>
                 `;
 
@@ -9944,6 +10225,7 @@
                         ).join('');
                 } catch (e) {}
                 updateSocialBadge();
+                updateNavBadges();
             } catch (e) { console.warn('Wallet render error:', e); }
         }
 
@@ -10828,7 +11110,7 @@
         }
 
         // ================================================================
-        // BOOKS MODULE – WITH HYBRID ADS + ADMIN APPROVAL + PREMIUM UPLOAD
+        // BOOKS MODULE
         // ================================================================
         async function loadBooks() {
             showLoading('Loading books...');
@@ -11092,7 +11374,7 @@
             }
         }
 
-        // ─── BOOK UPLOAD (Premium) – COMPLETE ────────────────────────────
+        // ─── BOOK UPLOAD ──────────────────────────────────────────────
         function previewBookCover(url) {
             const preview = document.getElementById('bookUploadCoverPreview');
             const img = document.getElementById('bookUploadCoverPreviewImg');
@@ -11195,7 +11477,7 @@
             if (S.dp === 'books') loadBooks();
         }
 
-        // ─── MY LIBRARY (Purchased Books) ─────────────────────────────
+        // ─── MY LIBRARY ────────────────────────────────────────────────
         async function loadMyLibrary() {
             showLoading('Loading your library...');
             try {
@@ -11356,26 +11638,35 @@
                     container.innerHTML = '<div class="empty-state"><i class="fas fa-credit-card"></i><p>No manual payments submitted.</p></div>';
                     return;
                 }
-                container.innerHTML = payments.map(p => `
-                    <div class="card card-p mb-2" style="border-left: 4px solid ${p.status === 'approved' ? 'var(--success)' : p.status === 'rejected' ? 'var(--danger)' : 'var(--gold)'};">
-                        <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
-                            <div>
-                                <strong>${p.type.charAt(0).toUpperCase() + p.type.slice(1)}</strong>
-                                <span class="badge ${p.status === 'approved' ? 'badge-success' : p.status === 'rejected' ? 'badge-danger' : 'badge-gold'}">${p.status}</span>
-                                <div style="font-size:.75rem;color:var(--text3);">Reference: ${p.reference}</div>
-                                <div style="font-size:.75rem;color:var(--text3);">Amount: ${fmtMoneyAPI(p.amount)}</div>
-                                <div style="font-size:.75rem;color:var(--text3);">Date: ${new Date(p.paymentDate).toLocaleDateString()}</div>
-                                ${p.adminNote ? `<div style="font-size:.75rem;color:var(--text2);">Note: ${escapeHtml(p.adminNote)}</div>` : ''}
+                const pendingCount = payments.filter(p => p.status === 'pending_review').length;
+                document.getElementById('navManualBadge').textContent = pendingCount;
+                localStorage.setItem('cx_manual_payments', JSON.stringify(payments));
+                container.innerHTML = payments.map(p => {
+                    const statusClass = p.status === 'approved' ? 'badge-success' :
+                        p.status === 'rejected' ? 'badge-danger' : 'badge-gold';
+                    const statusLabel = p.status === 'approved' ? '✅ Approved' :
+                        p.status === 'rejected' ? '❌ Rejected' : '⏳ Pending Review';
+                    return `
+                        <div class="card card-p mb-2" style="border-left: 4px solid ${p.status === 'approved' ? 'var(--success)' : p.status === 'rejected' ? 'var(--danger)' : 'var(--gold)'};">
+                            <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
+                                <div>
+                                    <strong>${p.type.charAt(0).toUpperCase() + p.type.slice(1)}</strong>
+                                    <span class="badge ${statusClass}">${statusLabel}</span>
+                                    <div style="font-size:.75rem;color:var(--text3);">Reference: ${p.reference}</div>
+                                    <div style="font-size:.75rem;color:var(--text3);">Amount: ${fmtMoneyAPI(p.amount)}</div>
+                                    <div style="font-size:.75rem;color:var(--text3);">Date: ${new Date(p.paymentDate).toLocaleDateString()}</div>
+                                    ${p.adminNote ? `<div style="font-size:.75rem;color:var(--text2);">Note: ${escapeHtml(p.adminNote)}</div>` : ''}
+                                </div>
+                                <a href="${p.receiptUrl}" target="_blank" class="btn btn-ghost btn-sm"><i class="fas fa-eye"></i> Receipt</a>
                             </div>
-                            <a href="${p.receiptUrl}" target="_blank" class="btn btn-ghost btn-sm"><i class="fas fa-eye"></i> Receipt</a>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (err) { toast('Failed to load manual payments: ' + err.message, 'error'); }
         }
 
         // ================================================================
-        // PURCHASED ARTICLES – FIXED WITH BETTER ERROR HANDLING
+        // PURCHASED ARTICLES
         // ================================================================
         async function loadPurchasedArticles() {
             try {
@@ -12115,7 +12406,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL – FULL WITH BOOKS, ADS, CHALLENGES, SOCIAL EARNINGS, CAMPAIGNS, SPONSORSHIPS
+        // ADMIN PANEL – FULL WITH BOOKS, ADS, CHALLENGES, SOCIAL EARNINGS, CAMPAIGNS, SPONSORSHIPS, ARTICLES
         // ================================================================
         function renderAdm(sec) { switchAdm(sec, null); }
 
@@ -12143,6 +12434,7 @@
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admTotalEnrollments">—</div><div class="sl">Enrollments</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admPendingW">—</div><div class="sl">Pending Withdrawals</div></div></div>
                             <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admPendingCampaigns">—</div><div class="sl">Pending Campaigns</div></div></div>
+                            <div class="col-6 col-md-3"><div class="stat-card"><div class="sv" id="admPendingArticles">—</div><div class="sl">Pending Articles</div></div></div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-12 col-md-6"><div class="card card-p"><h6>📈 Revenue (Last 30 Days)</h6><div id="dashRevenueChart" style="height:150px;"></div></div></div>
@@ -12441,9 +12733,95 @@
                             `<div class="overflow-x-auto"><table class="dtable"><thead><tr><th>User</th><th>Action</th><th>Resource</th><th>Date</th></tr></thead><tbody>${logs.map(l => `<tr><td>${l.user?.firstName || '—'}</td><td>${l.action}</td><td>${l.resource}</td><td>${new Date(l.createdAt).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="4" style="text-align:center">No logs</td></tr>'}</tbody></table></div>`;
                     } catch (e) {}
                     break;
+                case 'articles':
+                    content.innerHTML = `
+                        <div class="admin-section-header"><h6>📝 Articles</h6>
+                            <div class="d-flex gap-2">
+                                <select id="articleFilter" onchange="loadAdminArticles()" class="finput" style="width:auto;">
+                                    <option value="all">All</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="published">Published</option>
+                                    <option value="rejected">Rejected</option>
+                                    <option value="draft">Drafts</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="adminArticlesContainer"><p style="color:var(--text3)">Loading...</p></div>
+                    `;
+                    loadAdminArticles();
+                    break;
                 default:
                     content.innerHTML = '<p>Select a section</p>';
             }
+        }
+
+        // ─── ADMIN ARTICLES ─────────────────────────────────────────────
+        async function loadAdminArticles() {
+            const filter = document.getElementById('articleFilter')?.value || 'all';
+            try {
+                const res = await apiCall(`/articles/admin/all?status=${filter}&limit=50`);
+                const data = res.data;
+                const articles = data.articles || [];
+                const stats = data.stats || {};
+                let html = `
+                    <div class="row mb-3">
+                        <div class="col-4"><div class="stat-card"><div class="sv">${stats.total || 0}</div><div class="sl">Total</div></div></div>
+                        <div class="col-4"><div class="stat-card"><div class="sv">${stats.pending || 0}</div><div class="sl">Pending</div></div></div>
+                        <div class="col-4"><div class="stat-card"><div class="sv">${stats.published || 0}</div><div class="sl">Published</div></div></div>
+                    </div>
+                `;
+                if (!articles.length) {
+                    html += '<div class="empty-state"><p>No articles found</p></div>';
+                } else {
+                    html += articles.map(a => `
+                        <div class="card card-p mb-2">
+                            <div class="d-flex items-center justify-between flex-wrap" style="gap:.5rem;">
+                                <div>
+                                    <strong>${escapeHtml(a.title)}</strong>
+                                    <span class="badge ${a.status === 'published' ? 'badge-success' : a.status === 'pending' ? 'badge-gold' : a.status === 'rejected' ? 'badge-danger' : 'badge-dark'}">${a.status}</span>
+                                    <span class="badge ${a.isPaid ? 'badge-gold' : 'badge-dark'}">${a.isPaid ? '💰 Paid' : 'Free'}</span>
+                                    <br>
+                                    <small style="color:var(--text3);">
+                                        By ${a.userId?.firstName || 'User'} ${a.userId?.lastName || ''} · 
+                                        👁️ ${a.views || 0} · 🛒 ${a.purchases || 0} · 💰 ${fmtMoneyAPI(a.earnings || 0)}
+                                    </small>
+                                    ${a.rejectionReason ? `<div style="font-size:.75rem;color:var(--danger);">${escapeHtml(a.rejectionReason)}</div>` : ''}
+                                </div>
+                                <div style="display:flex;gap:.3rem;">
+                                    ${a.status === 'pending' ? `
+                                        <button class="btn btn-success btn-sm" onclick="approveArticleAdmin('${a._id}')"><i class="fas fa-check"></i> Approve</button>
+                                        <button class="btn btn-danger btn-sm" onclick="rejectArticleAdmin('${a._id}')"><i class="fas fa-times"></i> Reject</button>
+                                    ` : ''}
+                                    <button class="btn btn-ghost btn-sm" onclick="viewArticleDetails('${a._id}')"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                document.getElementById('adminArticlesContainer').innerHTML = html;
+            } catch (err) { toast('Failed to load articles: ' + err.message, 'error'); }
+        }
+
+        async function approveArticleAdmin(articleId) {
+            try {
+                await apiCall(`/articles/admin/${articleId}/approve`, { method: 'POST' });
+                toast('Article approved!', 'success');
+                loadAdminArticles();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        async function rejectArticleAdmin(articleId) {
+            const reason = prompt('Rejection reason:');
+            try {
+                await apiCall(`/articles/admin/${articleId}/reject`, { method: 'POST', body: { reason: reason ||
+                            'Not specified' } });
+                toast('Article rejected', 'info');
+                loadAdminArticles();
+            } catch (err) { toast(err.message, 'error'); }
+        }
+
+        function viewArticleDetails(articleId) {
+            toast('Article details coming soon!', 'info');
         }
 
         // ─── ADMIN SOCIAL EARNINGS ──────────────────────────────────────
@@ -12590,7 +12968,8 @@
         async function rejectCampaign(campaignId) {
             const reason = prompt('Rejection reason:');
             try {
-                await apiCall(`/campaigns/admin/${campaignId}/reject`, { method: 'POST', body: { reason: reason || 'Not specified' } });
+                await apiCall(`/campaigns/admin/${campaignId}/reject`, { method: 'POST', body: { reason: reason ||
+                            'Not specified' } });
                 toast('Campaign rejected', 'info');
                 loadAdminCampaigns();
             } catch (err) { toast(err.message, 'error'); }
@@ -12921,6 +13300,7 @@
                 { key: 'enableManualPayments', label: 'Manual Payments', default: true },
                 { key: 'enableBookUpload', label: 'Book Upload (Premium)', default: true },
                 { key: 'enableCourseUpload', label: 'Course Upload (Premium)', default: true },
+                { key: 'enablePaidArticles', label: 'Paid Articles', default: true },
             ];
             const container = document.getElementById('featureFlagsList');
             if (!container) return;
@@ -12934,7 +13314,7 @@
 
         async function saveFeatureFlags() {
             const flags = ['enableReferrals', 'enableAffiliates', 'enableSocialEarnings', 'enableAIChat',
-                'enableManualPayments', 'enableBookUpload', 'enableCourseUpload'
+                'enableManualPayments', 'enableBookUpload', 'enableCourseUpload', 'enablePaidArticles'
             ];
             flags.forEach(key => {
                 const el = document.getElementById('flag_' + key);
@@ -12981,6 +13361,11 @@
                     const cRes = await apiCall('/campaigns/admin/all?status=pending&limit=1');
                     setText('admPendingCampaigns', cRes.data?.stats?.pending || 0);
                 } catch (e) { setText('admPendingCampaigns', '0'); }
+
+                try {
+                    const aRes = await apiCall('/articles/admin/all?status=pending&limit=1');
+                    setText('admPendingArticles', aRes.data?.stats?.pending || 0);
+                } catch (e) { setText('admPendingArticles', '0'); }
 
                 const revChart = document.getElementById('dashRevenueChart');
                 if (revChart) {
@@ -13400,6 +13785,9 @@
                         } else if (payment.data?.type === 'campaign') {
                             await loadMyCampaigns();
                             toast('🚀 Campaign payment verified! It will go live shortly.', 'success');
+                        } else if (payment.data?.type === 'article') {
+                            toast('📰 Article purchase approved!', 'success');
+                            await loadPurchasedArticles();
                         }
                     } catch (e) { console.warn('Could not refresh purchase data after approval:', e); }
                     if (S.dp === 'referrals') renderRefs();
@@ -13559,7 +13947,7 @@
             } catch (err) { toast('Failed to load user details: ' + err.message, 'error'); }
         }
 
-        // ─── ADMIN BOOKS (additional functions for upload, etc.) ──────
+        // ─── ADMIN BOOKS ──────────────────────────────────────────────
         let editingBookId = null;
 
         function openBookForm(bookId = null) {
@@ -13746,7 +14134,7 @@
         }
 
         // ================================================================
-        // LANDING PAGE FUNCTIONS – FULLY STATIC
+        // LANDING PAGE FUNCTIONS
         // ================================================================
         function initLanding() {
             buildTicker();
@@ -14355,10 +14743,11 @@
                         </div>
                     `;
                 }).join('');
+                updateNavBadges();
             } catch (err) { toast('Failed to load campaigns: ' + err.message, 'error'); } finally { hideLoading(); }
         }
 
-        // ─── CAMPAIGN PAYMENT MODAL (Reuses buyCourseModal) ────────────
+        // ─── CAMPAIGN PAYMENT MODAL ────────────────────────────────────
         function openCampaignPaymentModal(campaignId, method) {
             const campaign = S.myCampaigns.find(c => c._id === campaignId);
             if (!campaign) { toast('Campaign not found', 'error'); return; }
@@ -14811,9 +15200,12 @@
         console.log('🚀 ChangeX Academy — Production Ready with All Features');
         console.log('📚 Learn, Earn, and Grow with ChangeX!');
         console.log('✅ Premium Course Upload — Users can create courses with lessons and submit for approval.');
+        console.log('✅ Paid Articles — Users can create and sell articles with admin approval.');
+        console.log('✅ Ad Campaigns — Users create campaigns, admin approves, user pays, campaign goes live.');
+        console.log('✅ Sponsorships — Users can donate/partner with the platform.');
         console.log('✅ Social Earnings Config — Admin config with engagement weights and distribution trigger.');
         console.log('✅ Manual Payment Status — Users can track their bank transfer submissions.');
-        console.log('✅ Platform Stats — Admin dashboard with total users, courses, revenue, posts, books, enrollments.');
+        console.log('✅ Platform Stats — Admin dashboard with total users, courses, revenue, posts, books, enrollments, articles.');
         console.log('✅ User Badges — Achievements system with earned badges display.');
         console.log('✅ Revenue Split Management — Instructors can split revenue with co-instructors.');
         console.log('✅ Analytics Dashboard — Course analytics with funnel charts and engagement metrics.');
@@ -14823,6 +15215,7 @@
         console.log('✅ Sponsorship & Ad Campaign Platform — Users submit campaigns, pay, track performance.');
         console.log('✅ Admin Campaign Management — Approve, reject, mark paid, refund campaigns.');
         console.log('✅ Admin Sponsorship Management — Approve/reject sponsorships.');
+        console.log('✅ Admin Article Management — Approve/reject articles.');
         console.log('✅ Campaign Analytics — Real-time stats with impressions, clicks, CTR, and daily charts.');
         console.log('✅ Book Upload for Premium Users — Submit books for admin approval with status tracking.');
         console.log('✅ My Library — Purchased books library with download buttons.');
@@ -14862,6 +15255,12 @@
         console.log('📌 Top-up campaigns to add more budget.');
         console.log('📌 Fraud detection with IP blacklisting and unique impression tracking.');
         console.log('📌 Minimum withdrawal: ₦5,000.');
+        console.log('📌 Paid Articles: Users earn 80% of article sales.');
+        console.log('📌 Badges: Published Author, Paid Author, Book Author, Advertiser badges.');
+        console.log('📌 Admin Articles tab: Approve/reject articles with reason.');
+        console.log('📌 Premium-only: Paid articles require Premium to create.');
+        console.log('📌 Manual Payments: Track article, book, course, campaign, subscription payments.');
+        console.log('📌 Wallet breakdown includes article earnings.');
     </script>
 </body>
 </html>
