@@ -1061,6 +1061,25 @@
             font-weight: 700;
         }
 
+        .trial-banner {
+            background: var(--gold-light);
+            padding: .8rem 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: .5rem;
+            border-left: 4px solid var(--gold);
+        }
+        .trial-banner i {
+            color: var(--gold);
+        }
+        .trial-banner strong {
+            color: var(--ink);
+        }
+
         /* Landing */
         #landingPage {
             font-family: var(--font-body);
@@ -1582,6 +1601,32 @@
                 color: #000 !important;
             }
         }
+
+        /* SMS Top-up modal custom */
+        .sms-package-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .6rem 1rem;
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            width: 100%;
+        }
+        .sms-package-btn:hover {
+            border-color: var(--green);
+            background: var(--green-light);
+        }
+        .sms-package-btn .pkg-price {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .sms-package-btn .pkg-credits {
+            color: var(--slate);
+            font-size: .85rem;
+        }
     </style>
 </head>
 <body>
@@ -1673,7 +1718,7 @@
     </div>
 
     <!-- ============================================================
-    LOGIN SCREEN (with Forgot Password & Create Account)
+    LOGIN SCREEN
     ============================================================ -->
     <div id="loginScreen">
         <div class="login-card">
@@ -1709,7 +1754,7 @@
     </div>
 
     <!-- ============================================================
-    SET CREDENTIALS SCREEN (first-time login for school owner)
+    SET CREDENTIALS SCREEN
     ============================================================ -->
     <div id="setCredentialsScreen" style="display:none;position:fixed;inset:0;z-index:6100;background:var(--paper);align-items:center;justify-content:center;padding:1.2rem;">
         <div class="login-card">
@@ -1771,7 +1816,7 @@
     </div>
 
     <!-- ============================================================
-    PLATFORM ADMIN CONSOLE (Super Admin)
+    PLATFORM ADMIN CONSOLE
     ============================================================ -->
     <div id="platformApp">
         <header class="topbar" style="position:sticky;">
@@ -2356,7 +2401,7 @@
         }
 
         // =============================================================
-        // 10. ENTER APP FROM LANDING (FIXED)
+        // 10. ENTER APP FROM LANDING
         // =============================================================
         function enterAppFromLanding() {
             document.getElementById('landingPage').style.display = 'none';
@@ -2388,6 +2433,7 @@
             payments: ['Payments', 'Record and review payments'],
             defaulters: ['Defaulters', 'Students with outstanding fees'],
             attendance: ['Attendance', 'Daily attendance tracking'],
+            attendanceReview: ['Attendance Review', 'Detailed attendance history'],
             results: ['Results', 'Academic performance'],
             reports: ['Reports', 'Analytics and exports'],
             settings: ['Settings', 'School configuration'],
@@ -2400,7 +2446,8 @@
             audit: ['Audit Logs', 'User activity tracking'],
             parentportal: ['Parent Portal', 'My children'],
             exams: ['Exams', 'Schedule and manage exams'],
-            health: ['System Health', 'Monitoring & status']
+            health: ['System Health', 'Monitoring & status'],
+            platformRenewals: ['Renewal Approvals', 'Pending subscription renewals']
         };
 
         const NAV_ITEMS = [
@@ -2415,6 +2462,7 @@
                 { key: 'defaulters', icon: 'bi-exclamation-triangle-fill', label: 'Defaulters' },
                 { key: 'invoices', icon: 'bi-file-text-fill', label: 'Invoices' }] },
             { group: 'Academics', items: [{ key: 'attendance', icon: 'bi-calendar-check-fill', label: 'Attendance' },
+                { key: 'attendanceReview', icon: 'bi-clock-history', label: 'Attendance History' },
                 { key: 'results', icon: 'bi-bar-chart-fill', label: 'Results' },
                 { key: 'exams', icon: 'bi-calendar-event-fill', label: 'Exams' },
                 { key: 'reportstudio', icon: 'bi-palette-fill', label: 'Report Studio' }] },
@@ -2429,6 +2477,12 @@
             { key: 'parentportal', icon: 'bi-person-lock', label: 'Parent Portal', group: 'People' }
         ];
 
+        // Platform admin extra nav item
+        if (Api.getRole() === 'SUPER_ADMIN') {
+            NAV_ITEMS.push({ group: 'Platform', items: [{ key: 'platformRenewals', icon: 'bi-arrow-repeat',
+                    label: 'Renewal Approvals' }] });
+        }
+
         const BOTTOM_NAV = [
             { key: 'dashboard', icon: 'bi-grid-1x2-fill', label: 'Home' },
             { key: 'students', icon: 'bi-people-fill', label: 'Students' },
@@ -2441,13 +2495,12 @@
 
         function renderNav() {
             const container = document.getElementById('sidebarNav');
-            // Filter nav items based on role
             const role = Api.getRole();
             const filtered = NAV_ITEMS.filter(g => {
                 if (g.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !==
                     'SCHOOL_OWNER') return false;
                 if (g.key === 'audit' && role !== 'SUPER_ADMIN') return false;
-                if (g.key === 'platform' && role !== 'SUPER_ADMIN') return false;
+                if (g.key === 'platformRenewals' && role !== 'SUPER_ADMIN') return false;
                 return true;
             });
             container.innerHTML = filtered.map(group => {
@@ -2457,6 +2510,7 @@
                 ${group.items.filter(item => {
                     if (item.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !== 'SCHOOL_OWNER') return false;
                     if (item.key === 'audit' && role !== 'SUPER_ADMIN') return false;
+                    if (item.key === 'platformRenewals' && role !== 'SUPER_ADMIN') return false;
                     return true;
                 }).map(item => `
                   <button class="nav-item" data-page="${item.key}">
@@ -2470,6 +2524,7 @@
                     if (group.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !==
                         'SCHOOL_OWNER') return '';
                     if (group.key === 'audit' && role !== 'SUPER_ADMIN') return '';
+                    if (group.key === 'platformRenewals' && role !== 'SUPER_ADMIN') return '';
                     return `
                 <div class="nav-group">${group.group || 'Other'}</div>
                 <button class="nav-item" data-page="${group.key}">
@@ -2514,6 +2569,8 @@
             container.innerHTML = `<div class="page-enter">${renderer()}</div>`;
             updateBadges();
             if (POST_RENDER_HOOKS[page]) POST_RENDER_HOOKS[page]();
+            // Trial banner check for dashboard
+            if (page === 'dashboard') checkTrialStatus();
         }
 
         function updateBadges() {}
@@ -2631,7 +2688,28 @@
         }
 
         // =============================================================
-        // 15. PAGE RENDERERS
+        // 15. TRIAL STATUS CHECK
+        // =============================================================
+        async function checkTrialStatus() {
+            try {
+                const resp = await Api.get('/subscriptions/trial-status');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                if (data.isTrial && data.daysLeft <= 3) {
+                    const container = document.getElementById('pageContent');
+                    const banner = document.createElement('div');
+                    banner.className = 'trial-banner';
+                    banner.innerHTML = `
+                <span><i class="bi bi-clock-fill me-2"></i><strong>${data.daysLeft} days left</strong> on your free trial. <span class="eyebrow">Subscribe now to keep using SchoolFlow.</span></span>
+                <button class="btn-x btn-gold-x btn-sm-x" onclick="navigateTo('subscription')"><i class="bi bi-credit-card"></i> Subscribe now</button>
+              `;
+                    container.prepend(banner);
+                }
+            } catch (_) {}
+        }
+
+        // =============================================================
+        // 16. PAGE RENDERERS
         // =============================================================
         const PAGE_RENDERERS = {};
         const POST_RENDER_HOOKS = {};
@@ -2684,7 +2762,7 @@
             } catch (_) {}
         };
 
-        // --- STUDENTS ---
+        // --- STUDENTS --- (same as before, kept for brevity)
         PAGE_RENDERERS.students = function() {
             return `
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -2805,9 +2883,19 @@
                 if (!resp.ok) { showToast('Student not found', 'error'); return; }
                 const s = await resp.json();
                 const out = Math.max(0, (s.fees?.expected || 0) - (s.fees?.paid || 0));
+                // Fetch attendance summary
+                let attHTML = '';
+                try {
+                    const attResp = await Api.get('/attendance/summary/' + id);
+                    if (attResp.ok) {
+                        const att = await attResp.json();
+                        attHTML =
+                            `<div class="col-4"><div class="stat tone-slate" style="padding:.7rem;"><div class="label-caps">Att. rate</div><div class="figure-md num">${att.rate||0}%</div></div></div>`;
+                    }
+                } catch (_) {}
                 openModal(`${escapeHtml(s.fullName)}`, `
               <div class="d-flex align-items-center gap-3 mb-3"><div class="avatar-ring lg" style="background:${avatarColor(s.id)};">${initials(s.fullName)}</div><div><div style="font-weight:700;font-size:1.05rem;">${escapeHtml(s.fullName)}</div><div class="eyebrow">${s.id} · ${escapeHtml(s.className||'—')} · ${escapeHtml(s.gender||'—')}</div></div></div>
-              <div class="row g-2 mb-3"><div class="col-4"><div class="stat tone-green" style="padding:.7rem;"><div class="label-caps">Paid</div><div class="figure-md num" style="color:var(--green)">${money(s.fees?.paid||0)}</div></div></div><div class="col-4"><div class="stat tone-danger" style="padding:.7rem;"><div class="label-caps">Owing</div><div class="figure-md num" style="color:var(--danger)">${money(out)}</div></div></div><div class="col-4"><div class="stat tone-slate" style="padding:.7rem;"><div class="label-caps">Attendance</div><div class="figure-md num">${s.attendance||0}%</div></div></div></div>
+              <div class="row g-2 mb-3"><div class="col-4"><div class="stat tone-green" style="padding:.7rem;"><div class="label-caps">Paid</div><div class="figure-md num" style="color:var(--green)">${money(s.fees?.paid||0)}</div></div></div><div class="col-4"><div class="stat tone-danger" style="padding:.7rem;"><div class="label-caps">Owing</div><div class="figure-md num" style="color:var(--danger)">${money(out)}</div></div></div>${attHTML}</div>
               <div class="mb-3"><div class="label-caps mb-1">Guardian</div><div style="font-weight:600;">${escapeHtml(s.guardian||'—')}</div><div class="eyebrow">${escapeHtml(s.guardianPhone||'')}${s.guardianEmail?' · '+escapeHtml(s.guardianEmail):''}</div></div>
               <div class="d-flex flex-wrap gap-2"><button class="btn-x btn-gold-x btn-sm-x" onclick="closeModal();openRecordPaymentModal('${s.id}')"><i class="bi bi-credit-card"></i> Record payment</button><button class="btn-x btn-outline-x btn-sm-x" onclick="closeModal();navigateTo('results')"><i class="bi bi-bar-chart"></i> View results</button><button class="btn-x btn-outline-x btn-sm-x" onclick="closeModal();generateReportCard('${s.id}')"><i class="bi bi-file-earmark-text"></i> Report card</button><button class="btn-x btn-danger-x btn-sm-x ms-auto" onclick="confirmDeleteStudent('${s.id}')"><i class="bi bi-trash3"></i></button></div>
             `);
@@ -2831,7 +2919,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- CLASSES ---
+        // --- CLASSES --- (same as before, kept for brevity)
         PAGE_RENDERERS.classes = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 style="font-weight:700;">Classes</h5><span class="eyebrow" id="classCount">Loading...</span></div><button class="btn-x btn-primary-x btn-sm-x" onclick="openAddClassModal()"><i class="bi bi-plus-lg"></i> Add class</button></div>
@@ -2931,7 +3019,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- PAYMENTS ---
+        // --- PAYMENTS --- (same as before, kept for brevity)
         let paymentsTab = 'pending';
 
         PAGE_RENDERERS.payments = function() {
@@ -3116,7 +3204,7 @@
             setTimeout(() => win.print(), 300);
         };
 
-        // --- DEFAULTERS ---
+        // --- DEFAULTERS --- (same, kept for brevity)
         PAGE_RENDERERS.defaulters = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -3152,7 +3240,7 @@
         window.sendSingleReminder = function(id) { showToast('Reminder sent', 'success'); };
         window.sendBulkReminder = function() { showToast('Reminders sent to all defaulters', 'success'); };
 
-        // --- ATTENDANCE ---
+        // --- ATTENDANCE --- (with remark support)
         PAGE_RENDERERS.attendance = function() {
             return `
             <div class="row g-3 mb-3">
@@ -3211,7 +3299,7 @@
                         return;
                     }
                     roster.innerHTML = students.map(s =>
-                        `<div class="d-flex justify-content-between align-items-center p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);"><span style="font-size:.85rem;">${escapeHtml(s.fullName)}</span><select class="input-x" style="width:auto;padding:.25rem .5rem;font-size:.75rem;" data-student="${s.id}"><option value="PRESENT" selected>Present</option><option value="LATE">Late</option><option value="ABSENT">Absent</option></select></div>`
+                        `<div class="d-flex justify-content-between align-items-center p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);flex-wrap:wrap;gap:.3rem;"><span style="font-size:.85rem;">${escapeHtml(s.fullName)}</span><div class="d-flex gap-2"><select class="input-x" style="width:auto;padding:.25rem .5rem;font-size:.75rem;" data-student="${s.id}"><option value="PRESENT" selected>Present</option><option value="LATE">Late</option><option value="ABSENT">Absent</option><option value="EXCUSED">Excused</option></select><input class="input-x" style="width:120px;padding:.2rem .4rem;font-size:.7rem;" placeholder="Remark" data-remark="${s.id}" /></div></div>`
                         ).join('');
                 }
             } catch (_) {}
@@ -3221,7 +3309,11 @@
             if (!Api.can('manageAttendance')) { showToast('You do not have permission to save attendance.', 'error'); return; }
             const selects = document.querySelectorAll('#attRoster select');
             const records = [];
-            selects.forEach(sel => { records.push({ studentId: sel.dataset.student, status: sel.value }); });
+            selects.forEach(sel => {
+                const studentId = sel.dataset.student;
+                const remarkInput = document.querySelector(`[data-remark="${studentId}"]`);
+                records.push({ studentId, status: sel.value, remark: remarkInput ? remarkInput.value.trim() : '' });
+            });
             try {
                 const resp = await Api.post('/attendance', { records });
                 if (!resp.ok) { showToast('Failed to save attendance', 'error'); return; }
@@ -3230,7 +3322,67 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- INVOICES (Full CRUD) ---
+        // --- ATTENDANCE REVIEW (NEW) ---
+        PAGE_RENDERERS.attendanceReview = function() {
+            return `
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <input type="date" id="attFrom" class="input-x" style="max-width:160px;" />
+              <input type="date" id="attTo" class="input-x" style="max-width:160px;" />
+              <select class="input-x" id="attStudentFilter" style="max-width:200px;"><option value="">All students</option></select>
+              <button class="btn-x btn-primary-x" onclick="loadAttendanceReview()"><i class="bi bi-search"></i> Filter</button>
+            </div>
+            <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Class</th><th>Date</th><th>Status</th><th>Remark</th></tr></thead><tbody id="attReviewBody"><tr><td colspan="5" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
+          `;
+        };
+
+        window.loadAttendanceReview = async function() {
+            const from = document.getElementById('attFrom').value;
+            const to = document.getElementById('attTo').value;
+            const studentId = document.getElementById('attStudentFilter').value;
+            let url = '/attendance/review?';
+            if (from) url += `from=${from}&`;
+            if (to) url += `to=${to}&`;
+            if (studentId) url += `studentId=${studentId}`;
+            try {
+                const resp = await Api.get(url);
+                if (!resp.ok) throw new Error('Failed to load attendance history');
+                const records = await resp.json();
+                const tbody = document.getElementById('attReviewBody');
+                if (records.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="5" class="text-center py-4">${emptyState('clock-history','No records found','Adjust your filters.')}</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = records.map(r => `
+              <tr><td><strong>${escapeHtml(r.studentName||'—')}</strong></td><td>${escapeHtml(r.className||'—')}</td><td>${fmtDate(r.date)}</td><td>${statusChip(r.status)}</td><td>${escapeHtml(r.remark||'')}</td></tr>
+            `).join('');
+            } catch (e) {
+                document.getElementById('attReviewBody').innerHTML =
+                    `<tr><td colspan="5" class="text-center py-4 text-danger">${e.message}</td></tr>`;
+            }
+        };
+
+        POST_RENDER_HOOKS.attendanceReview = async function() {
+            // Populate student filter
+            try {
+                const resp = await Api.get('/students');
+                if (resp.ok) {
+                    const students = await resp.json();
+                    const sel = document.getElementById('attStudentFilter');
+                    sel.innerHTML = '<option value="">All students</option>' + students.map(s =>
+                        `<option value="${s.id}">${escapeHtml(s.fullName)}</option>`).join('');
+                }
+            } catch (_) {}
+            // Load initial data (last 7 days)
+            const now = new Date();
+            const from = new Date(now);
+            from.setDate(from.getDate() - 7);
+            document.getElementById('attFrom').value = from.toISOString().slice(0, 10);
+            document.getElementById('attTo').value = now.toISOString().slice(0, 10);
+            await window.loadAttendanceReview();
+        };
+
+        // --- INVOICES --- (full CRUD, kept for brevity)
         PAGE_RENDERERS.invoices = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -3375,7 +3527,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- SUBSCRIPTION ---
+        // --- SUBSCRIPTION (with SMS top-up and renewal) ---
         PAGE_RENDERERS.subscription = function() {
             return `
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -3390,10 +3542,23 @@
               <div class="bar-track mt-3"><div class="bar-fill" style="width:60%;" id="subBar"></div></div>
               <div class="d-flex justify-content-between mt-1"><span class="eyebrow" id="subDaysLeft">—</span><span class="eyebrow" id="subPct">—</span></div>
             </div>
+
+            <!-- SMS Credits -->
+            <div class="panel mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><h6 class="mb-0">SMS Credits</h6><span class="eyebrow">Send SMS reminders and notifications</span></div>
+                <button class="btn-x btn-gold-x btn-sm-x" onclick="openSMSTopUpModal()"><i class="bi bi-plus-circle"></i> Top up</button>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <span style="font-size:1.1rem;font-weight:700;" id="smsBalance">—</span>
+                <span class="eyebrow">credits available</span>
+              </div>
+            </div>
+
             <div class="row g-3">
               <div class="col-lg-6"><div class="panel h-100"><h6 class="mb-3">Renew subscription</h6>
                 <div class="d-flex flex-column gap-2">
-                  ${['starter','growth'].map(p=>{const price=p==='starter'?20000:30000;const label=p==='starter'?'Starter':'Growth';return `<div class="d-flex justify-content-between align-items-center p-2" style="border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);cursor:pointer;" onclick="selectPlan('${p}')"><div><div style="font-weight:600;">${label}</div><div class="eyebrow">${money(price)}/term</div></div></div>`;}).join('')}
+                  ${['Starter','Pro'].map(p=>{const price=p==='Starter'?20000:30000;return `<div class="d-flex justify-content-between align-items-center p-2" style="border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);cursor:pointer;" onclick="selectPlan('${p.toLowerCase()}')"><div><div style="font-weight:600;">${p}</div><div class="eyebrow">${money(price)}/term</div></div></div>`;}).join('')}
                 </div>
                 <button class="btn-x btn-gold-x btn-block-x mt-3" onclick="openRenewalModal()"><i class="bi bi-credit-card"></i> Renew</button>
               </div></div>
@@ -3427,16 +3592,69 @@
                     }
                 }
             } catch (_) {}
+            // Load SMS balance
+            try {
+                const resp = await Api.get('/schools/current');
+                if (resp.ok) {
+                    const school = await resp.json();
+                    document.getElementById('smsBalance').textContent = school.smsBalance || 0;
+                }
+            } catch (_) {}
         };
 
         window.selectPlan = function(plan) {
             showToast(`Selected ${plan} plan`, 'info');
         };
 
+        // --- SMS TOP-UP MODAL ---
+        window.openSMSTopUpModal = function() {
+            openModal('Top up SMS credits', `
+            <p class="eyebrow mb-3">Select a package to purchase SMS credits.</p>
+            <div class="d-flex flex-column gap-2">
+              <button class="sms-package-btn" onclick="processSMSTopUp(5000)"><span><span class="pkg-price">₦5,000</span><span class="pkg-credits"> · 250 credits</span></span><i class="bi bi-arrow-right"></i></button>
+              <button class="sms-package-btn" onclick="processSMSTopUp(10000)"><span><span class="pkg-price">₦10,000</span><span class="pkg-credits"> · 500 credits</span></span><i class="bi bi-arrow-right"></i></button>
+              <button class="sms-package-btn" onclick="processSMSTopUp(20000)"><span><span class="pkg-price">₦20,000</span><span class="pkg-credits"> · 1000 credits</span></span><i class="bi bi-arrow-right"></i></button>
+              <button class="sms-package-btn" onclick="processSMSTopUp(50000)"><span><span class="pkg-price">₦50,000</span><span class="pkg-credits"> · 2500 credits</span></span><i class="bi bi-arrow-right"></i></button>
+            </div>
+            <div class="mt-3"><label class="field-label">Or enter custom amount</label><input class="input-x" id="customSMSAmount" type="number" placeholder="Amount in ₦" /></div>
+            <button class="btn-x btn-primary-x btn-block-x mt-2" onclick="processCustomSMSTopUp()">Buy credits</button>
+            <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x btn-block-x" onclick="closeModal()">Cancel</button></div>
+          `);
+        };
+
+        window.processSMSTopUp = function(amount) {
+            closeModal();
+            // Simulate Paystack redirect or direct API call
+            showToast(`Initiating payment of ${money(amount)} for SMS credits...`, 'info');
+            // In production, redirect to Paystack with metadata.type='sms_topup'
+            // For demo, simulate success
+            setTimeout(() => {
+                showToast(`SMS credits added! (${amount/2000} credits)`, 'success');
+                renderPage('subscription');
+            }, 1500);
+        };
+
+        window.processCustomSMSTopUp = function() {
+            const amount = Number(document.getElementById('customSMSAmount').value);
+            if (!amount || amount < 1000) { showToast('Minimum top-up is ₦1,000', 'error'); return; }
+            closeModal();
+            showToast(`Initiating payment of ${money(amount)} for SMS credits...`, 'info');
+            setTimeout(() => {
+                showToast(`SMS credits added! (${Math.floor(amount/2000)} credits)`, 'success');
+                renderPage('subscription');
+            }, 1500);
+        };
+
+        // --- RENEWAL MODAL ---
         window.openRenewalModal = function() {
             openModal('Renew subscription', `
             <div class="text-center mb-3"><div style="font-weight:700;font-size:1.1rem;">${escapeHtml(_pageData.school?.name||'SchoolFlow')}</div><div class="eyebrow">Renew plan</div></div>
-            <div class="p-3" style="background:var(--line-soft);border-radius:var(--radius-md);text-align:center;margin-bottom:1rem;"><div class="label-caps">Pay by bank transfer</div><div style="font-weight:700;font-size:.9rem;">Account: SchoolFlow Technologies</div><div style="font-weight:700;font-size:.9rem;">Bank: XXXX Bank</div><div style="font-weight:700;font-size:1.1rem;color:var(--green);">${money(20000)}</div></div>
+            <div class="p-3" style="background:var(--line-soft);border-radius:var(--radius-md);text-align:center;margin-bottom:1rem;">
+              <div class="label-caps">Pay by bank transfer</div>
+              <div style="font-weight:700;font-size:.9rem;">Account: SchoolFlow Technologies</div>
+              <div style="font-weight:700;font-size:.9rem;">Bank: XXXX Bank</div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--green);">${money(20000)}</div>
+            </div>
             <div class="mb-3"><label class="field-label">Upload payment proof</label><input type="file" accept="image/*" id="renewalProof" class="input-x" style="padding:.4rem;" /></div>
             <div class="mb-3"><label class="field-label">Transaction reference</label><input class="input-x" id="renewalRef" placeholder="e.g. TRX-123456" /></div>
             <div class="mb-1"><label class="field-label">Payment date</label><input class="input-x" id="renewalDate" type="date" /></div>
@@ -3471,7 +3689,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         }
 
-        // --- SETTINGS ---
+        // --- SETTINGS --- (kept for brevity)
         PAGE_RENDERERS.settings = function() {
             return `
             <div class="row g-3">
@@ -3558,7 +3776,7 @@
             })();
         };
 
-        // --- AUTOMATIONS (with test) ---
+        // --- AUTOMATIONS --- (kept for brevity)
         PAGE_RENDERERS.automations = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -3647,7 +3865,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- QUEUES (with retry & details) ---
+        // --- QUEUES --- (kept for brevity)
         PAGE_RENDERERS.queues = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 style="font-weight:700;">Queue Status</h5><span class="eyebrow">Background job monitoring</span></div><button class="btn-x btn-outline-x btn-sm-x" onclick="renderPage('queues')"><i class="bi bi-arrow-repeat"></i> Refresh</button></div>
@@ -3752,7 +3970,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- DOCUMENTS ---
+        // --- DOCUMENTS (with template support) ---
         PAGE_RENDERERS.documents = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -3762,6 +3980,7 @@
             <div class="d-flex flex-wrap gap-2 mb-3">
               <div class="search-wrap flex-grow-1" style="max-width:260px;"><i class="bi bi-search"></i><input class="input-x" id="docSearch" placeholder="Search documents..." oninput="filterDocs()" /></div>
               <select class="input-x" id="docCategory" style="max-width:160px;" onchange="filterDocs()"><option value="">All categories</option><option>Administrative</option><option>Academic</option><option>Financial</option><option>Other</option></select>
+              <select class="input-x" id="docTemplateType" style="max-width:180px;" onchange="filterDocs()"><option value="">All types</option><option value="report_card">Report Card</option><option value="receipt">Receipt</option></select>
             </div>
             <div class="row g-3" id="docGrid"><div class="col-12 text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div></div>
           `;
@@ -3788,18 +4007,21 @@
                 return;
             }
             grid.innerHTML = docs.map(d => `
-              <div class="col-12 col-sm-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex align-items-start gap-2"><div style="width:40px;height:40px;border-radius:8px;background:var(--line-soft);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;"><i class="bi bi-file-earmark-text"></i></div><div class="flex-grow-1"><div style="font-weight:600;font-size:.85rem;">${escapeHtml(d.filename||'Untitled')}</div><div class="eyebrow">${(d.size?Math.round(d.size/1024):0)} KB · ${fmtDate(d.uploadedAt)}</div><div class="eyebrow">${d.category||'Uncategorized'}</div><div class="d-flex gap-2 mt-1"><a href="${d.fileUrl}" target="_blank" class="btn-x btn-outline-x btn-sm-x"><i class="bi bi-eye"></i> View</a><button class="btn-x btn-danger-x btn-sm-x" onclick="deleteDocument('${d.id}')"><i class="bi bi-trash3"></i></button></div></div></div></div></div>
+              <div class="col-12 col-sm-6 col-lg-4"><div class="stat ${d.isActiveTemplate?'tone-green':'tone-slate'} h-100"><div class="d-flex align-items-start gap-2"><div style="width:40px;height:40px;border-radius:8px;background:var(--line-soft);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;"><i class="bi bi-file-earmark-text"></i></div><div class="flex-grow-1"><div style="font-weight:600;font-size:.85rem;">${escapeHtml(d.title||d.filename||'Untitled')}</div><div class="eyebrow">${(d.size?Math.round(d.size/1024):0)} KB · ${fmtDate(d.uploadedAt)}</div><div class="eyebrow">${d.category||'Uncategorized'}${d.templateType?` · <span class="chip chip-purple">${d.templateType}</span>`:''}${d.isActiveTemplate?` <span class="chip chip-green">Active</span>`:''}</div><div class="d-flex gap-2 mt-1 flex-wrap"><a href="${d.fileUrl}" target="_blank" class="btn-x btn-outline-x btn-sm-x"><i class="bi bi-eye"></i> View</a>${d.templateType?`<button class="btn-x ${d.isActiveTemplate?'btn-gold-x':'btn-outline-x'} btn-sm-x" onclick="setActiveTemplate('${d.id}','${d.templateType}')"><i class="bi ${d.isActiveTemplate?'bi-check-lg':'bi-check2'}"></i> ${d.isActiveTemplate?'Active':'Set active'}</button>`:''}<button class="btn-x btn-danger-x btn-sm-x" onclick="deleteDocument('${d.id}')"><i class="bi bi-trash3"></i></button></div></div></div></div></div>
             `).join('');
         }
 
         window.filterDocs = function() {
             const search = document.getElementById('docSearch')?.value?.toLowerCase() || '';
             const category = document.getElementById('docCategory')?.value || '';
+            const templateType = document.getElementById('docTemplateType')?.value || '';
             const data = window._documentsData || [];
             const filtered = data.filter(d => {
-                const matchSearch = !search || (d.filename || '').toLowerCase().includes(search);
+                const matchSearch = !search || (d.filename || '').toLowerCase().includes(search) || (d.title || '')
+                    .toLowerCase().includes(search);
                 const matchCategory = !category || d.category === category;
-                return matchSearch && matchCategory;
+                const matchTemplate = !templateType || d.templateType === templateType;
+                return matchSearch && matchCategory && matchTemplate;
             });
             renderDocGrid(filtered);
         };
@@ -3807,7 +4029,9 @@
         window.openUploadDocumentModal = function() {
             openModal('Upload document', `
             <div class="mb-3"><label class="field-label">File</label><input type="file" id="docFile" class="input-x" style="padding:.4rem;" /></div>
+            <div class="mb-3"><label class="field-label">Title</label><input class="input-x" id="docTitle" placeholder="Document title" /></div>
             <div class="mb-3"><label class="field-label">Category</label><select class="input-x" id="docCategoryUpload"><option>Administrative</option><option>Academic</option><option>Financial</option><option>Other</option></select></div>
+            <div class="mb-3"><label class="field-label">Template type (optional)</label><select class="input-x" id="docTemplateUpload"><option value="">None</option><option value="report_card">Report Card</option><option value="receipt">Receipt</option></select></div>
             <div class="mb-1"><label class="field-label">Description (optional)</label><input class="input-x" id="docDesc" placeholder="e.g. School brochure" /></div>
             <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="uploadDocument()"><i class="bi bi-cloud-upload"></i> Upload</button></div>
           `);
@@ -3815,13 +4039,17 @@
 
         window.uploadDocument = async function() {
             const fileInput = document.getElementById('docFile');
+            const title = document.getElementById('docTitle').value.trim() || 'Untitled';
             const desc = document.getElementById('docDesc').value.trim();
             const category = document.getElementById('docCategoryUpload').value;
+            const templateType = document.getElementById('docTemplateUpload').value || null;
             if (!fileInput || !fileInput.files || !fileInput.files[0]) { showToast('Please select a file', 'error'); return; }
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
+            formData.append('title', title);
             formData.append('description', desc);
             formData.append('category', category);
+            if (templateType) formData.append('templateType', templateType);
             try {
                 const resp = await Api.upload('/documents', formData);
                 if (!resp.ok) { showToast('Upload failed', 'error'); return; }
@@ -3840,7 +4068,16 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- RESULTS ---
+        window.setActiveTemplate = async function(id, type) {
+            try {
+                const resp = await Api.post(`/documents/${id}/set-active`, { type });
+                if (!resp.ok) { showToast('Failed to set active template', 'error'); return; }
+                showToast(`Template set as active ${type}`, 'success');
+                renderPage('documents');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        // --- RESULTS --- (kept for brevity)
         PAGE_RENDERERS.results = function() {
             return `
             <div class="row g-3 mb-3">
@@ -3901,7 +4138,6 @@
             }
         };
 
-        // --- BULK REPORT CARD ---
         window.openBulkReportModal = function() {
             openModal('Generate class report cards', `
             <div class="mb-3"><label class="field-label">Class</label><select class="input-x" id="bulkClass"><option>Loading...</option></select></div>
@@ -3937,7 +4173,7 @@
             } catch (e) { showToast('Error generating report cards', 'error'); }
         };
 
-        // --- INSIGHTS ---
+        // --- INSIGHTS --- (kept for brevity)
         PAGE_RENDERERS.insights = function() {
             return `
             <div class="d-flex align-items-center gap-2 mb-3"><h5 style="font-weight:700;margin:0;">Insights</h5><span class="chip chip-gold"><i class="bi bi-stars"></i> Premium</span></div>
@@ -4005,7 +4241,7 @@
             } catch (_) {}
         };
 
-        // --- REPORTS ---
+        // --- REPORTS --- (kept for brevity)
         PAGE_RENDERERS.reports = function() {
             return `
             <div class="row g-3 mb-3">
@@ -4052,7 +4288,7 @@
             } catch (_) {}
         };
 
-        // --- PARENTS ---
+        // --- PARENTS --- (kept for brevity)
         PAGE_RENDERERS.parents = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 style="font-weight:700;">Parents &amp; guardians</h5><span class="eyebrow" id="parentCount">Loading...</span></div></div>
@@ -4081,7 +4317,7 @@
             }
         };
 
-        // --- STAFF ---
+        // --- STAFF --- (kept for brevity)
         PAGE_RENDERERS.staff = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 style="font-weight:700;">Staff</h5><span class="eyebrow" id="staffCount">Loading...</span></div><button class="btn-x btn-primary-x btn-sm-x" onclick="openAddStaffModal()"><i class="bi bi-plus-lg"></i> Add staff</button></div>
@@ -4131,7 +4367,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- FEES ---
+        // --- FEES --- (kept for brevity)
         PAGE_RENDERERS.fees = function() {
             return `
             <div class="row g-3 mb-3">
@@ -4174,7 +4410,7 @@
             }
         };
 
-        // --- REPORT STUDIO ---
+        // --- REPORT STUDIO --- (kept for brevity)
         PAGE_RENDERERS.reportstudio = function() {
             return `
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -4257,7 +4493,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- AUDIT LOGS ---
+        // --- AUDIT LOGS --- (kept for brevity)
         PAGE_RENDERERS.audit = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -4313,7 +4549,7 @@
             renderAuditTable(filtered);
         };
 
-        // --- PARENT PORTAL ---
+        // --- PARENT PORTAL --- (with attendance summary)
         PAGE_RENDERERS.parentportal = function() {
             const user = Api.getUser();
             if (user.role !== 'PARENT' && user.role !== 'SUPER_ADMIN' && user.role !== 'SCHOOL_OWNER') {
@@ -4336,16 +4572,35 @@
                         `<div class="col-12">${emptyState('people','No children linked','Ask your school to link your account.')}</div>`;
                     return;
                 }
-                grid.innerHTML = children.map(c => `
-              <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-green h-100"><h6 class="mb-0">${escapeHtml(c.fullName)}</h6><div class="eyebrow">${escapeHtml(c.className)}</div><div class="d-flex justify-content-between mt-2"><span>Fees: ${money(c.fees?.paid||0)} / ${money(c.fees?.expected||0)}</span><span>${statusChip(c.fees?.status||'OUTSTANDING')}</span></div><div class="d-flex gap-2 mt-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="viewStudent('${c.id}')"><i class="bi bi-eye"></i> View</button><button class="btn-x btn-outline-x btn-sm-x" onclick="generateReportCard('${c.id}')"><i class="bi bi-file-earmark-text"></i> Report</button></div></div></div>
-            `).join('');
+                // Fetch attendance for each child
+                let html = '';
+                for (const c of children) {
+                    let attHTML = '';
+                    try {
+                        const attResp = await Api.get('/attendance/summary/' + c.id);
+                        if (attResp.ok) {
+                            const att = await attResp.json();
+                            attHTML = `
+                    <div class="mt-2">
+                      <div class="d-flex justify-content-between"><span class="eyebrow">Attendance</span><span><strong>${att.rate||0}%</strong></span></div>
+                      <div class="bar-track"><div class="bar-fill" style="width:${att.rate||0}%;"></div></div>
+                      <div class="d-flex justify-content-between mt-1"><span class="eyebrow">Present: ${att.present||0}</span><span class="eyebrow">Absent: ${att.absent||0}</span></div>
+                    </div>
+                  `;
+                        }
+                    } catch (_) {}
+                    html += `
+                <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-green h-100"><h6 class="mb-0">${escapeHtml(c.fullName)}</h6><div class="eyebrow">${escapeHtml(c.className)}</div><div class="d-flex justify-content-between mt-2"><span>Fees: ${money(c.fees?.paid||0)} / ${money(c.fees?.expected||0)}</span><span>${statusChip(c.fees?.status||'OUTSTANDING')}</span></div>${attHTML}<div class="d-flex gap-2 mt-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="viewStudent('${c.id}')"><i class="bi bi-eye"></i> View</button><button class="btn-x btn-outline-x btn-sm-x" onclick="generateReportCard('${c.id}')"><i class="bi bi-file-earmark-text"></i> Report</button></div></div></div>
+              `;
+                }
+                grid.innerHTML = html;
             } catch (e) {
                 document.getElementById('parentChildren').innerHTML =
                     `<div class="col-12 text-center py-4 text-danger">${e.message}</div>`;
             }
         };
 
-        // --- EXAMS ---
+        // --- EXAMS --- (kept for brevity)
         PAGE_RENDERERS.exams = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -4467,11 +4722,87 @@
             }
         };
 
+        // --- PLATFORM RENEWALS (Super Admin) ---
+        PAGE_RENDERERS.platformRenewals = function() {
+            return `
+            <div class="d-flex align-items-center gap-2 mb-3"><h5 style="font-weight:700;">Pending Subscription Renewals</h5><span class="chip chip-gold"><i class="bi bi-shield-lock"></i> Super Admin</span></div>
+            <div id="renewalsList"><div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div></div>
+          `;
+        };
+
+        POST_RENDER_HOOKS.platformRenewals = async function() {
+            try {
+                const resp = await Api.get('/subscriptions/renewals/pending');
+                if (!resp.ok) { showToast('Failed to load renewals', 'error'); return; }
+                const renewals = await resp.json();
+                const container = document.getElementById('renewalsList');
+                if (renewals.length === 0) {
+                    container.innerHTML = emptyState('check-circle', 'No pending renewals',
+                    'All renewal requests have been reviewed.');
+                    return;
+                }
+                container.innerHTML = renewals.map(r => `
+              <div class="panel mb-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div><strong>${escapeHtml(r.schoolId?.name || 'School')}</strong> – ${money(r.amount)} (${r.plan})</div>
+                  <div class="d-flex gap-2">
+                    <button class="btn-x btn-primary-x btn-sm-x" onclick="approveRenewal('${r.id}')"><i class="bi bi-check-lg"></i> Approve</button>
+                    <button class="btn-x btn-danger-x btn-sm-x" onclick="rejectRenewalPrompt('${r.id}')"><i class="bi bi-x-lg"></i> Reject</button>
+                  </div>
+                </div>
+                <div class="eyebrow">Reference: ${escapeHtml(r.reference)} · Submitted: ${fmtDate(r.submittedAt)}</div>
+                ${r.proofUrl ? `<a href="${r.proofUrl}" target="_blank" class="btn-x btn-outline-x btn-sm-x mt-1"><i class="bi bi-eye"></i> View proof</a>` : ''}
+              </div>
+            `).join('');
+            } catch (e) {
+                document.getElementById('renewalsList').innerHTML =
+                    `<div class="text-center py-4 text-danger">Failed to load renewals: ${e.message}</div>`;
+            }
+        };
+
+        window.approveRenewal = async function(id) {
+            try {
+                const resp = await Api.post('/subscriptions/renewals/' + id + '/approve');
+                if (!resp.ok) { showToast('Approval failed', 'error'); return; }
+                showToast('Renewal approved', 'success');
+                renderPage('platformRenewals');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        window.rejectRenewalPrompt = function(id) {
+            openModal('Reject Renewal', `
+            <p>Provide a reason for rejection.</p>
+            <input class="input-x" id="rejectReason" placeholder="e.g. Invalid proof" />
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button>
+              <button class="btn-x btn-danger-x" onclick="rejectRenewal('${id}')">Reject</button>
+            </div>
+          `);
+        };
+
+        window.rejectRenewal = async function(id) {
+            const reason = document.getElementById('rejectReason').value.trim() || 'No reason provided';
+            try {
+                const resp = await Api.post('/subscriptions/renewals/' + id + '/reject', { reason });
+                if (!resp.ok) { showToast('Rejection failed', 'error'); return; }
+                closeModal();
+                showToast('Renewal rejected', 'info');
+                renderPage('platformRenewals');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
         // =============================================================
-        // 16. PLATFORM ADMIN (Super Admin)
+        // 17. PLATFORM ADMIN (Super Admin)
         // =============================================================
         function renderPlatformPage() {
             const el = document.getElementById('platformPageContent');
+            // Check if we're showing a specific platform page or default
+            const page = CURRENT_PAGE === 'platformRenewals' ? 'platformRenewals' : 'platformSchools';
+            if (page === 'platformRenewals') {
+                el.innerHTML = `<div class="page-enter">${PAGE_RENDERERS.platformRenewals()}</div>`;
+                POST_RENDER_HOOKS.platformRenewals();
+                return;
+            }
             el.innerHTML = `<div class="page-enter">${renderPlatformSchoolsPage()}</div>`;
             renderPlatformHooks();
         }
@@ -4525,7 +4856,7 @@
         };
 
         // =============================================================
-        // 17. EVENT BINDINGS
+        // 18. EVENT BINDINGS
         // =============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
@@ -4593,7 +4924,7 @@
         });
 
         // =============================================================
-        // 18. GLOBAL EXPOSURE
+        // 19. GLOBAL EXPOSURE
         // =============================================================
         window.navigateTo = navigateTo;
         window.renderPage = renderPage;
@@ -4613,11 +4944,22 @@
         window.sendPasswordReset = sendPasswordReset;
         window.Api = Api;
         window._chartInstances = _chartInstances;
+        window.openSMSTopUpModal = openSMSTopUpModal;
+        window.processSMSTopUp = processSMSTopUp;
+        window.processCustomSMSTopUp = processCustomSMSTopUp;
+        window.openRenewalModal = openRenewalModal;
+        window.submitRenewal = submitRenewal;
+        window.approveRenewal = approveRenewal;
+        window.rejectRenewalPrompt = rejectRenewalPrompt;
+        window.rejectRenewal = rejectRenewal;
+        window.loadAttendanceReview = loadAttendanceReview;
+        window.setActiveTemplate = setActiveTemplate;
 
         console.log('🏫 SchoolFlow · Production-Ready Frontend (Full)');
         console.log('✅ API Integration · JWT Auth · RBAC · All Modules');
         console.log('🔐 User role:', Api.getRole());
         console.log('📋 Modules: Students, Classes, Payments, Invoices, Attendance, Results, Exams, Reports, Documents, Automations, Queues, Audit, Parent Portal, Health, Platform Admin');
+        console.log('📱 SMS Top-up · Trial Management · Template Upload · Renewal Workflow');
     </script>
 </body>
 </html>
