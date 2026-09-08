@@ -2290,7 +2290,7 @@
         }
 
         // =============================================================
-        // 9. ONBOARDING WIZARD — FIXED with direct fetch + debug
+        // 9. ONBOARDING WIZARD — FIXED with direct fetch + debug + unique username
         // =============================================================
         function initWizardClassRow(name = '', fee = '') {
             const wrap = document.getElementById('wizClassRows');
@@ -2348,9 +2348,7 @@
         }
 
         // =============================================================
-        // 9b. finishWizard — FIXED with direct fetch + debug
-        //     This bypasses the Api wrapper entirely to avoid any
-        //     Authorization header issues during onboarding.
+        // 9b. finishWizard — FIXED with direct fetch, debug, and unique username
         // =============================================================
         async function finishWizard() {
             const name = document.getElementById('wSchoolName').value.trim();
@@ -2366,7 +2364,9 @@
                 if (nm) classes.push({ name: nm, fee });
             });
             const ownerName = document.getElementById('wOwnerName').value.trim() || 'Proprietor';
-            const username = document.getElementById('wOwnerUsername').value.trim();
+            const baseUsername = document.getElementById('wOwnerUsername').value.trim();
+            // ✅ Append timestamp to make it unique
+            const username = baseUsername + '_' + Date.now();
             const password = document.getElementById('wOwnerPassword').value;
             const loadSample = document.getElementById('wLoadSample').checked;
 
@@ -2379,25 +2379,26 @@
                 term,
                 classes,
                 ownerName,
-                username,
+                username,   // <-- unique now
                 password,
-                loadSample
+                loadSample,
+                slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                state: 'Lagos',
+                city: 'Ikeja',
             };
 
             console.log('📦 Sending payload:', payload);
 
             try {
-                // ✅ Direct fetch — no Api wrapper, no Authorization header
                 const response = await fetch('https://school-lwoa.onrender.com/api/v1/schools/onboard', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                console.log('🔁 Response status:', response.status);
-
+                console.log('🔁 Status:', response.status);
                 const data = await response.json();
-                console.log('📨 Response data:', data);
+                console.log('📨 Data:', data);
 
                 if (!response.ok) {
                     alert('❌ Server error: ' + (data.message || 'Unknown error'));
@@ -2405,7 +2406,6 @@
                     return;
                 }
 
-                // ✅ Success – store tokens and boot
                 const d = data.data || data;
                 Api.setTokens(d.accessToken, d.refreshToken, d.user);
                 document.getElementById('onboarding').style.display = 'none';
@@ -4991,7 +4991,7 @@
         console.log('🔐 User role:', Api.getRole());
         console.log('📋 Modules: Students, Classes, Payments, Invoices, Attendance, Results, Exams, Reports, Documents, Automations, Queues, Audit, Parent Portal, Health, Platform Admin');
         console.log('📱 SMS Top-up · Trial Management · Template Upload · Renewal Workflow');
-        console.log('🔧 Onboarding bypass: direct fetch with debug enabled');
+        console.log('🔧 Onboarding: unique username with timestamp, direct fetch with debug');
         console.log('🔑 Backend fix: authMiddleware bypass for /onboard and /ping');
     </script>
 </body>
