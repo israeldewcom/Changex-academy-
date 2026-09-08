@@ -1433,12 +1433,6 @@
         #loginScreen .login-error.show {
             display: block;
         }
-        #loginScreen .login-footer {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: .78rem;
-            color: var(--slate);
-        }
 
         /* Onboarding */
         #onboarding {
@@ -1679,16 +1673,38 @@
     </div>
 
     <!-- ============================================================
-    LOGIN SCREEN
+    LOGIN SCREEN (with Forgot Password & Create Account)
     ============================================================ -->
     <div id="loginScreen">
         <div class="login-card">
-            <div class="login-logo"><div class="brand-mark-lg"><i class="bi bi-mortarboard-fill"></i></div><h4>SchoolFlow</h4><p class="eyebrow">Sign in to your school</p></div>
+            <div class="login-logo">
+                <div class="brand-mark-lg"><i class="bi bi-mortarboard-fill"></i></div>
+                <h4>SchoolFlow</h4>
+                <p class="eyebrow">Sign in to your school</p>
+            </div>
             <div class="login-error" id="loginError">Invalid username or password.</div>
-            <div class="mb-3"><label class="field-label">Username</label><input class="input-x" id="loginUsername" placeholder="Enter your username" autofocus /></div>
-            <div class="mb-3"><label class="field-label">Password</label><input class="input-x" id="loginPassword" type="password" placeholder="Enter your password" /></div>
-            <button class="btn-x btn-primary-x btn-block-x" id="loginBtn"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
-            <div class="login-footer"><span class="eyebrow">First time? Complete onboarding to set up your school.</span></div>
+            <div class="mb-3">
+                <label class="field-label">Username</label>
+                <input class="input-x" id="loginUsername" placeholder="Enter your username" autofocus />
+            </div>
+            <div class="mb-3">
+                <label class="field-label">Password</label>
+                <input class="input-x" id="loginPassword" type="password" placeholder="Enter your password" />
+            </div>
+            <button class="btn-x btn-primary-x btn-block-x" id="loginBtn">
+                <i class="bi bi-box-arrow-in-right"></i> Sign in
+            </button>
+            <div class="d-flex justify-content-between mt-3" style="font-size:.82rem;">
+                <button class="btn-x btn-ghost-x" style="padding:.2rem .4rem;color:var(--slate);" onclick="showForgotPassword()">
+                    <i class="bi bi-question-circle"></i> Forgot password?
+                </button>
+                <button class="btn-x btn-ghost-x" style="padding:.2rem .4rem;color:var(--green);" onclick="enterAppFromLanding()">
+                    <i class="bi bi-person-plus"></i> Create an account
+                </button>
+            </div>
+            <div class="login-footer mt-3">
+                <span class="eyebrow">First time? Complete onboarding to set up your school.</span>
+            </div>
         </div>
     </div>
 
@@ -2000,7 +2016,9 @@
             const map = { PAID: 'chip-green', PARTIAL: 'chip-gold', OUTSTANDING: 'chip-danger', OVERDUE: 'chip-danger',
                 PRESENT: 'chip-green', ABSENT: 'chip-danger', LATE: 'chip-gold', APPROVED: 'chip-green',
                 PENDING: 'chip-gold', REJECTED: 'chip-danger', ISSUED: 'chip-green', OVERDUE: 'chip-danger',
-                CANCELLED: 'chip-slate', ACTIVE: 'chip-green', EXPIRED: 'chip-danger', SUSPENDED: 'chip-danger' };
+                CANCELLED: 'chip-slate', ACTIVE: 'chip-green', EXPIRED: 'chip-danger', SUSPENDED: 'chip-danger',
+                DRAFT: 'chip-slate', PUBLISHED: 'chip-green'
+            };
             return `<span class="chip ${map[status]||'chip-slate'}">${status}</span>`;
         }
 
@@ -2140,7 +2158,6 @@
                 Api.setTokens(data.accessToken, data.refreshToken, data.user);
                 errorEl.classList.remove('show');
                 document.getElementById('loginScreen').style.display = 'none';
-                // Route based on role
                 const role = data.user?.role;
                 if (role === 'SUPER_ADMIN') {
                     document.getElementById('platformApp').style.display = 'flex';
@@ -2186,7 +2203,39 @@
         }
 
         // =============================================================
-        // 8. ONBOARDING WIZARD
+        // 8. FORGOT PASSWORD
+        // =============================================================
+        function showForgotPassword() {
+            openModal('Reset password', `
+                <p style="font-size:.9rem;color:var(--slate);">Enter your registered email address and we'll send you a link to reset your password.</p>
+                <div class="mb-3">
+                    <label class="field-label">Email address</label>
+                    <input class="input-x" id="resetEmail" type="email" placeholder="you@school.edu" />
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button>
+                    <button class="btn-x btn-primary-x btn-block-x" onclick="sendPasswordReset()">
+                        <i class="bi bi-send"></i> Send reset link
+                    </button>
+                </div>
+            `);
+        }
+
+        async function sendPasswordReset() {
+            const email = document.getElementById('resetEmail').value.trim();
+            if (!email) { showToast('Please enter your email address', 'error'); return; }
+            try {
+                const resp = await Api.post('/auth/forgot-password', { email });
+                if (!resp.ok) { showToast('Email not found or error sending reset link', 'error'); return; }
+                closeModal();
+                showToast('Password reset link sent to your email!', 'success');
+            } catch (e) {
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+
+        // =============================================================
+        // 9. ONBOARDING WIZARD
         // =============================================================
         function initWizardClassRow(name = '', fee = '') {
             const wrap = document.getElementById('wizClassRows');
@@ -2307,7 +2356,26 @@
         }
 
         // =============================================================
-        // 9. NAVIGATION
+        // 10. ENTER APP FROM LANDING (FIXED)
+        // =============================================================
+        function enterAppFromLanding() {
+            document.getElementById('landingPage').style.display = 'none';
+            (async () => {
+                try {
+                    const resp = await Api.get('/schools/current');
+                    if (resp.ok) {
+                        showLoginScreen();
+                    } else {
+                        startWizard();
+                    }
+                } catch (_) {
+                    startWizard();
+                }
+            })();
+        }
+
+        // =============================================================
+        // 11. NAVIGATION
         // =============================================================
         const PAGE_META = {
             dashboard: ['Dashboard', 'Overview of your school'],
@@ -2328,7 +2396,11 @@
             automations: ['Automations', 'Rules & triggers'],
             invoices: ['Invoices', 'Generate and manage invoices'],
             documents: ['Documents', 'Upload and manage files'],
-            queues: ['Queue Status', 'Background job monitor']
+            queues: ['Queue Status', 'Background job monitor'],
+            audit: ['Audit Logs', 'User activity tracking'],
+            parentportal: ['Parent Portal', 'My children'],
+            exams: ['Exams', 'Schedule and manage exams'],
+            health: ['System Health', 'Monitoring & status']
         };
 
         const NAV_ITEMS = [
@@ -2344,13 +2416,17 @@
                 { key: 'invoices', icon: 'bi-file-text-fill', label: 'Invoices' }] },
             { group: 'Academics', items: [{ key: 'attendance', icon: 'bi-calendar-check-fill', label: 'Attendance' },
                 { key: 'results', icon: 'bi-bar-chart-fill', label: 'Results' },
+                { key: 'exams', icon: 'bi-calendar-event-fill', label: 'Exams' },
                 { key: 'reportstudio', icon: 'bi-palette-fill', label: 'Report Studio' }] },
             { group: 'Automation', items: [{ key: 'automations', icon: 'bi-gear-wide-connected', label: 'Automations' },
                 { key: 'queues', icon: 'bi-hdd-stack-fill', label: 'Queue Status' }] },
             { group: 'System', items: [{ key: 'reports', icon: 'bi-file-earmark-bar-graph-fill', label: 'Reports' },
                 { key: 'documents', icon: 'bi-folder2-open', label: 'Documents' },
                 { key: 'subscription', icon: 'bi-credit-card-2-front-fill', label: 'Subscription' },
-                { key: 'settings', icon: 'bi-gear-fill', label: 'Settings' }] }
+                { key: 'settings', icon: 'bi-gear-fill', label: 'Settings' },
+                { key: 'audit', icon: 'bi-clock-history', label: 'Audit Logs' },
+                { key: 'health', icon: 'bi-heart-pulse-fill', label: 'System Health' }] },
+            { key: 'parentportal', icon: 'bi-person-lock', label: 'Parent Portal', group: 'People' }
         ];
 
         const BOTTOM_NAV = [
@@ -2365,16 +2441,44 @@
 
         function renderNav() {
             const container = document.getElementById('sidebarNav');
-            container.innerHTML = NAV_ITEMS.map(group => `
-            <div class="nav-group">${group.group}</div>
-            ${group.items.map(item => `
-              <button class="nav-item" data-page="${item.key}">
-                <i class="bi ${item.icon}"></i>${item.label}
-                ${item.badge ? `<span class="badge gold">${item.badge}</span>` : ''}
-                <span class="badge" id="navBadge_${item.key}" style="display:none;"></span>
-              </button>
-            `).join('')}
-          `).join('');
+            // Filter nav items based on role
+            const role = Api.getRole();
+            const filtered = NAV_ITEMS.filter(g => {
+                if (g.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !==
+                    'SCHOOL_OWNER') return false;
+                if (g.key === 'audit' && role !== 'SUPER_ADMIN') return false;
+                if (g.key === 'platform' && role !== 'SUPER_ADMIN') return false;
+                return true;
+            });
+            container.innerHTML = filtered.map(group => {
+                if (group.items) {
+                    return `
+                <div class="nav-group">${group.group}</div>
+                ${group.items.filter(item => {
+                    if (item.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !== 'SCHOOL_OWNER') return false;
+                    if (item.key === 'audit' && role !== 'SUPER_ADMIN') return false;
+                    return true;
+                }).map(item => `
+                  <button class="nav-item" data-page="${item.key}">
+                    <i class="bi ${item.icon}"></i>${item.label}
+                    ${item.badge ? `<span class="badge gold">${item.badge}</span>` : ''}
+                    <span class="badge" id="navBadge_${item.key}" style="display:none;"></span>
+                  </button>
+                `).join('')}
+              `;
+                } else {
+                    if (group.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !==
+                        'SCHOOL_OWNER') return '';
+                    if (group.key === 'audit' && role !== 'SUPER_ADMIN') return '';
+                    return `
+                <div class="nav-group">${group.group || 'Other'}</div>
+                <button class="nav-item" data-page="${group.key}">
+                  <i class="bi ${group.icon}"></i>${group.label}
+                  <span class="badge" id="navBadge_${group.key}" style="display:none;"></span>
+                </button>
+              `;
+                }
+            }).join('');
             container.querySelectorAll('.nav-item[data-page]').forEach(btn => {
                 btn.addEventListener('click', () => navigateTo(btn.dataset.page));
             });
@@ -2412,9 +2516,7 @@
             if (POST_RENDER_HOOKS[page]) POST_RENDER_HOOKS[page]();
         }
 
-        function updateBadges() {
-            // Will be updated from API data
-        }
+        function updateBadges() {}
 
         function closeSidebar() {
             document.getElementById('sidebar').classList.remove('open');
@@ -2431,7 +2533,7 @@
         }
 
         // =============================================================
-        // 10. BOOT
+        // 12. BOOT
         // =============================================================
         let booted = false;
 
@@ -2499,7 +2601,7 @@
         }
 
         // =============================================================
-        // 11. FAB
+        // 13. FAB
         // =============================================================
         let fabOpen = false;
 
@@ -2518,7 +2620,7 @@
         }
 
         // =============================================================
-        // 12. NOTIFICATIONS
+        // 14. NOTIFICATIONS
         // =============================================================
         function openNotifications() {
             openModal('Notifications', `
@@ -2529,7 +2631,7 @@
         }
 
         // =============================================================
-        // 13. PAGE RENDERERS
+        // 15. PAGE RENDERERS
         // =============================================================
         const PAGE_RENDERERS = {};
         const POST_RENDER_HOOKS = {};
@@ -3128,12 +3230,16 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- INVOICES ---
+        // --- INVOICES (Full CRUD) ---
         PAGE_RENDERERS.invoices = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
               <div><h5 style="font-weight:700;">Invoices</h5><span class="eyebrow">Generate and manage invoices</span></div>
               <button class="btn-x btn-primary-x btn-sm-x" onclick="openGenerateInvoiceModal()"><i class="bi bi-plus-lg"></i> Generate invoice</button>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <select class="input-x" id="invStatusFilter" style="max-width:160px;" onchange="filterInvoices()"><option value="">All status</option><option value="ISSUED">Issued</option><option value="PAID">Paid</option><option value="OVERDUE">Overdue</option><option value="CANCELLED">Cancelled</option></select>
+              <input class="input-x" id="invSearch" placeholder="Search student..." style="max-width:200px;" oninput="filterInvoices()" />
             </div>
             <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Amount</th><th>Status</th><th>Due date</th><th></th></tr></thead><tbody id="invoiceBody"><tr><td colspan="5" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
           `;
@@ -3144,25 +3250,89 @@
                 const resp = await Api.get('/invoices');
                 if (!resp.ok) throw new Error('Failed to load invoices');
                 const invoices = await resp.json();
-                const tbody = document.getElementById('invoiceBody');
-                if (invoices.length === 0) {
-                    tbody.innerHTML =
-                        `<tr><td colspan="5" class="text-center py-4">${emptyState('file-text','No invoices','Generate invoices for students.')}</td></tr>`;
-                    return;
-                }
-                tbody.innerHTML = invoices.map(i => `
+                window._invoicesData = invoices;
+                renderInvoiceTable(invoices);
+            } catch (e) {
+                document.getElementById('invoiceBody').innerHTML =
+                    `<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load invoices: ${e.message}</td></tr>`;
+            }
+        };
+
+        function renderInvoiceTable(invoices) {
+            const tbody = document.getElementById('invoiceBody');
+            if (invoices.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="5" class="text-center py-4">${emptyState('file-text','No invoices','Generate invoices for students.')}</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = invoices.map(i => `
               <tr>
                 <td><strong>${escapeHtml(i.studentName||'—')}</strong></td>
                 <td class="num">${money(i.amount)}</td>
                 <td>${statusChip(i.status||'ISSUED')}</td>
                 <td>${fmtDate(i.dueDate)}</td>
-                <td><button class="btn-x btn-outline-x btn-sm-x" onclick="viewInvoice('${i.id}')"><i class="bi bi-eye"></i></button></td>
+                <td><div class="d-flex gap-1">
+                  <button class="btn-x btn-outline-x btn-sm-x" onclick="viewInvoice('${i.id}')"><i class="bi bi-eye"></i></button>
+                  ${i.status !== 'PAID' && i.status !== 'CANCELLED' ? `<button class="btn-x btn-primary-x btn-sm-x" onclick="updateInvoiceStatus('${i.id}','PAID')"><i class="bi bi-check-lg"></i></button>` : ''}
+                  ${i.status !== 'CANCELLED' ? `<button class="btn-x btn-danger-x btn-sm-x" onclick="updateInvoiceStatus('${i.id}','CANCELLED')"><i class="bi bi-x-lg"></i></button>` : ''}
+                </div></td>
               </tr>
             `).join('');
-            } catch (e) {
-                document.getElementById('invoiceBody').innerHTML =
-                    `<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load invoices: ${e.message}</td></tr>`;
-            }
+        }
+
+        window.filterInvoices = function() {
+            const status = document.getElementById('invStatusFilter')?.value || '';
+            const search = document.getElementById('invSearch')?.value?.toLowerCase() || '';
+            const data = window._invoicesData || [];
+            const filtered = data.filter(i => {
+                const matchStatus = !status || i.status === status;
+                const matchSearch = !search || (i.studentName || '').toLowerCase().includes(search);
+                return matchStatus && matchSearch;
+            });
+            renderInvoiceTable(filtered);
+        };
+
+        window.updateInvoiceStatus = async function(id, status) {
+            try {
+                const resp = await Api.put('/invoices/' + id, { status });
+                if (!resp.ok) { showToast('Failed to update invoice', 'error'); return; }
+                showToast('Invoice updated', 'success');
+                renderPage('invoices');
+            } catch (e) { showToast('Error updating invoice', 'error'); }
+        };
+
+        window.viewInvoice = function(id) {
+            openModal('Invoice', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
+            (async () => {
+                try {
+                    const resp = await Api.get('/invoices/' + id);
+                    if (resp.ok) {
+                        const i = await resp.json();
+                        const body = document.getElementById('modalBody');
+                        if (body) {
+                            body.innerHTML = `
+                    <div style="border:1px solid var(--line);border-radius:var(--radius-md);padding:1.2rem;">
+                      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:.5rem;margin-bottom:.5rem;">
+                        <div><div style="font-weight:700;">${escapeHtml(_pageData.school?.name||'SchoolFlow')}</div><div class="eyebrow">${escapeHtml(_pageData.school?.address||'')}</div></div>
+                        <div style="text-align:right;"><div class="label-caps">Invoice #</div><div style="font-weight:700;">${i.invoiceNumber||uid('INV')}</div></div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;margin:.5rem 0;">
+                        <div><span class="eyebrow">Student:</span> ${escapeHtml(i.studentName||'—')}</div>
+                        <div><span class="eyebrow">Date:</span> ${fmtDate(i.createdAt)}</div>
+                        <div><span class="eyebrow">Due:</span> ${fmtDate(i.dueDate)}</div>
+                        <div><span class="eyebrow">Status:</span> ${statusChip(i.status||'ISSUED')}</div>
+                      </div>
+                      <hr class="hr-x" />
+                      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;"><span>Total</span><span class="num">${money(i.amount)}</span></div>
+                      <hr class="hr-x" />
+                      <div class="eyebrow text-center">SchoolFlow</div>
+                    </div>
+                    <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Close</button><button class="btn-x btn-primary-x flex-grow-1" onclick="window.print()"><i class="bi bi-printer"></i> Print</button></div>
+                  `;
+                        }
+                    }
+                } catch (_) {}
+            })();
         };
 
         window.openGenerateInvoiceModal = function() {
@@ -3203,40 +3373,6 @@
                 showToast('Invoice generated successfully', 'success');
                 renderPage('invoices');
             } catch (e) { showToast('Network error', 'error'); }
-        };
-
-        window.viewInvoice = function(id) {
-            openModal('Invoice', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
-            (async () => {
-                try {
-                    const resp = await Api.get('/invoices/' + id);
-                    if (resp.ok) {
-                        const i = await resp.json();
-                        const body = document.getElementById('modalBody');
-                        if (body) {
-                            body.innerHTML = `
-                    <div style="border:1px solid var(--line);border-radius:var(--radius-md);padding:1.2rem;">
-                      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:.5rem;margin-bottom:.5rem;">
-                        <div><div style="font-weight:700;">${escapeHtml(_pageData.school?.name||'SchoolFlow')}</div><div class="eyebrow">${escapeHtml(_pageData.school?.address||'')}</div></div>
-                        <div style="text-align:right;"><div class="label-caps">Invoice #</div><div style="font-weight:700;">${i.invoiceNumber||uid('INV')}</div></div>
-                      </div>
-                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;margin:.5rem 0;">
-                        <div><span class="eyebrow">Student:</span> ${escapeHtml(i.studentName||'—')}</div>
-                        <div><span class="eyebrow">Date:</span> ${fmtDate(i.createdAt)}</div>
-                        <div><span class="eyebrow">Due:</span> ${fmtDate(i.dueDate)}</div>
-                        <div><span class="eyebrow">Status:</span> ${statusChip(i.status||'ISSUED')}</div>
-                      </div>
-                      <hr class="hr-x" />
-                      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;"><span>Total</span><span class="num">${money(i.amount)}</span></div>
-                      <hr class="hr-x" />
-                      <div class="eyebrow text-center">SchoolFlow</div>
-                    </div>
-                    <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Close</button><button class="btn-x btn-primary-x flex-grow-1" onclick="window.print()"><i class="bi bi-printer"></i> Print</button></div>
-                  `;
-                        }
-                    }
-                } catch (_) {}
-            })();
         };
 
         // --- SUBSCRIPTION ---
@@ -3422,7 +3558,7 @@
             })();
         };
 
-        // --- AUTOMATIONS ---
+        // --- AUTOMATIONS (with test) ---
         PAGE_RENDERERS.automations = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -3445,12 +3581,28 @@
                     return;
                 }
                 grid.innerHTML = automations.map(a => `
-              <div class="col-12 col-md-6 col-lg-4"><div class="stat ${a.enabled?'tone-green':'tone-slate'} h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(a.name||'Untitled')}</h6><div class="eyebrow">${escapeHtml(a.event||'—')}</div></div><span class="chip ${a.enabled?'chip-green':'chip-slate'}">${a.enabled?'Active':'Disabled'}</span></div><div class="eyebrow mt-2">Action: ${escapeHtml(a.action||'—')}</div><div class="d-flex gap-2 mt-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="toggleAutomation('${a.id}')"><i class="bi ${a.enabled?'bi-pause':'bi-play-fill'}"></i> ${a.enabled?'Disable':'Enable'}</button><button class="btn-x btn-danger-x btn-sm-x" onclick="deleteAutomation('${a.id}')"><i class="bi bi-trash3"></i></button></div></div></div>
+              <div class="col-12 col-md-6 col-lg-4"><div class="stat ${a.enabled?'tone-green':'tone-slate'} h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(a.name||'Untitled')}</h6><div class="eyebrow">${escapeHtml(a.event||'—')}</div></div><span class="chip ${a.enabled?'chip-green':'chip-slate'}">${a.enabled?'Active':'Disabled'}</span></div><div class="eyebrow mt-2">Action: ${escapeHtml(a.action||'—')}</div><div class="d-flex gap-2 mt-2">
+                <button class="btn-x btn-outline-x btn-sm-x" onclick="testAutomation('${a.id}')"><i class="bi bi-play-fill"></i> Test</button>
+                <button class="btn-x btn-outline-x btn-sm-x" onclick="toggleAutomation('${a.id}')"><i class="bi ${a.enabled?'bi-pause':'bi-play-fill'}"></i> ${a.enabled?'Disable':'Enable'}</button>
+                <button class="btn-x btn-danger-x btn-sm-x" onclick="deleteAutomation('${a.id}')"><i class="bi bi-trash3"></i></button>
+              </div></div></div>
             `).join('');
             } catch (e) {
                 document.getElementById('automationGrid').innerHTML =
                     `<div class="col-12 text-center py-4 text-danger">Failed to load automations: ${e.message}</div>`;
             }
+        };
+
+        window.testAutomation = async function(id) {
+            try {
+                const resp = await Api.post('/automations/' + id + '/test');
+                if (!resp.ok) { showToast('Test failed', 'error'); return; }
+                const result = await resp.json();
+                openModal('Test Result', `
+              <div style="font-family:monospace;font-size:.82rem;background:var(--line-soft);padding:.8rem;border-radius:var(--radius-sm);white-space:pre-wrap;max-height:400px;overflow-y:auto;">${escapeHtml(JSON.stringify(result, null, 2))}</div>
+              <button class="btn-x btn-outline-x mt-3" onclick="closeModal()">Close</button>
+            `);
+            } catch (e) { showToast('Test failed', 'error'); }
         };
 
         window.openAddAutomationModal = function() {
@@ -3495,7 +3647,7 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        // --- QUEUES ---
+        // --- QUEUES (with retry & details) ---
         PAGE_RENDERERS.queues = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 style="font-weight:700;">Queue Status</h5><span class="eyebrow">Background job monitoring</span></div><button class="btn-x btn-outline-x btn-sm-x" onclick="renderPage('queues')"><i class="bi bi-arrow-repeat"></i> Refresh</button></div>
@@ -3515,12 +3667,89 @@
                     return;
                 }
                 grid.innerHTML = queues.map(q => `
-              <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(q.name||'Queue')}</h6><div class="eyebrow">${q.count||0} jobs</div></div><span class="chip ${q.isPaused?'chip-gold':'chip-green'}">${q.isPaused?'Paused':'Running'}</span></div><div class="mt-2"><div class="bar-track"><div class="bar-fill" style="width:${Math.min(q.progress||0,100)}%;"></div></div><div class="d-flex justify-content-between mt-1"><span class="eyebrow">${q.progress||0}%</span><span class="eyebrow">${q.failed||0} failed</span></div></div></div></div>
+              <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(q.name||'Queue')}</h6><div class="eyebrow">${q.count||0} jobs</div></div><span class="chip ${q.isPaused?'chip-gold':'chip-green'}">${q.isPaused?'Paused':'Running'}</span></div><div class="mt-2"><div class="bar-track"><div class="bar-fill" style="width:${Math.min(q.progress||0,100)}%;"></div></div><div class="d-flex justify-content-between mt-1"><span class="eyebrow">${q.progress||0}%</span><span class="eyebrow">${q.failed||0} failed</span></div></div>
+                <div class="d-flex gap-2 mt-2">
+                  <button class="btn-x btn-outline-x btn-sm-x" onclick="viewQueueJobs('${q.name}')"><i class="bi bi-list"></i> Jobs</button>
+                  ${q.isPaused ? `<button class="btn-x btn-primary-x btn-sm-x" onclick="resumeQueue('${q.name}')"><i class="bi bi-play-fill"></i> Resume</button>` : `<button class="btn-x btn-gold-x btn-sm-x" onclick="pauseQueue('${q.name}')"><i class="bi bi-pause-fill"></i> Pause</button>`}
+                </div>
+              </div></div>
             `).join('');
             } catch (e) {
                 document.getElementById('queueGrid').innerHTML =
                     `<div class="col-12 text-center py-4 text-danger">Failed to load queue status: ${e.message}</div>`;
             }
+        };
+
+        window.viewQueueJobs = function(queueName) {
+            openModal(`Jobs in ${queueName}`, `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
+            (async () => {
+                try {
+                    const resp = await Api.get('/queues/' + queueName + '/jobs');
+                    if (resp.ok) {
+                        const jobs = await resp.json();
+                        const body = document.getElementById('modalBody');
+                        if (body) {
+                            if (jobs.length === 0) {
+                                body.innerHTML = emptyState('inbox', 'No jobs', 'This queue is empty.');
+                                return;
+                            }
+                            body.innerHTML = `
+                    <div style="max-height:400px;overflow-y:auto;">
+                      ${jobs.slice(0,20).map(j => `
+                        <div class="d-flex justify-content-between align-items-center p-2" style="border-bottom:1px solid var(--line-soft);font-size:.82rem;">
+                          <div><span class="chip ${j.status==='completed'?'chip-green':j.status==='failed'?'chip-danger':'chip-gold'}">${j.status}</span> ${j.id}</div>
+                          <div class="d-flex gap-1">
+                            <button class="btn-x btn-ghost-x btn-sm-x" onclick="viewJobDetail('${queueName}','${j.id}')"><i class="bi bi-eye"></i></button>
+                            ${j.status==='failed'?`<button class="btn-x btn-primary-x btn-sm-x" onclick="retryJob('${queueName}','${j.id}')"><i class="bi bi-arrow-repeat"></i></button>`:''}
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  `;
+                        }
+                    }
+                } catch (_) {}
+            })();
+        };
+
+        window.viewJobDetail = async function(queueName, jobId) {
+            try {
+                const resp = await Api.get('/queues/' + queueName + '/jobs/' + jobId);
+                if (!resp.ok) { showToast('Job not found', 'error'); return; }
+                const job = await resp.json();
+                openModal('Job Details', `
+              <div style="font-family:monospace;font-size:.82rem;background:var(--line-soft);padding:.8rem;border-radius:var(--radius-sm);white-space:pre-wrap;max-height:400px;overflow-y:auto;">${escapeHtml(JSON.stringify(job, null, 2))}</div>
+              <button class="btn-x btn-outline-x mt-3" onclick="closeModal()">Close</button>
+            `);
+            } catch (e) { showToast('Job not found', 'error'); }
+        };
+
+        window.retryJob = async function(queueName, jobId) {
+            try {
+                const resp = await Api.post('/queues/' + queueName + '/retry/' + jobId);
+                if (!resp.ok) { showToast('Retry failed', 'error'); return; }
+                showToast('Job retried', 'success');
+                closeModal();
+                renderPage('queues');
+            } catch (e) { showToast('Retry failed', 'error'); }
+        };
+
+        window.pauseQueue = async function(queueName) {
+            try {
+                const resp = await Api.post('/queues/' + queueName + '/pause');
+                if (!resp.ok) { showToast('Failed to pause queue', 'error'); return; }
+                showToast('Queue paused', 'info');
+                renderPage('queues');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        window.resumeQueue = async function(queueName) {
+            try {
+                const resp = await Api.post('/queues/' + queueName + '/resume');
+                if (!resp.ok) { showToast('Failed to resume queue', 'error'); return; }
+                showToast('Queue resumed', 'success');
+                renderPage('queues');
+            } catch (e) { showToast('Network error', 'error'); }
         };
 
         // --- DOCUMENTS ---
@@ -3529,6 +3758,10 @@
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
               <div><h5 style="font-weight:700;">Documents</h5><span class="eyebrow">Upload and manage files</span></div>
               <button class="btn-x btn-primary-x btn-sm-x" onclick="openUploadDocumentModal()"><i class="bi bi-cloud-upload"></i> Upload</button>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <div class="search-wrap flex-grow-1" style="max-width:260px;"><i class="bi bi-search"></i><input class="input-x" id="docSearch" placeholder="Search documents..." oninput="filterDocs()" /></div>
+              <select class="input-x" id="docCategory" style="max-width:160px;" onchange="filterDocs()"><option value="">All categories</option><option>Administrative</option><option>Academic</option><option>Financial</option><option>Other</option></select>
             </div>
             <div class="row g-3" id="docGrid"><div class="col-12 text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div></div>
           `;
@@ -3539,24 +3772,42 @@
                 const resp = await Api.get('/documents');
                 if (!resp.ok) throw new Error('Failed to load documents');
                 const docs = await resp.json();
-                const grid = document.getElementById('docGrid');
-                if (docs.length === 0) {
-                    grid.innerHTML =
-                        `<div class="col-12">${emptyState('folder2-open','No documents yet','Upload files to manage them.')}</div>`;
-                    return;
-                }
-                grid.innerHTML = docs.map(d => `
-              <div class="col-12 col-sm-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex align-items-start gap-2"><div style="width:40px;height:40px;border-radius:8px;background:var(--line-soft);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;"><i class="bi bi-file-earmark-text"></i></div><div class="flex-grow-1"><div style="font-weight:600;font-size:.85rem;">${escapeHtml(d.filename||'Untitled')}</div><div class="eyebrow">${(d.size?Math.round(d.size/1024):0)} KB · ${fmtDate(d.uploadedAt)}</div><div class="d-flex gap-2 mt-1"><a href="${d.fileUrl}" target="_blank" class="btn-x btn-outline-x btn-sm-x"><i class="bi bi-eye"></i> View</a><button class="btn-x btn-danger-x btn-sm-x" onclick="deleteDocument('${d.id}')"><i class="bi bi-trash3"></i></button></div></div></div></div></div>
-            `).join('');
+                window._documentsData = docs;
+                renderDocGrid(docs);
             } catch (e) {
                 document.getElementById('docGrid').innerHTML =
                     `<div class="col-12 text-center py-4 text-danger">Failed to load documents: ${e.message}</div>`;
             }
         };
 
+        function renderDocGrid(docs) {
+            const grid = document.getElementById('docGrid');
+            if (docs.length === 0) {
+                grid.innerHTML =
+                    `<div class="col-12">${emptyState('folder2-open','No documents yet','Upload files to manage them.')}</div>`;
+                return;
+            }
+            grid.innerHTML = docs.map(d => `
+              <div class="col-12 col-sm-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex align-items-start gap-2"><div style="width:40px;height:40px;border-radius:8px;background:var(--line-soft);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;"><i class="bi bi-file-earmark-text"></i></div><div class="flex-grow-1"><div style="font-weight:600;font-size:.85rem;">${escapeHtml(d.filename||'Untitled')}</div><div class="eyebrow">${(d.size?Math.round(d.size/1024):0)} KB · ${fmtDate(d.uploadedAt)}</div><div class="eyebrow">${d.category||'Uncategorized'}</div><div class="d-flex gap-2 mt-1"><a href="${d.fileUrl}" target="_blank" class="btn-x btn-outline-x btn-sm-x"><i class="bi bi-eye"></i> View</a><button class="btn-x btn-danger-x btn-sm-x" onclick="deleteDocument('${d.id}')"><i class="bi bi-trash3"></i></button></div></div></div></div></div>
+            `).join('');
+        }
+
+        window.filterDocs = function() {
+            const search = document.getElementById('docSearch')?.value?.toLowerCase() || '';
+            const category = document.getElementById('docCategory')?.value || '';
+            const data = window._documentsData || [];
+            const filtered = data.filter(d => {
+                const matchSearch = !search || (d.filename || '').toLowerCase().includes(search);
+                const matchCategory = !category || d.category === category;
+                return matchSearch && matchCategory;
+            });
+            renderDocGrid(filtered);
+        };
+
         window.openUploadDocumentModal = function() {
             openModal('Upload document', `
             <div class="mb-3"><label class="field-label">File</label><input type="file" id="docFile" class="input-x" style="padding:.4rem;" /></div>
+            <div class="mb-3"><label class="field-label">Category</label><select class="input-x" id="docCategoryUpload"><option>Administrative</option><option>Academic</option><option>Financial</option><option>Other</option></select></div>
             <div class="mb-1"><label class="field-label">Description (optional)</label><input class="input-x" id="docDesc" placeholder="e.g. School brochure" /></div>
             <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="uploadDocument()"><i class="bi bi-cloud-upload"></i> Upload</button></div>
           `);
@@ -3565,10 +3816,12 @@
         window.uploadDocument = async function() {
             const fileInput = document.getElementById('docFile');
             const desc = document.getElementById('docDesc').value.trim();
+            const category = document.getElementById('docCategoryUpload').value;
             if (!fileInput || !fileInput.files || !fileInput.files[0]) { showToast('Please select a file', 'error'); return; }
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
             formData.append('description', desc);
+            formData.append('category', category);
             try {
                 const resp = await Api.upload('/documents', formData);
                 if (!resp.ok) { showToast('Upload failed', 'error'); return; }
@@ -3595,7 +3848,7 @@
               <div class="col-4"><div class="stat tone-green text-center"><div class="figure-md num" style="color:var(--green)" id="resHigh">—</div><div class="label-caps">Highest</div></div></div>
               <div class="col-4"><div class="stat tone-danger text-center"><div class="figure-md num" style="color:var(--danger)" id="resLow">—</div><div class="label-caps">Lowest</div></div></div>
             </div>
-            <div class="panel mb-3"><div class="panel-head"><h6>Subject performance</h6></div><div class="chart-box"><canvas id="resultsChart"></canvas></div></div>
+            <div class="panel mb-3"><div class="panel-head"><h6>Subject performance</h6><button class="btn-x btn-primary-x btn-sm-x" onclick="openBulkReportModal()"><i class="bi bi-file-earmark-text"></i> Generate class report cards</button></div><div class="chart-box"><canvas id="resultsChart"></canvas></div></div>
             <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Class</th><th>Average</th><th>Grade</th><th></th></tr></thead><tbody id="resultsBody"><tr><td colspan="5" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
           `;
         };
@@ -3646,6 +3899,42 @@
                 document.getElementById('resultsBody').innerHTML =
                     `<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load results: ${e.message}</td></tr>`;
             }
+        };
+
+        // --- BULK REPORT CARD ---
+        window.openBulkReportModal = function() {
+            openModal('Generate class report cards', `
+            <div class="mb-3"><label class="field-label">Class</label><select class="input-x" id="bulkClass"><option>Loading...</option></select></div>
+            <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="generateClassReportCards()"><i class="bi bi-check-lg"></i> Generate for class</button></div>
+          `);
+            (async () => {
+                try {
+                    const resp = await Api.get('/classes');
+                    if (resp.ok) {
+                        const classes = await resp.json();
+                        const sel = document.getElementById('bulkClass');
+                        sel.innerHTML = classes.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(
+                        '');
+                    }
+                } catch (_) {}
+            })();
+        };
+
+        window.generateClassReportCards = async function() {
+            const classId = document.getElementById('bulkClass').value;
+            if (!classId) { showToast('Please select a class', 'warning'); return; }
+            try {
+                const resp = await Api.post('/report-cards/generate-class', {
+                    classId,
+                    sessionId: _pageData.school?.session || '2026/2027',
+                    termId: _pageData.school?.term || 'First Term'
+                });
+                if (!resp.ok) { showToast('Generation failed', 'error'); return; }
+                const data = await resp.json();
+                closeModal();
+                showToast(`Generated ${data.length || 0} report cards`, 'success');
+                renderPage('results');
+            } catch (e) { showToast('Error generating report cards', 'error'); }
         };
 
         // --- INSIGHTS ---
@@ -3968,8 +4257,218 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
+        // --- AUDIT LOGS ---
+        PAGE_RENDERERS.audit = function() {
+            return `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div><h5 style="font-weight:700;">Audit Logs</h5><span class="eyebrow">User activity tracking</span></div>
+              <button class="btn-x btn-outline-x btn-sm-x" onclick="renderPage('audit')"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <div class="search-wrap flex-grow-1" style="max-width:260px;"><i class="bi bi-search"></i><input class="input-x" id="auditSearch" placeholder="Search actor, action..." oninput="filterAudit()" /></div>
+              <select class="input-x" id="auditAction" style="max-width:180px;" onchange="filterAudit()"><option value="">All actions</option><option>login</option><option>logout</option><option>payment.created</option><option>payment.approved</option><option>student.created</option><option>student.updated</option></select>
+              <input class="input-x" id="auditDate" type="date" style="max-width:160px;" onchange="filterAudit()" />
+            </div>
+            <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Details</th></tr></thead><tbody id="auditBody"><tr><td colspan="5" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
+          `;
+        };
+
+        POST_RENDER_HOOKS.audit = async function() {
+            try {
+                const resp = await Api.get('/audit-logs');
+                if (!resp.ok) throw new Error('Failed to load audit logs');
+                const logs = await resp.json();
+                window._auditData = logs;
+                renderAuditTable(logs);
+            } catch (e) {
+                document.getElementById('auditBody').innerHTML =
+                    `<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load audit logs: ${e.message}</td></tr>`;
+            }
+        };
+
+        function renderAuditTable(logs) {
+            const tbody = document.getElementById('auditBody');
+            if (logs.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="5" class="text-center py-4">${emptyState('clock-history','No audit logs','Audit logs will appear here.')}</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = logs.slice(0, 50).map(l => `
+            <tr><td class="eyebrow">${fmtDateTime(l.timestamp)}</td><td><strong>${escapeHtml(l.actor)}</strong></td><td><span class="chip chip-slate">${escapeHtml(l.action)}</span></td><td>${escapeHtml(l.resource)}</td><td class="eyebrow">${l.resourceId||''}</td></tr>
+          `).join('');
+        }
+
+        window.filterAudit = function() {
+            const search = document.getElementById('auditSearch')?.value?.toLowerCase() || '';
+            const action = document.getElementById('auditAction')?.value || '';
+            const date = document.getElementById('auditDate')?.value || '';
+            const data = window._auditData || [];
+            const filtered = data.filter(l => {
+                const matchSearch = !search || (l.actor || '').toLowerCase().includes(search) || (l.action || '')
+                    .toLowerCase().includes(search);
+                const matchAction = !action || l.action === action;
+                const matchDate = !date || (l.timestamp || '').startsWith(date);
+                return matchSearch && matchAction && matchDate;
+            });
+            renderAuditTable(filtered);
+        };
+
+        // --- PARENT PORTAL ---
+        PAGE_RENDERERS.parentportal = function() {
+            const user = Api.getUser();
+            if (user.role !== 'PARENT' && user.role !== 'SUPER_ADMIN' && user.role !== 'SCHOOL_OWNER') {
+                return `<div class="panel">${emptyState('lock','Access Denied','Only parents and school owners can view this page.')}</div>`;
+            }
+            return `
+            <div class="d-flex align-items-center gap-2 mb-3"><h5 style="font-weight:700;">Parent Portal</h5><span class="chip chip-green">My children</span></div>
+            <div class="row g-3" id="parentChildren"><div class="col-12 text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div></div>
+          `;
+        };
+
+        POST_RENDER_HOOKS.parentportal = async function() {
+            try {
+                const resp = await Api.get('/students?view=parent');
+                if (!resp.ok) throw new Error('Failed to load children');
+                const children = await resp.json();
+                const grid = document.getElementById('parentChildren');
+                if (children.length === 0) {
+                    grid.innerHTML =
+                        `<div class="col-12">${emptyState('people','No children linked','Ask your school to link your account.')}</div>`;
+                    return;
+                }
+                grid.innerHTML = children.map(c => `
+              <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-green h-100"><h6 class="mb-0">${escapeHtml(c.fullName)}</h6><div class="eyebrow">${escapeHtml(c.className)}</div><div class="d-flex justify-content-between mt-2"><span>Fees: ${money(c.fees?.paid||0)} / ${money(c.fees?.expected||0)}</span><span>${statusChip(c.fees?.status||'OUTSTANDING')}</span></div><div class="d-flex gap-2 mt-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="viewStudent('${c.id}')"><i class="bi bi-eye"></i> View</button><button class="btn-x btn-outline-x btn-sm-x" onclick="generateReportCard('${c.id}')"><i class="bi bi-file-earmark-text"></i> Report</button></div></div></div>
+            `).join('');
+            } catch (e) {
+                document.getElementById('parentChildren').innerHTML =
+                    `<div class="col-12 text-center py-4 text-danger">${e.message}</div>`;
+            }
+        };
+
+        // --- EXAMS ---
+        PAGE_RENDERERS.exams = function() {
+            return `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div><h5 style="font-weight:700;">Exams</h5><span class="eyebrow">Schedule and manage exams</span></div>
+              <button class="btn-x btn-primary-x btn-sm-x" onclick="openAddExamModal()"><i class="bi bi-plus-lg"></i> Add exam</button>
+            </div>
+            <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Class</th><th>Subject</th><th>Date</th><th>Max Score</th><th></th></tr></thead><tbody id="examBody"><tr><td colspan="6" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
+          `;
+        };
+
+        POST_RENDER_HOOKS.exams = async function() {
+            try {
+                const resp = await Api.get('/exams');
+                if (!resp.ok) throw new Error('Failed to load exams');
+                const exams = await resp.json();
+                const tbody = document.getElementById('examBody');
+                if (exams.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="6" class="text-center py-4">${emptyState('calendar-event','No exams','Create exams to schedule assessments.')}</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = exams.map(e => `
+              <tr><td><strong>${escapeHtml(e.name)}</strong></td><td>${escapeHtml(e.className||'—')}</td><td>${escapeHtml(e.subjectName||'—')}</td><td>${fmtDate(e.date)}</td><td class="num">${e.maxScore}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="editExam('${e.id}')"><i class="bi bi-pencil"></i></button><button class="btn-x btn-danger-x btn-sm-x" onclick="deleteExam('${e.id}')"><i class="bi bi-trash3"></i></button></td></tr>
+            `).join('');
+            } catch (e) {
+                document.getElementById('examBody').innerHTML =
+                    `<tr><td colspan="6" class="text-center py-4 text-danger">${e.message}</td></tr>`;
+            }
+        };
+
+        window.openAddExamModal = function() {
+            openModal('Add Exam', `
+              <div class="mb-3"><label class="field-label">Exam name</label><input class="input-x" id="examName" placeholder="e.g. First Term Mathematics" /></div>
+              <div class="mb-3"><label class="field-label">Class</label><select class="input-x" id="examClass"><option>Loading...</option></select></div>
+              <div class="mb-3"><label class="field-label">Subject</label><select class="input-x" id="examSubject"><option>Loading...</option></select></div>
+              <div class="mb-3"><label class="field-label">Max score</label><input class="input-x" id="examMax" type="number" value="100" /></div>
+              <div class="mb-1"><label class="field-label">Date</label><input class="input-x" id="examDate" type="date" /></div>
+              <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveExam()"><i class="bi bi-check-lg"></i> Save</button></div>
+            `);
+            (async () => {
+                try {
+                    const resp = await Api.get('/classes');
+                    if (resp.ok) {
+                        const classes = await resp.json();
+                        const sel = document.getElementById('examClass');
+                        sel.innerHTML = classes.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(
+                        '');
+                    }
+                } catch (_) {}
+            })();
+        };
+
+        window.saveExam = async function() {
+            const name = document.getElementById('examName').value.trim();
+            const classId = document.getElementById('examClass').value;
+            const subject = document.getElementById('examSubject').value.trim() || 'General';
+            const maxScore = Number(document.getElementById('examMax').value) || 100;
+            const date = document.getElementById('examDate').value;
+            if (!name) { showToast('Please enter an exam name', 'error'); return; }
+            try {
+                const resp = await Api.post('/exams', { name, classId, subjectName: subject, maxScore, date });
+                if (!resp.ok) { showToast('Failed to create exam', 'error'); return; }
+                closeModal();
+                showToast('Exam created', 'success');
+                renderPage('exams');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        window.editExam = function(id) {
+            showToast('Edit exam feature coming soon', 'info');
+        };
+
+        window.deleteExam = async function(id) {
+            try {
+                const resp = await Api.del('/exams/' + id);
+                if (!resp.ok) { showToast('Failed to delete exam', 'error'); return; }
+                showToast('Exam deleted', 'info');
+                renderPage('exams');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        // --- SYSTEM HEALTH ---
+        PAGE_RENDERERS.health = function() {
+            return `
+            <div class="d-flex align-items-center gap-2 mb-3"><h5 style="font-weight:700;">System Health</h5><span class="chip chip-green" id="healthStatus">Checking...</span></div>
+            <div class="row g-3" id="healthChecks">
+              <div class="col-md-4"><div class="stat tone-slate text-center"><div class="figure-md num" id="healthDb">—</div><div class="label-caps">Database</div></div></div>
+              <div class="col-md-4"><div class="stat tone-slate text-center"><div class="figure-md num" id="healthRedis">—</div><div class="label-caps">Redis</div></div></div>
+              <div class="col-md-4"><div class="stat tone-slate text-center"><div class="figure-md num" id="healthQueues">—</div><div class="label-caps">Queues</div></div></div>
+            </div>
+            <div class="panel mt-3"><div class="panel-head"><h6>Last check</h6><span class="eyebrow" id="healthTimestamp">—</span></div><pre id="healthDetails" style="background:var(--line-soft);padding:.8rem;border-radius:var(--radius-sm);font-size:.78rem;overflow-x:auto;">Loading...</pre></div>
+          `;
+        };
+
+        POST_RENDER_HOOKS.health = async function() {
+            try {
+                const resp = await Api.get('/health');
+                if (!resp.ok) throw new Error('Health check failed');
+                const data = await resp.json();
+                document.getElementById('healthStatus').textContent = data.status;
+                document.getElementById('healthStatus').className = 'chip ' + (data.status === 'ok' ? 'chip-green' :
+                    'chip-gold');
+                document.getElementById('healthDb').textContent = data.checks?.db ? '✅ OK' : '❌ Error';
+                document.getElementById('healthDb').parentElement.className = 'stat ' + (data.checks?.db ?
+                    'tone-green' : 'tone-danger') + ' text-center';
+                document.getElementById('healthRedis').textContent = data.checks?.redis ? '✅ OK' : '❌ Error';
+                document.getElementById('healthRedis').parentElement.className = 'stat ' + (data.checks?.redis ?
+                    'tone-green' : 'tone-danger') + ' text-center';
+                document.getElementById('healthQueues').textContent = data.checks?.queues ? '✅ OK' : '❌ Error';
+                document.getElementById('healthQueues').parentElement.className = 'stat ' + (data.checks?.queues ?
+                    'tone-green' : 'tone-danger') + ' text-center';
+                document.getElementById('healthTimestamp').textContent = data.timestamp ? new Date(data.timestamp)
+                    .toLocaleString() : '—';
+                document.getElementById('healthDetails').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('healthStatus').textContent = '❌ Error';
+                document.getElementById('healthStatus').className = 'chip chip-danger';
+                document.getElementById('healthDetails').textContent = 'Failed to fetch health status: ' + e.message;
+            }
+        };
+
         // =============================================================
-        // 14. PLATFORM ADMIN (Super Admin)
+        // 16. PLATFORM ADMIN (Super Admin)
         // =============================================================
         function renderPlatformPage() {
             const el = document.getElementById('platformPageContent');
@@ -4026,27 +4525,7 @@
         };
 
         // =============================================================
-        // 15. LANDING PAGE → APP
-        // =============================================================
-        function enterAppFromLanding() {
-            document.getElementById('landingPage').style.display = 'none';
-            const token = Api._token;
-            const user = Api.getUser();
-            if (token && user) {
-                if (user.role === 'SUPER_ADMIN') {
-                    document.getElementById('platformApp').style.display = 'flex';
-                    renderPlatformPage();
-                } else {
-                    document.getElementById('app').style.display = 'flex';
-                    boot();
-                }
-            } else {
-                showLoginScreen();
-            }
-        }
-
-        // =============================================================
-        // 16. EVENT BINDINGS
+        // 17. EVENT BINDINGS
         // =============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
@@ -4114,7 +4593,7 @@
         });
 
         // =============================================================
-        // 17. GLOBAL EXPOSURE
+        // 18. GLOBAL EXPOSURE
         // =============================================================
         window.navigateTo = navigateTo;
         window.renderPage = renderPage;
@@ -4130,11 +4609,15 @@
         window.generateReportCard = generateReportCard;
         window.togglePlatformSchool = togglePlatformSchool;
         window.startWizard = startWizard;
+        window.showForgotPassword = showForgotPassword;
+        window.sendPasswordReset = sendPasswordReset;
         window.Api = Api;
+        window._chartInstances = _chartInstances;
 
-        console.log('🏫 SchoolFlow · Production-Ready Frontend');
+        console.log('🏫 SchoolFlow · Production-Ready Frontend (Full)');
         console.log('✅ API Integration · JWT Auth · RBAC · All Modules');
         console.log('🔐 User role:', Api.getRole());
+        console.log('📋 Modules: Students, Classes, Payments, Invoices, Attendance, Results, Exams, Reports, Documents, Automations, Queues, Audit, Parent Portal, Health, Platform Admin');
     </script>
 </body>
 </html>
