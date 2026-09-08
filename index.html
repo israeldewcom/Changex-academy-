@@ -65,9 +65,6 @@
             --shadow-3: 0 20px 50px rgba(0, 0, 0, .6);
         }
 
-        /* ============================================================
-           RESET & BASE
-           ============================================================ */
         *,
         *::before,
         *::after {
@@ -117,9 +114,6 @@
             background: transparent;
         }
 
-        /* ============================================================
-           UTILITY CLASSES
-           ============================================================ */
         .num {
             font-family: var(--font-display);
             font-variant-numeric: tabular-nums;
@@ -169,9 +163,6 @@
             gap: 1rem;
         }
 
-        /* ============================================================
-           APP SHELL
-           ============================================================ */
         #app {
             display: none;
             min-height: 100vh;
@@ -1522,9 +1513,6 @@
             flex-direction: column;
         }
 
-        /* ============================================================
-           RESPONSIVE TWEAKS
-           ============================================================ */
         @media(max-width:575px) {
             .figure-lg {
                 font-size: 1.5rem;
@@ -1705,7 +1693,7 @@
     </div>
 
     <!-- ============================================================
-    SET CREDENTIALS SCREEN
+    SET CREDENTIALS SCREEN (first-time login for school owner)
     ============================================================ -->
     <div id="setCredentialsScreen" style="display:none;position:fixed;inset:0;z-index:6100;background:var(--paper);align-items:center;justify-content:center;padding:1.2rem;">
         <div class="login-card">
@@ -1767,7 +1755,7 @@
     </div>
 
     <!-- ============================================================
-    PLATFORM ADMIN CONSOLE
+    PLATFORM ADMIN CONSOLE (Super Admin)
     ============================================================ -->
     <div id="platformApp">
         <header class="topbar" style="position:sticky;">
@@ -1820,17 +1808,39 @@
     </div>
 
     <!-- ============================================================
-    JAVASCRIPT — SCHOOLFLOW ENGINE (Production-Ready)
+    JAVASCRIPT — FULL PRODUCTION ENGINE
     ============================================================ -->
     <script>
         // =============================================================
-        // 1. CONFIG
+        // 1. CONFIGURATION
         // =============================================================
         const API_BASE = window.API_BASE || 'https://school-lwoa.onrender.com/api/v1';
         const TOKEN_KEY = 'schoolflow_tokens';
         const REFRESH_KEY = 'schoolflow_refresh';
         const THEME_KEY = 'schoolflow_theme';
-        const ROLE_LABELS = { owner: 'Proprietor', admin: 'Admin', bursar: 'Bursar', teacher: 'Teacher' };
+        const ROLE_LABELS = {
+            SUPER_ADMIN: 'Super Admin',
+            SCHOOL_OWNER: 'Proprietor',
+            ADMIN: 'Admin',
+            BURSAR: 'Bursar',
+            TEACHER: 'Teacher',
+            STAFF: 'Staff',
+            PARENT: 'Parent'
+        };
+        const PERMISSION_ROLES = {
+            approvePayments: ['SUPER_ADMIN', 'SCHOOL_OWNER'],
+            closeTerm: ['SUPER_ADMIN', 'SCHOOL_OWNER'],
+            manageStaff: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
+            manageStudents: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
+            manageAttendance: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'TEACHER'],
+            manageResults: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'TEACHER'],
+            submitPayments: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'BURSAR'],
+            viewReports: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'BURSAR'],
+            manageSettings: ['SUPER_ADMIN', 'SCHOOL_OWNER'],
+            manageReportTemplates: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
+            viewAll: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
+            platformAccess: ['SUPER_ADMIN']
+        };
 
         // =============================================================
         // 2. API SERVICE
@@ -1838,6 +1848,7 @@
         const Api = {
             _token: null,
             _refresh: null,
+            _user: null,
 
             init() {
                 try {
@@ -1845,21 +1856,42 @@
                     const r = localStorage.getItem(REFRESH_KEY);
                     if (t) this._token = t;
                     if (r) this._refresh = r;
+                    const u = localStorage.getItem('schoolflow_user');
+                    if (u) this._user = JSON.parse(u);
                 } catch (_) {}
             },
 
-            setTokens(access, refresh) {
+            setTokens(access, refresh, user) {
                 this._token = access;
                 this._refresh = refresh;
-                try { localStorage.setItem(TOKEN_KEY, access);
-                    localStorage.setItem(REFRESH_KEY, refresh); } catch (_) {}
+                if (user) this._user = user;
+                try {
+                    localStorage.setItem(TOKEN_KEY, access);
+                    localStorage.setItem(REFRESH_KEY, refresh);
+                    if (user) localStorage.setItem('schoolflow_user', JSON.stringify(user));
+                } catch (_) {}
             },
 
             clearTokens() {
                 this._token = null;
                 this._refresh = null;
-                try { localStorage.removeItem(TOKEN_KEY);
-                    localStorage.removeItem(REFRESH_KEY); } catch (_) {}
+                this._user = null;
+                try {
+                    localStorage.removeItem(TOKEN_KEY);
+                    localStorage.removeItem(REFRESH_KEY);
+                    localStorage.removeItem('schoolflow_user');
+                } catch (_) {}
+            },
+
+            getUser() { return this._user; },
+
+            getRole() { return this._user?.role || null; },
+
+            can(permission) {
+                const role = this.getRole();
+                if (!role) return false;
+                if (role === 'SUPER_ADMIN') return true;
+                return (PERMISSION_ROLES[permission] || []).includes(role);
             },
 
             async _fetch(endpoint, opts = {}) {
@@ -1868,7 +1900,6 @@
                 if (this._token) headers['Authorization'] = 'Bearer ' + this._token;
                 const resp = await fetch(url, { ...opts, headers });
                 if (resp.status === 401 && this._refresh) {
-                    // Try refresh
                     try {
                         const ref = await fetch(API_BASE + '/auth/refresh', {
                             method: 'POST',
@@ -1877,7 +1908,7 @@
                         });
                         if (ref.ok) {
                             const data = await ref.json();
-                            this.setTokens(data.accessToken, data.refreshToken);
+                            this.setTokens(data.accessToken, data.refreshToken, data.user || this._user);
                             headers['Authorization'] = 'Bearer ' + this._token;
                             const retry = await fetch(url, { ...opts, headers });
                             return retry;
@@ -1903,14 +1934,12 @@
                 return this._fetch(endpoint, { method: 'DELETE' });
             },
 
-            // --- File upload (multipart) ---
             async upload(endpoint, formData) {
                 const url = endpoint.startsWith('http') ? endpoint : API_BASE + endpoint;
                 const headers = {};
                 if (this._token) headers['Authorization'] = 'Bearer ' + this._token;
                 const resp = await fetch(url, { method: 'POST', headers, body: formData });
                 if (resp.status === 401 && this._refresh) {
-                    // refresh & retry
                     try {
                         const ref = await fetch(API_BASE + '/auth/refresh', {
                             method: 'POST',
@@ -1919,7 +1948,7 @@
                         });
                         if (ref.ok) {
                             const data = await ref.json();
-                            this.setTokens(data.accessToken, data.refreshToken);
+                            this.setTokens(data.accessToken, data.refreshToken, data.user || this._user);
                             headers['Authorization'] = 'Bearer ' + this._token;
                             const retry = await fetch(url, { method: 'POST', headers, body: formData });
                             return retry;
@@ -1971,7 +2000,7 @@
             const map = { PAID: 'chip-green', PARTIAL: 'chip-gold', OUTSTANDING: 'chip-danger', OVERDUE: 'chip-danger',
                 PRESENT: 'chip-green', ABSENT: 'chip-danger', LATE: 'chip-gold', APPROVED: 'chip-green',
                 PENDING: 'chip-gold', REJECTED: 'chip-danger', ISSUED: 'chip-green', OVERDUE: 'chip-danger',
-                CANCELLED: 'chip-slate' };
+                CANCELLED: 'chip-slate', ACTIVE: 'chip-green', EXPIRED: 'chip-danger', SUSPENDED: 'chip-danger' };
             return `<span class="chip ${map[status]||'chip-slate'}">${status}</span>`;
         }
 
@@ -2108,11 +2137,18 @@
                     return;
                 }
                 const data = await resp.json();
-                Api.setTokens(data.accessToken, data.refreshToken);
+                Api.setTokens(data.accessToken, data.refreshToken, data.user);
                 errorEl.classList.remove('show');
                 document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                boot();
+                // Route based on role
+                const role = data.user?.role;
+                if (role === 'SUPER_ADMIN') {
+                    document.getElementById('platformApp').style.display = 'flex';
+                    renderPlatformPage();
+                } else {
+                    document.getElementById('app').style.display = 'flex';
+                    boot();
+                }
             } catch (e) {
                 errorEl.textContent = 'Network error. Please check your connection.';
                 errorEl.classList.add('show');
@@ -2124,10 +2160,16 @@
                 const resp = await Api.post('/auth/register-first', { username, password });
                 if (!resp.ok) { showToast('Error saving credentials', 'error'); return false; }
                 const data = await resp.json();
-                Api.setTokens(data.accessToken, data.refreshToken);
+                Api.setTokens(data.accessToken, data.refreshToken, data.user);
                 document.getElementById('setCredentialsScreen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                boot();
+                const role = data.user?.role;
+                if (role === 'SUPER_ADMIN') {
+                    document.getElementById('platformApp').style.display = 'flex';
+                    renderPlatformPage();
+                } else {
+                    document.getElementById('app').style.display = 'flex';
+                    boot();
+                }
                 return true;
             } catch (e) { showToast('Network error', 'error'); return false; }
         }
@@ -2233,13 +2275,14 @@
                     password,
                     loadSample
                 });
-                if (!resp.ok) { showToast('Onboarding failed', 'error'); return; }
+                if (!resp.ok) { const err = await resp.json();
+                    showToast(err.message || 'Onboarding failed', 'error'); return; }
                 const data = await resp.json();
-                Api.setTokens(data.accessToken, data.refreshToken);
+                Api.setTokens(data.accessToken, data.refreshToken, data.user);
                 document.getElementById('onboarding').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 boot();
-                showToast(`Welcome to SchoolFlow, ${name}!`, 'success');
+                showToast(`Welcome to SchoolFlow, ${name}!`, 'success', 5000);
             } catch (e) { showToast('Network error', 'error'); }
         }
 
@@ -2248,6 +2291,7 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('setCredentialsScreen').style.display = 'none';
             document.getElementById('app').style.display = 'none';
+            document.getElementById('platformApp').style.display = 'none';
             document.getElementById('onboarding').style.display = 'flex';
             wizStep = 1;
             document.getElementById('wizClassRows').innerHTML = '';
@@ -2284,8 +2328,7 @@
             automations: ['Automations', 'Rules & triggers'],
             invoices: ['Invoices', 'Generate and manage invoices'],
             documents: ['Documents', 'Upload and manage files'],
-            queues: ['Queue Status', 'Background job monitor'],
-            platform: ['Platform Admin', 'Multi-school management']
+            queues: ['Queue Status', 'Background job monitor']
         };
 
         const NAV_ITEMS = [
@@ -2318,7 +2361,7 @@
         ];
 
         let CURRENT_PAGE = 'dashboard';
-        let _pageData = {};
+        let _pageData = { school: null, user: null };
 
         function renderNav() {
             const container = document.getElementById('sidebarNav');
@@ -2391,7 +2434,6 @@
         // 10. BOOT
         // =============================================================
         let booted = false;
-        let chartInstances = {};
 
         async function boot() {
             if (booted) {
@@ -2401,6 +2443,8 @@
                 return;
             }
             booted = true;
+            const user = Api.getUser();
+            if (user) _pageData.user = user;
             renderNav();
             document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
             document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
@@ -2408,13 +2452,13 @@
             document.getElementById('themeToggleSb').addEventListener('click', toggleTheme);
             document.getElementById('notifBell').addEventListener('click', openNotifications);
             document.getElementById('fabMain').addEventListener('click', toggleFab);
-            // Try to fetch current school info
+
             try {
                 const resp = await Api.get('/schools/current');
                 if (resp.ok) {
                     const data = await resp.json();
-                    document.getElementById('brandSchoolName').textContent = data.name || 'School management';
                     _pageData.school = data;
+                    document.getElementById('brandSchoolName').textContent = data.name || 'School management';
                 }
             } catch (_) {}
             updateUserChrome();
@@ -2423,37 +2467,28 @@
         }
 
         function updateUserChrome() {
-            // Decode JWT to get user info if available
-            try {
-                const token = Api._token;
-                if (token) {
-                    const parts = token.split('.');
-                    if (parts.length === 3) {
-                        const payload = JSON.parse(atob(parts[1]));
-                        document.getElementById('userAvatar').textContent = (payload.name || payload.username || 'U')
-                        .charAt(0).toUpperCase();
-                        document.getElementById('userAvatar').style.background = avatarColor(payload.sub || payload
-                            .username || 'user');
-                        document.getElementById('userNameLabel').textContent = payload.name || payload.username || '—';
-                        document.getElementById('userRoleLabel').textContent = ROLE_LABELS[payload.role] || payload
-                            .role || '—';
-                        return;
-                    }
-                }
-            } catch (_) {}
-            document.getElementById('userAvatar').textContent = '?';
-            document.getElementById('userAvatar').style.background = 'var(--slate-light)';
-            document.getElementById('userNameLabel').textContent = '—';
-            document.getElementById('userRoleLabel').textContent = '—';
+            const user = Api.getUser();
+            if (user) {
+                document.getElementById('userAvatar').textContent = (user.name || user.username || 'U').charAt(0)
+                .toUpperCase();
+                document.getElementById('userAvatar').style.background = avatarColor(user.id || user.username || 'user');
+                document.getElementById('userNameLabel').textContent = user.name || user.username || '—';
+                document.getElementById('userRoleLabel').textContent = ROLE_LABELS[user.role] || user.role || '—';
+                _pageData.user = user;
+            } else {
+                document.getElementById('userAvatar').textContent = '?';
+                document.getElementById('userAvatar').style.background = 'var(--slate-light)';
+                document.getElementById('userNameLabel').textContent = '—';
+                document.getElementById('userRoleLabel').textContent = '—';
+            }
         }
 
         function openAccountMenu() {
-            const u = { name: document.getElementById('userNameLabel').textContent, role: document.getElementById(
-                    'userRoleLabel').textContent };
+            const user = Api.getUser() || { name: '—', role: '—' };
             openModal('Account', `
             <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="avatar-ring lg" style="background:${avatarColor('user')};">${u.name.charAt(0).toUpperCase()}</div>
-              <div><div style="font-weight:700;font-size:1rem;">${escapeHtml(u.name)}</div><div class="eyebrow">${escapeHtml(u.role)}</div></div>
+              <div class="avatar-ring lg" style="background:${avatarColor(user.id||'user')};">${(user.name||user.username||'U').charAt(0).toUpperCase()}</div>
+              <div><div style="font-weight:700;font-size:1rem;">${escapeHtml(user.name||user.username||'—')}</div><div class="eyebrow">${ROLE_LABELS[user.role]||user.role||'—'}</div></div>
             </div>
             <hr class="hr-x" />
             <div class="d-flex flex-column gap-2">
@@ -2498,6 +2533,7 @@
         // =============================================================
         const PAGE_RENDERERS = {};
         const POST_RENDER_HOOKS = {};
+        let _chartInstances = {};
 
         // --- DASHBOARD ---
         PAGE_RENDERERS.dashboard = function() {
@@ -2568,12 +2604,10 @@
                 if (!resp.ok) throw new Error('Failed to fetch students');
                 const students = await resp.json();
                 document.getElementById('studentCount').textContent = students.length + ' enrolled';
-                // Populate class filter
                 const clsSet = new Set(students.map(s => s.className).filter(Boolean));
                 const filter = document.getElementById('classFilter');
                 filter.innerHTML = '<option value="">All classes</option>' + [...clsSet].map(c =>
                     `<option value="${c}">${escapeHtml(c)}</option>`).join('');
-                // Render table
                 const tbody = document.getElementById('studentTableBody');
                 if (students.length === 0) {
                     tbody.innerHTML =
@@ -2610,6 +2644,7 @@
         };
 
         window.openAddStudentModal = function() {
+            if (!Api.can('manageStudents')) { showToast('You do not have permission to add students.', 'error'); return; }
             openModal('Add student', `
             <div class="row g-3">
               <div class="col-6"><label class="field-label">First name</label><input class="input-x" id="sfFirst" placeholder="John" /></div>
@@ -2623,7 +2658,6 @@
             </div>
             <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewStudent()"><i class="bi bi-check-lg"></i> Save student</button></div>
           `);
-            // Load classes
             (async () => {
                 try {
                     const resp = await Api.get('/classes');
@@ -2655,7 +2689,8 @@
             };
             try {
                 const resp = await Api.post('/students', data);
-                if (!resp.ok) { showToast('Failed to add student', 'error'); return; }
+                if (!resp.ok) { const err = await resp.json();
+                    showToast(err.message || 'Failed to add student', 'error'); return; }
                 closeModal();
                 showToast(`${data.fullName} added successfully`, 'success');
                 renderPage('students');
@@ -2724,6 +2759,7 @@
         };
 
         window.openAddClassModal = function() {
+            if (!Api.can('manageStudents')) { showToast('You do not have permission to add classes.', 'error'); return; }
             openModal('Add class',
                 `<div class="mb-3"><label class="field-label">Class name</label><input class="input-x" id="cfName" placeholder="e.g. Primary 6" /></div><div class="mb-3"><label class="field-label">Termly fee (₦)</label><input class="input-x" id="cfFee" type="number" placeholder="65000" /></div><div class="mb-1"><label class="field-label">Class teacher (optional)</label><input class="input-x" id="cfTeacher" placeholder="Mrs. Adeyemi" /></div><div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewClass()"><i class="bi bi-check-lg"></i> Save class</button></div>`
                 );
@@ -2851,6 +2887,7 @@
 
         function paymentActions(p) {
             if (p.status === 'PENDING') {
+                if (!Api.can('approvePayments')) return `<span class="chip chip-gold">Awaiting owner</span>`;
                 return `<div class="d-flex gap-1"><button class="btn-x btn-primary-x btn-sm-x" onclick="approvePayment('${p.id}')"><i class="bi bi-check-lg"></i></button><button class="btn-x btn-danger-x btn-sm-x" onclick="rejectPaymentPrompt('${p.id}')"><i class="bi bi-x-lg"></i></button></div>`;
             }
             if (p.status === 'APPROVED') {
@@ -2863,6 +2900,7 @@
             renderPage('payments'); };
 
         window.openRecordPaymentModal = function(preselectId) {
+            if (!Api.can('submitPayments')) { showToast('You do not have permission to submit payments.', 'error'); return; }
             openModal('Submit payment', `
             <p class="eyebrow mb-3"><i class="bi bi-info-circle me-1"></i>This will be sent for approval before it reflects on the student's balance.</p>
             <div class="mb-3"><label class="field-label">Student</label><select class="input-x" id="pfStudent"><option>Loading...</option></select></div>
@@ -2890,7 +2928,7 @@
             const amount = Number(document.getElementById('pfAmount').value);
             if (!amount || amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
             try {
-                const resp = await Api.post('/payments', {
+                const resp = await Api.post('/payments/manual', {
                     studentId,
                     amount,
                     method: document.getElementById('pfMethod').value,
@@ -2905,6 +2943,7 @@
         };
 
         window.approvePayment = async function(id) {
+            if (!Api.can('approvePayments')) { showToast('Only proprietors can approve payments.', 'error'); return; }
             try {
                 const resp = await Api.put('/payments/' + id + '/approve');
                 if (!resp.ok) { showToast('Failed to approve payment', 'error'); return; }
@@ -2914,6 +2953,7 @@
         };
 
         window.rejectPaymentPrompt = function(id) {
+            if (!Api.can('approvePayments')) { showToast('Only proprietors can reject payments.', 'error'); return; }
             openModal('Reject payment',
                 `<p style="font-size:.9rem;">Please give a short reason.</p><input class="input-x" id="rejReason" placeholder="e.g. Reference number doesn't match bank record" /><div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-danger-x btn-block-x" onclick="rejectPayment('${id}')"><i class="bi bi-x-lg"></i> Reject payment</button></div>`
                 );
@@ -2935,37 +2975,29 @@
             <div id="receiptPrintArea" style="border:1.5px dashed var(--line);border-radius:var(--radius-md);padding:1.3rem;">
               <div class="d-flex align-items-center gap-2 mb-3"><div class="wiz-badge" style="width:42px;height:42px;margin:0;font-size:1.1rem;"><i class="bi bi-mortarboard-fill"></i></div><div><div style="font-weight:700;">${_pageData.school?.name || 'SchoolFlow'}</div><div class="eyebrow">${_pageData.school?.address || ''}</div></div></div>
               <hr class="hr-x" />
-              <div class="d-flex justify-content-between"><span class="eyebrow">Receipt No.</span><strong class="num">#${uid('RCP')}</strong></div>
-              <div class="d-flex justify-content-between"><span class="eyebrow">Date</span><span>${fmtDate(new Date().toISOString())}</span></div>
+              <div class="d-flex justify-content-between"><span class="eyebrow">Receipt No.</span><strong class="num" id="receiptNo">#${uid('RCP')}</strong></div>
+              <div class="d-flex justify-content-between"><span class="eyebrow">Date</span><span id="receiptDate">${fmtDate(new Date().toISOString())}</span></div>
+              <div class="d-flex justify-content-between"><span class="eyebrow">Student</span><strong id="receiptStudent">—</strong></div>
+              <div class="d-flex justify-content-between"><span class="eyebrow">Method</span><span id="receiptMethod">—</span></div>
+              <div class="d-flex justify-content-between"><span class="eyebrow">Reference</span><span id="receiptRef">—</span></div>
               <hr class="hr-x" />
-              <div class="d-flex justify-content-between"><span style="font-weight:700;">Amount paid</span><strong class="num" style="color:var(--green);font-size:1.15rem;">${money(0)}</strong></div>
+              <div class="d-flex justify-content-between"><span style="font-weight:700;">Amount paid</span><strong class="num" style="color:var(--green);font-size:1.15rem;" id="receiptAmount">—</strong></div>
               <hr class="hr-x" />
               <div class="eyebrow text-center">SchoolFlow</div>
             </div>
             <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Close</button><button class="btn-x btn-primary-x flex-grow-1" onclick="printReceipt()"><i class="bi bi-printer"></i> Print</button></div>
           `);
-            // Fetch payment details
             (async () => {
                 try {
                     const resp = await Api.get('/payments/' + paymentId);
                     if (resp.ok) {
                         const p = await resp.json();
-                        const area = document.getElementById('receiptPrintArea');
-                        if (area) {
-                            area.innerHTML = `
-                    <div class="d-flex align-items-center gap-2 mb-3"><div class="wiz-badge" style="width:42px;height:42px;margin:0;font-size:1.1rem;"><i class="bi bi-mortarboard-fill"></i></div><div><div style="font-weight:700;">${_pageData.school?.name || 'SchoolFlow'}</div><div class="eyebrow">${_pageData.school?.address || ''}</div></div></div>
-                    <hr class="hr-x" />
-                    <div class="d-flex justify-content-between"><span class="eyebrow">Receipt No.</span><strong class="num">#${p.receiptNo || uid('RCP')}</strong></div>
-                    <div class="d-flex justify-content-between"><span class="eyebrow">Date</span><span>${fmtDate(p.approvedAt || p.date)}</span></div>
-                    <div class="d-flex justify-content-between"><span class="eyebrow">Student</span><strong>${escapeHtml(p.studentName||'—')}</strong></div>
-                    <div class="d-flex justify-content-between"><span class="eyebrow">Method</span><span>${escapeHtml(p.method||'—')}</span></div>
-                    <div class="d-flex justify-content-between"><span class="eyebrow">Reference</span><span>${escapeHtml(p.reference||'—')}</span></div>
-                    <hr class="hr-x" />
-                    <div class="d-flex justify-content-between"><span style="font-weight:700;">Amount paid</span><strong class="num" style="color:var(--green);font-size:1.15rem;">${money(p.amount)}</strong></div>
-                    <hr class="hr-x" />
-                    <div class="eyebrow text-center">SchoolFlow</div>
-                  `;
-                        }
+                        document.getElementById('receiptNo').textContent = '#' + (p.receiptNo || uid('RCP'));
+                        document.getElementById('receiptDate').textContent = fmtDate(p.approvedAt || p.date);
+                        document.getElementById('receiptStudent').textContent = escapeHtml(p.studentName || '—');
+                        document.getElementById('receiptMethod').textContent = escapeHtml(p.method || '—');
+                        document.getElementById('receiptRef').textContent = escapeHtml(p.reference || '—');
+                        document.getElementById('receiptAmount').textContent = money(p.amount);
                     }
                 } catch (_) {}
             })();
@@ -3033,6 +3065,11 @@
         };
 
         POST_RENDER_HOOKS.attendance = async function() {
+            if (!Api.can('manageAttendance')) {
+                document.getElementById('attRoster').innerHTML =
+                    `<div class="text-center py-4 text-danger">You do not have permission to manage attendance.</div>`;
+                return;
+            }
             try {
                 const resp = await Api.get('/attendance/today');
                 if (resp.ok) {
@@ -3052,8 +3089,7 @@
                     if (ctx && data.labels && data.labels.length) {
                         const styles = getComputedStyle(document.documentElement);
                         const gold = styles.getPropertyValue('--gold').trim();
-                        window._chartInstances = window._chartInstances || {};
-                        window._chartInstances['attendanceChart'] = new Chart(ctx, { type: 'bar', data: { labels: data
+                        _chartInstances['attendanceChart'] = new Chart(ctx, { type: 'bar', data: { labels: data
                                     .labels, datasets: [{ label: 'Attendance %', data: data.values,
                                     backgroundColor: hexToRgba(gold, .55), borderColor: gold, borderWidth: 2,
                                     borderRadius: 5 }] }, options: { responsive: true,
@@ -3080,6 +3116,7 @@
         };
 
         window.saveAttendance = async function() {
+            if (!Api.can('manageAttendance')) { showToast('You do not have permission to save attendance.', 'error'); return; }
             const selects = document.querySelectorAll('#attRoster select');
             const records = [];
             selects.forEach(sel => { records.push({ studentId: sel.dataset.student, status: sel.value }); });
@@ -3129,6 +3166,7 @@
         };
 
         window.openGenerateInvoiceModal = function() {
+            if (!Api.can('manageStudents')) { showToast('You do not have permission to generate invoices.', 'error'); return; }
             openModal('Generate invoice', `
             <div class="mb-3"><label class="field-label">Student</label><select class="input-x" id="invStudent"><option>Loading...</option></select></div>
             <div class="mb-3"><label class="field-label">Due date</label><input class="input-x" id="invDue" type="date" /></div>
@@ -3245,7 +3283,6 @@
                     const pct = sub.expires ? Math.max(0, Math.min(100, Math.round((1 - daysLeft / 90) * 100))) : 0;
                     document.getElementById('subBar').style.width = (100 - pct) + '%';
                     document.getElementById('subPct').textContent = (100 - pct) + '%';
-                    // Billing history
                     if (sub.payments && sub.payments.length) {
                         const bh = document.getElementById('billingHistory');
                         bh.innerHTML = sub.payments.slice(0, 5).map(p =>
@@ -3316,10 +3353,11 @@
                 <div class="panel mb-3"><h6 class="mb-3">Academic session</h6>
                   <div class="mb-3"><label class="field-label">Session</label><input class="input-x" id="setSession" value="${escapeHtml(_pageData.school?.session||'')}" /></div>
                   <div class="mb-1"><label class="field-label">Current term</label><select class="input-x" id="setTerm">${['First Term','Second Term','Third Term'].map(t=>`<option ${t===_pageData.school?.term?'selected':''}>${t}</option>`).join('')}</select></div>
+                  ${Api.can('closeTerm')?`<button class="btn-x btn-danger-x mt-3" onclick="confirmCloseTerm()"><i class="bi bi-arrow-repeat"></i> Close &amp; renew term</button>`:''}
                   <button class="btn-x btn-primary-x mt-3" onclick="saveSettings()">Save session</button>
                 </div>
                 <div class="panel"><h6 class="mb-2">Data &amp; backup</h6><p class="eyebrow mb-3">Your data is stored securely in the cloud.</p>
-                  <div class="d-flex flex-column gap-2"><button class="btn-x btn-outline-x" onclick="exportCSV()"><i class="bi bi-download"></i> Export CSV</button><button class="btn-x btn-danger-x" onclick="confirmResetApp()"><i class="bi bi-exclamation-triangle"></i> Reset all data</button></div>
+                  <div class="d-flex flex-column gap-2"><button class="btn-x btn-outline-x" onclick="exportCSV()"><i class="bi bi-download"></i> Export CSV</button></div>
                   <hr class="hr-x" /><div class="d-flex gap-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="openAccountMenu()" style="color:var(--slate);"><i class="bi bi-person-circle"></i> Account</button><button class="btn-x btn-danger-x btn-sm-x" onclick="logOut()" style="color:var(--danger);"><i class="bi bi-box-arrow-right"></i> Sign out</button></div>
                 </div>
               </div>
@@ -3345,9 +3383,26 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
+        window.confirmCloseTerm = function() {
+            if (!Api.can('closeTerm')) { showToast('Only proprietors can close terms.', 'error'); return; }
+            openModal('Close & renew term?', `
+            <p style="font-size:.9rem;">This will archive current balances and advance to the next term.</p>
+            <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-danger-x btn-block-x" onclick="closeTerm()"><i class="bi bi-arrow-repeat"></i> Close term</button></div>
+          `);
+        };
+
+        window.closeTerm = async function() {
+            try {
+                const resp = await Api.post('/schools/close-term');
+                if (!resp.ok) { showToast('Failed to close term', 'error'); return; }
+                closeModal();
+                showToast('Term closed successfully', 'success');
+                renderPage('settings');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
         window.exportCSV = function() {
             showToast('Exporting CSV...', 'info');
-            // Fetch from API
             (async () => {
                 try {
                     const resp = await Api.get('/export/students');
@@ -3366,16 +3421,6 @@
                 } catch (e) { showToast('Export failed', 'error'); }
             })();
         };
-
-        window.confirmResetApp = function() {
-            openModal('Reset all data?', `
-            <p style="font-size:.9rem;">This permanently deletes every student, payment, and record. This cannot be undone.</p>
-            <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-danger-x btn-block-x" onclick="resetApp()"><i class="bi bi-trash3"></i> Yes, reset everything</button></div>
-          `);
-        };
-
-        window.resetApp = function() { closeModal();
-            showToast('Reset feature requires backend confirmation', 'info'); };
 
         // --- AUTOMATIONS ---
         PAGE_RENDERERS.automations = function() {
@@ -3478,136 +3523,6 @@
             }
         };
 
-        // --- PLATFORM ADMIN ---
-        PAGE_RENDERERS.platform = function() {
-            return `
-            <div class="d-flex align-items-center gap-2 mb-3"><h5 style="font-weight:700;margin:0;">Platform Admin</h5><span class="chip chip-gold"><i class="bi bi-shield-lock"></i> Admin</span></div>
-            <div class="row g-3 mb-3" id="platformStats">
-              <div class="col-6 col-lg-3"><div class="stat tone-slate text-center"><div class="figure-lg num" id="platSchools">—</div><div class="label-caps">Total schools</div></div></div>
-              <div class="col-6 col-lg-3"><div class="stat tone-green text-center"><div class="figure-lg num" id="platActive">—</div><div class="label-caps">Active</div></div></div>
-              <div class="col-6 col-lg-3"><div class="stat tone-gold text-center"><div class="figure-lg num" id="platStudents">—</div><div class="label-caps">Students</div></div></div>
-              <div class="col-6 col-lg-3"><div class="stat tone-green text-center"><div class="figure-lg num" id="platMRR">—</div><div class="label-caps">MRR</div></div></div>
-            </div>
-            <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>School</th><th>State</th><th>Students</th><th>Plan</th><th>Status</th><th>Joined</th><th></th></tr></thead><tbody id="platSchoolsBody"><tr><td colspan="7" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
-          `;
-        };
-
-        POST_RENDER_HOOKS.platform = async function() {
-            try {
-                const resp = await Api.get('/platform/schools');
-                if (!resp.ok) throw new Error('Failed to load platform data');
-                const schools = await resp.json();
-                document.getElementById('platSchools').textContent = schools.length;
-                document.getElementById('platActive').textContent = schools.filter(s => s.status === 'active').length;
-                document.getElementById('platStudents').textContent = schools.reduce((s, sc) => s + (sc.students || 0), 0)
-                    .toLocaleString();
-                document.getElementById('platMRR').textContent = money(schools.filter(s => s.status === 'active').reduce(
-                    (s, sc) => s + (sc.plan || 0), 0));
-                const tbody = document.getElementById('platSchoolsBody');
-                if (schools.length === 0) {
-                    tbody.innerHTML =
-                        `<tr><td colspan="7" class="text-center py-4">${emptyState('building','No schools','No schools registered yet.')}</td></tr>`;
-                    return;
-                }
-                tbody.innerHTML = schools.map(s => `
-              <tr><td><strong>${escapeHtml(s.name)}</strong></td><td>${escapeHtml(s.state||'—')}</td><td class="num">${s.students||0}</td><td class="num">${money(s.plan||0)}/mo</td><td>${s.status==='active'?'<span class="chip chip-green">Active</span>':s.status==='pending'?'<span class="chip chip-gold">Pending</span>':'<span class="chip chip-danger">Suspended</span>'}</td><td>${fmtDate(s.joined)}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="togglePlatformSchool('${s.id}')">${s.status==='active'?'Suspend':'Reactivate'}</button></td></tr>
-            `).join('');
-            } catch (e) {
-                document.getElementById('platSchoolsBody').innerHTML =
-                    `<tr><td colspan="7" class="text-center py-4 text-danger">Failed to load schools: ${e.message}</td></tr>`;
-            }
-        };
-
-        window.togglePlatformSchool = async function(id) {
-            try {
-                const resp = await Api.put('/platform/schools/' + id + '/toggle');
-                if (!resp.ok) { showToast('Failed to toggle school status', 'error'); return; }
-                showToast('School status updated', 'success');
-                renderPage('platform');
-            } catch (e) { showToast('Network error', 'error'); }
-        };
-
-        // --- GENERATE REPORT CARD ---
-        window.generateReportCard = async function(studentId) {
-            try {
-                const resp = await Api.post('/report-cards/generate', {
-                    studentId,
-                    sessionId: _pageData.school?.session || '2026/2027',
-                    termId: _pageData.school?.term || 'First Term'
-                });
-                if (!resp.ok) { showToast('Failed to generate report card', 'error'); return; }
-                const data = await resp.json();
-                showToast('Report card generated!', 'success');
-                // Show the report card
-                const r = data.reportCard;
-                if (r) {
-                    openModal('Report Card', `
-                <div id="reportCardArea" style="border:1px solid var(--line);border-radius:var(--radius-md);padding:1rem;background:#fff;color:#17241F;">
-                  <div style="font-weight:700;font-size:1.1rem;">${escapeHtml(r.studentName||'')}</div>
-                  <div class="eyebrow">${escapeHtml(r.className||'')} · ${escapeHtml(r.term||'')}</div>
-                  <hr class="hr-x" />
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.2rem .8rem;font-size:.85rem;margin:.4rem 0;">
-                    <span><strong>Average:</strong> ${r.average||0}%</span>
-                    <span><strong>Grade:</strong> ${r.grade||'—'}</span>
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;font-size:.8rem;margin:.4rem 0;">
-                    <thead><tr style="background:#0B4F3F;color:#fff;"><th style="padding:.3rem .4rem;text-align:left;">Subject</th><th style="padding:.3rem .4rem;">CA</th><th style="padding:.3rem .4rem;">Exam</th><th style="padding:.3rem .4rem;">Total</th><th style="padding:.3rem .4rem;">Grade</th></tr></thead>
-                    <tbody>${(r.subjects||[]).map(sub=>`<tr style="border-bottom:1px solid #eee;"><td style="padding:.25rem .4rem;">${escapeHtml(sub.name)}</td><td style="padding:.25rem .4rem;text-align:center;">${sub.ca}</td><td style="padding:.25rem .4rem;text-align:center;">${sub.exam}</td><td style="padding:.25rem .4rem;text-align:center;font-weight:700;">${sub.total}</td><td style="padding:.25rem .4rem;text-align:center;">${sub.grade}</td></tr>`).join('')}</tbody>
-                  </table>
-                  <div style="font-size:.85rem;margin:.4rem 0;border-top:1px solid var(--line);padding-top:.4rem;"><strong>Remark:</strong> ${remarkFor(r.average||0)}</div>
-                  <div style="display:flex;justify-content:space-between;margin:1rem 0 .4rem;font-size:.8rem;"><div>_____________________<br>Class Teacher</div><div>_____________________<br>Principal</div></div>
-                </div>
-                <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Close</button><button class="btn-x btn-primary-x flex-grow-1" onclick="window.print()"><i class="bi bi-printer"></i> Print</button></div>
-              `, { wide: true });
-                }
-            } catch (e) { showToast('Network error', 'error'); }
-        };
-
-        // --- REPORT STUDIO (simplified) ---
-        PAGE_RENDERERS.reportstudio = function() {
-            return `
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-              <div><h5 style="font-weight:700;">Report Studio</h5><span class="eyebrow">Design custom report cards</span></div>
-              <div class="d-flex gap-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="rcNewTemplate()"><i class="bi bi-plus-lg"></i> New</button><button class="btn-x btn-primary-x btn-sm-x" onclick="rcSaveTemplate()"><i class="bi bi-check-lg"></i> Save</button></div>
-            </div>
-            <div class="panel"><div class="empty-x"><i class="bi bi-palette"></i><h6>Report Studio</h6><p>Design custom report card templates with drag-and-drop blocks.</p><button class="btn-x btn-primary-x" onclick="rcNewTemplate()">Create your first template</button></div></div>
-          `;
-        };
-
-        window.rcNewTemplate = function() {
-            openModal('New Template',
-                `<div class="mb-3"><label class="field-label">Template name</label><input class="input-x" id="rcNewName" placeholder="e.g. My Custom Report" /></div><div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="rcCreateTemplate()"><i class="bi bi-check-lg"></i> Create</button></div>`
-                );
-        };
-
-        window.rcCreateTemplate = async function() {
-            const name = document.getElementById('rcNewName').value.trim() || 'Untitled Template';
-            try {
-                const resp = await Api.post('/report-cards/templates', {
-                    name,
-                    blocks: [
-                        { type: 'header', props: { content: '{{school_name}}', fontSize: '18', align: 'center',
-                                bold: true } },
-                        { type: 'subheader', props: { content: 'Termly Report Card', fontSize: '14',
-                                align: 'center' } },
-                        { type: 'divider', props: {} },
-                        { type: 'student-info', props: { showId: true, showDob: true, showGender: true } },
-                        { type: 'results-table', props: { showCA: true, showExam: true, showTotal: true,
-                                showGrade: true } },
-                        { type: 'divider', props: {} },
-                        { type: 'remark', props: { label: 'Teacher\'s Remark' } },
-                        { type: 'signature', props: { label: 'Class Teacher', showPrincipal: true } }
-                    ]
-                });
-                if (!resp.ok) { showToast('Failed to create template', 'error'); return; }
-                closeModal();
-                showToast(`Template "${name}" created`, 'success');
-                renderPage('reportstudio');
-            } catch (e) { showToast('Network error', 'error'); }
-        };
-
-        window.rcSaveTemplate = function() { showToast('Template saved', 'success'); };
-
         // --- DOCUMENTS ---
         PAGE_RENDERERS.documents = function() {
             return `
@@ -3707,7 +3622,6 @@
                 tbody.innerHTML = results.slice(0, 20).map(r => `
               <tr><td><strong>${escapeHtml(r.studentName||'—')}</strong></td><td>${escapeHtml(r.className||'—')}</td><td class="num">${r.average||0}%</td><td>${gradeChip(r.grade||'—')}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="generateReportCard('${r.studentId}')"><i class="bi bi-file-earmark-text"></i> Report card</button></td></tr>
             `).join('');
-                // Subject chart
                 const subMap = {};
                 results.forEach(r => {
                     (r.subjects || []).forEach(sub => {
@@ -3721,8 +3635,7 @@
                 const ctx = document.getElementById('resultsChart');
                 if (ctx && labels.length) {
                     const palette = ['#0B4F3F', '#D98E00', '#5E6E68', '#B3413B', '#3E6E86', '#7A5C9E'];
-                    window._chartInstances = window._chartInstances || {};
-                    window._chartInstances['resultsChart'] = new Chart(ctx, { type: 'bar', data: { labels,
+                    _chartInstances['resultsChart'] = new Chart(ctx, { type: 'bar', data: { labels,
                             datasets: [{ label: 'Average score', data, backgroundColor: labels.map((_,
                                     i) => palette[i % palette.length]), borderRadius: 6 }] },
                         options: { responsive: true, maintainAspectRatio: false,
@@ -3772,8 +3685,7 @@
                     destroyChart('insClassChart');
                     const ctx = document.getElementById('insClassChart');
                     if (ctx && data.labels && data.labels.length) {
-                        window._chartInstances = window._chartInstances || {};
-                        window._chartInstances['insClassChart'] = new Chart(ctx, { type: 'bar', data: { labels: data
+                        _chartInstances['insClassChart'] = new Chart(ctx, { type: 'bar', data: { labels: data
                                     .labels, datasets: [{ label: 'Collection %', data: data.values,
                                     backgroundColor: data.values.map(v => v >= 80 ? hexToRgba(green, .7) :
                                         v >= 50 ? hexToRgba(gold, .7) : hexToRgba(danger, .7)),
@@ -3794,8 +3706,7 @@
                         const palette = [styles.getPropertyValue('--green').trim(), styles.getPropertyValue('--gold')
                             .trim(), styles.getPropertyValue('--danger').trim(), '#3E6E86'
                         ];
-                        window._chartInstances = window._chartInstances || {};
-                        window._chartInstances['insMethodChart'] = new Chart(ctx, { type: 'doughnut', data: { labels: data
+                        _chartInstances['insMethodChart'] = new Chart(ctx, { type: 'doughnut', data: { labels: data
                                     .labels, datasets: [{ data: data.values, backgroundColor: palette.slice(
                                         0, data.labels.length) }] }, options: { responsive: true,
                                     maintainAspectRatio: false, plugins: { legend: { position: 'bottom',
@@ -3842,8 +3753,7 @@
                         const palette = ['#0B4F3F', '#D98E00', '#5E6E68', '#B3413B', '#3E6E86', '#7A5C9E', '#9C6B30',
                             '#3B7A57'
                         ];
-                        window._chartInstances = window._chartInstances || {};
-                        window._chartInstances['reportsChart'] = new Chart(ctx, { type: 'doughnut', data: { labels: data
+                        _chartInstances['reportsChart'] = new Chart(ctx, { type: 'doughnut', data: { labels: data
                                     .labels, datasets: [{ data: data.values, backgroundColor: palette.slice(
                                         0, data.labels.length) }] }, options: { responsive: true,
                                     maintainAspectRatio: false, plugins: { legend: { position: 'bottom',
@@ -3912,6 +3822,7 @@
         };
 
         window.openAddStaffModal = function() {
+            if (!Api.can('manageStaff')) { showToast('You do not have permission to add staff.', 'error'); return; }
             openModal('Add staff member',
                 `<div class="mb-3"><label class="field-label">Full name</label><input class="input-x" id="stfName" placeholder="Mrs. Adaeze Nwosu" /></div><div class="mb-3"><label class="field-label">Role</label><select class="input-x" id="stfRole"><option>Teacher</option><option>Principal</option><option>Bursar</option><option>Admin</option></select></div><div class="mb-3"><label class="field-label">Phone</label><input class="input-x" id="stfPhone" placeholder="0803 000 0000" /></div><div class="mb-1"><label class="field-label">Subjects (comma separated)</label><input class="input-x" id="stfSubjects" placeholder="Mathematics, Basic Science" /></div><div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewStaff()"><i class="bi bi-check-lg"></i> Save</button></div>`
                 );
@@ -3955,7 +3866,6 @@
                 const rate = data.expected ? Math.round(data.collected / data.expected * 100) : 0;
                 document.getElementById('feeRate').textContent = rate + '%';
                 document.getElementById('feeBar').style.width = rate + '%';
-                // Class breakdown
                 const clsResp = await Api.get('/fees/class-breakdown');
                 if (clsResp.ok) {
                     const classes = await clsResp.json();
@@ -3975,24 +3885,165 @@
             }
         };
 
+        // --- REPORT STUDIO ---
+        PAGE_RENDERERS.reportstudio = function() {
+            return `
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <div><h5 style="font-weight:700;">Report Studio</h5><span class="eyebrow">Design custom report cards</span></div>
+              <div class="d-flex gap-2"><button class="btn-x btn-outline-x btn-sm-x" onclick="rcNewTemplate()"><i class="bi bi-plus-lg"></i> New</button><button class="btn-x btn-primary-x btn-sm-x" onclick="rcSaveTemplate()"><i class="bi bi-check-lg"></i> Save</button></div>
+            </div>
+            <div class="panel"><div class="empty-x"><i class="bi bi-palette"></i><h6>Report Studio</h6><p>Design custom report card templates with drag-and-drop blocks.</p><button class="btn-x btn-primary-x" onclick="rcNewTemplate()">Create your first template</button></div></div>
+          `;
+        };
+
+        window.rcNewTemplate = function() {
+            if (!Api.can('manageReportTemplates')) { showToast('You do not have permission to manage templates.',
+                'error'); return; }
+            openModal('New Template',
+                `<div class="mb-3"><label class="field-label">Template name</label><input class="input-x" id="rcNewName" placeholder="e.g. My Custom Report" /></div><div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="rcCreateTemplate()"><i class="bi bi-check-lg"></i> Create</button></div>`
+                );
+        };
+
+        window.rcCreateTemplate = async function() {
+            const name = document.getElementById('rcNewName').value.trim() || 'Untitled Template';
+            try {
+                const resp = await Api.post('/report-cards/templates', {
+                    name,
+                    blocks: [
+                        { type: 'header', props: { content: '{{school_name}}', fontSize: '18', align: 'center',
+                                bold: true } },
+                        { type: 'subheader', props: { content: 'Termly Report Card', fontSize: '14',
+                                align: 'center' } },
+                        { type: 'divider', props: {} },
+                        { type: 'student-info', props: { showId: true, showDob: true, showGender: true } },
+                        { type: 'results-table', props: { showCA: true, showExam: true, showTotal: true,
+                                showGrade: true } },
+                        { type: 'divider', props: {} },
+                        { type: 'remark', props: { label: 'Teacher\'s Remark' } },
+                        { type: 'signature', props: { label: 'Class Teacher', showPrincipal: true } }
+                    ]
+                });
+                if (!resp.ok) { showToast('Failed to create template', 'error'); return; }
+                closeModal();
+                showToast(`Template "${name}" created`, 'success');
+                renderPage('reportstudio');
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        window.rcSaveTemplate = function() { showToast('Template saved', 'success'); };
+
+        // --- GENERATE REPORT CARD ---
+        window.generateReportCard = async function(studentId) {
+            try {
+                const resp = await Api.post('/report-cards/generate', {
+                    studentId,
+                    sessionId: _pageData.school?.session || '2026/2027',
+                    termId: _pageData.school?.term || 'First Term'
+                });
+                if (!resp.ok) { const err = await resp.json();
+                    showToast(err.message || 'Failed to generate report card', 'error'); return; }
+                const data = await resp.json();
+                showToast('Report card generated!', 'success');
+                const r = data.reportCard;
+                if (r) {
+                    openModal('Report Card', `
+                <div id="reportCardArea" style="border:1px solid var(--line);border-radius:var(--radius-md);padding:1rem;background:#fff;color:#17241F;">
+                  <div style="font-weight:700;font-size:1.1rem;">${escapeHtml(r.studentName||'')}</div>
+                  <div class="eyebrow">${escapeHtml(r.className||'')} · ${escapeHtml(r.term||'')}</div>
+                  <hr class="hr-x" />
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.2rem .8rem;font-size:.85rem;margin:.4rem 0;">
+                    <span><strong>Average:</strong> ${r.average||0}%</span>
+                    <span><strong>Grade:</strong> ${r.grade||'—'}</span>
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:.8rem;margin:.4rem 0;">
+                    <thead><tr style="background:#0B4F3F;color:#fff;"><th style="padding:.3rem .4rem;text-align:left;">Subject</th><th style="padding:.3rem .4rem;">CA</th><th style="padding:.3rem .4rem;">Exam</th><th style="padding:.3rem .4rem;">Total</th><th style="padding:.3rem .4rem;">Grade</th></tr></thead>
+                    <tbody>${(r.subjects||[]).map(sub=>`<tr style="border-bottom:1px solid #eee;"><td style="padding:.25rem .4rem;">${escapeHtml(sub.name)}</td><td style="padding:.25rem .4rem;text-align:center;">${sub.ca}</td><td style="padding:.25rem .4rem;text-align:center;">${sub.exam}</td><td style="padding:.25rem .4rem;text-align:center;font-weight:700;">${sub.total}</td><td style="padding:.25rem .4rem;text-align:center;">${sub.grade}</td></tr>`).join('')}</tbody>
+                  </table>
+                  <div style="font-size:.85rem;margin:.4rem 0;border-top:1px solid var(--line);padding-top:.4rem;"><strong>Remark:</strong> ${remarkFor(r.average||0)}</div>
+                  <div style="display:flex;justify-content:space-between;margin:1rem 0 .4rem;font-size:.8rem;"><div>_____________________<br>Class Teacher</div><div>_____________________<br>Principal</div></div>
+                </div>
+                <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Close</button><button class="btn-x btn-primary-x flex-grow-1" onclick="window.print()"><i class="bi bi-printer"></i> Print</button></div>
+              `, { wide: true });
+                }
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
         // =============================================================
-        // 14. LANDING PAGE → APP
+        // 14. PLATFORM ADMIN (Super Admin)
+        // =============================================================
+        function renderPlatformPage() {
+            const el = document.getElementById('platformPageContent');
+            el.innerHTML = `<div class="page-enter">${renderPlatformSchoolsPage()}</div>`;
+            renderPlatformHooks();
+        }
+
+        function renderPlatformSchoolsPage() {
+            return `
+            <div class="d-flex align-items-center gap-2 mb-3"><h5 style="font-weight:700;margin:0;">Platform Admin</h5><span class="chip chip-gold"><i class="bi bi-shield-lock"></i> Super Admin</span></div>
+            <div class="row g-3 mb-3">
+              <div class="col-6 col-lg-3"><div class="stat tone-slate text-center"><div class="figure-lg num" id="platSchools">—</div><div class="label-caps">Total schools</div></div></div>
+              <div class="col-6 col-lg-3"><div class="stat tone-green text-center"><div class="figure-lg num" id="platActive">—</div><div class="label-caps">Active</div></div></div>
+              <div class="col-6 col-lg-3"><div class="stat tone-gold text-center"><div class="figure-lg num" id="platStudents">—</div><div class="label-caps">Students</div></div></div>
+              <div class="col-6 col-lg-3"><div class="stat tone-green text-center"><div class="figure-lg num" id="platMRR">—</div><div class="label-caps">MRR</div></div></div>
+            </div>
+            <div class="panel" style="padding:0;"><div class="table-wrap"><table class="tbl"><thead><tr><th>School</th><th>State</th><th>Students</th><th>Plan</th><th>Status</th><th>Joined</th><th></th></tr></thead><tbody id="platSchoolsBody"><tr><td colspan="7" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div></div>
+          `;
+        }
+
+        async function renderPlatformHooks() {
+            try {
+                const resp = await Api.get('/platform/schools');
+                if (!resp.ok) throw new Error('Failed to load platform data');
+                const schools = await resp.json();
+                document.getElementById('platSchools').textContent = schools.length;
+                document.getElementById('platActive').textContent = schools.filter(s => s.status === 'active').length;
+                document.getElementById('platStudents').textContent = schools.reduce((s, sc) => s + (sc.students || 0), 0)
+                    .toLocaleString();
+                document.getElementById('platMRR').textContent = money(schools.filter(s => s.status === 'active').reduce(
+                    (s, sc) => s + (sc.plan || 0), 0));
+                const tbody = document.getElementById('platSchoolsBody');
+                if (schools.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="7" class="text-center py-4">${emptyState('building','No schools','No schools registered yet.')}</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = schools.map(s => `
+              <tr><td><strong>${escapeHtml(s.name)}</strong></td><td>${escapeHtml(s.state||'—')}</td><td class="num">${s.students||0}</td><td class="num">${money(s.plan||0)}/mo</td><td>${s.status==='active'?'<span class="chip chip-green">Active</span>':s.status==='pending'?'<span class="chip chip-gold">Pending</span>':'<span class="chip chip-danger">Suspended</span>'}</td><td>${fmtDate(s.joined)}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="togglePlatformSchool('${s.id}')">${s.status==='active'?'Suspend':'Reactivate'}</button></td></tr>
+            `).join('');
+            } catch (e) {
+                document.getElementById('platSchoolsBody').innerHTML =
+                    `<tr><td colspan="7" class="text-center py-4 text-danger">Failed to load schools: ${e.message}</td></tr>`;
+            }
+        }
+
+        window.togglePlatformSchool = async function(id) {
+            try {
+                const resp = await Api.put('/platform/schools/' + id + '/toggle');
+                if (!resp.ok) { showToast('Failed to toggle school status', 'error'); return; }
+                showToast('School status updated', 'success');
+                renderPlatformPage();
+            } catch (e) { showToast('Network error', 'error'); }
+        };
+
+        // =============================================================
+        // 15. LANDING PAGE → APP
         // =============================================================
         function enterAppFromLanding() {
             document.getElementById('landingPage').style.display = 'none';
             const token = Api._token;
-            if (token) {
-                document.getElementById('app').style.display = 'flex';
-                boot();
+            const user = Api.getUser();
+            if (token && user) {
+                if (user.role === 'SUPER_ADMIN') {
+                    document.getElementById('platformApp').style.display = 'flex';
+                    renderPlatformPage();
+                } else {
+                    document.getElementById('app').style.display = 'flex';
+                    boot();
+                }
             } else {
                 showLoginScreen();
             }
         }
-
-        // =============================================================
-        // 15. PLATFORM ADMIN ENTRY
-        // =============================================================
-        // Platform admin is rendered via separate page
 
         // =============================================================
         // 16. EVENT BINDINGS
@@ -4001,14 +4052,12 @@
             const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
             setTheme(savedTheme);
 
-            // Login
             document.getElementById('loginBtn').addEventListener('click', attemptLogin);
             document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter')
                     attemptLogin(); });
             document.getElementById('loginUsername').addEventListener('keydown', (e) => { if (e.key === 'Enter')
                     document.getElementById('loginPassword').focus(); });
 
-            // Set credentials
             document.getElementById('scSaveBtn').addEventListener('click', () => {
                 const username = document.getElementById('scUsername').value.trim();
                 const password = document.getElementById('scPassword').value;
@@ -4021,42 +4070,45 @@
                 saveFirstCredentials(username, password);
             });
 
-            // Platform admin
             document.getElementById('paThemeToggle').addEventListener('click', toggleTheme);
             document.getElementById('paLogoutBtn').addEventListener('click', () => {
+                Api.clearTokens();
                 document.getElementById('platformApp').style.display = 'none';
                 document.getElementById('app').style.display = 'none';
                 document.getElementById('landingPage').style.display = 'block';
                 showToast('Signed out of platform admin', 'info');
             });
 
-            // Check session
             const token = Api._token;
-            if (token) {
+            const user = Api.getUser();
+            if (token && user) {
                 document.getElementById('landingPage').style.display = 'none';
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('setCredentialsScreen').style.display = 'none';
                 document.getElementById('onboarding').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                boot();
+                if (user.role === 'SUPER_ADMIN') {
+                    document.getElementById('platformApp').style.display = 'flex';
+                    renderPlatformPage();
+                } else {
+                    document.getElementById('app').style.display = 'flex';
+                    boot();
+                }
                 return;
             }
 
-            // Check if school exists
             (async () => {
                 try {
                     const resp = await Api.get('/schools/current');
                     if (resp.ok) {
-                        // School exists but no token — show login
                         showLoginScreen();
                         return;
                     }
                 } catch (_) {}
-                // No school — show landing
                 document.getElementById('landingPage').style.display = 'block';
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('setCredentialsScreen').style.display = 'none';
                 document.getElementById('app').style.display = 'none';
+                document.getElementById('platformApp').style.display = 'none';
                 document.getElementById('onboarding').style.display = 'none';
             })();
         });
@@ -4077,10 +4129,12 @@
         window.exportCSV = exportCSV;
         window.generateReportCard = generateReportCard;
         window.togglePlatformSchool = togglePlatformSchool;
-        window._chartInstances = {};
+        window.startWizard = startWizard;
+        window.Api = Api;
 
         console.log('🏫 SchoolFlow · Production-Ready Frontend');
         console.log('✅ API Integration · JWT Auth · RBAC · All Modules');
+        console.log('🔐 User role:', Api.getRole());
     </script>
 </body>
 </html>
