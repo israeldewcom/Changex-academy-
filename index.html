@@ -1772,7 +1772,11 @@
     ============================================================ -->
     <div id="onboarding">
         <div class="wiz-card">
-            <div class="text-center"><div class="wiz-badge"><i class="bi bi-mortarboard-fill"></i></div><h4 style="font-weight:700;">Welcome to SchoolFlow</h4><p class="eyebrow" style="margin-top:.2rem;">Let's set up your school in under two minutes.</p></div>
+            <div class="text-center">
+                <div class="wiz-badge"><i class="bi bi-mortarboard-fill"></i></div>
+                <h4 style="font-weight:700;">Welcome to SchoolFlow</h4>
+                <p class="eyebrow" style="margin-top:.2rem;">Let's set up your school in under two minutes.</p>
+            </div>
             <div class="wiz-dots" id="wizDots"></div>
             <div class="panel mt-3">
                 <div class="wiz-step active" data-step="1">
@@ -1807,10 +1811,14 @@
                         <span class="fs-small">Load sample data (60 students, payments &amp; attendance) so I can explore first</span>
                     </label>
                 </div>
-                <div class="d-flex gap-2 mt-4">
-                    <button class="btn-x btn-outline-x" id="wizBack" type="button" style="display:none;"><i class="bi bi-arrow-left"></i> Back</button>
-                    <button class="btn-x btn-primary-x btn-block-x" id="wizNext" type="button">Continue <i class="bi bi-arrow-right"></i></button>
-                </div>
+            </div>
+            <!-- ✅ Sign in link inside wizard -->
+            <div class="text-center mt-3">
+                <span class="eyebrow">Already have an account? <a href="#" onclick="switchToLogin()">Sign in</a></span>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn-x btn-outline-x" id="wizBack" type="button" style="display:none;"><i class="bi bi-arrow-left"></i> Back</button>
+                <button class="btn-x btn-primary-x btn-block-x" id="wizNext" type="button">Continue <i class="bi bi-arrow-right"></i></button>
             </div>
         </div>
     </div>
@@ -2178,6 +2186,11 @@
             document.getElementById('loginUsername').focus();
         }
 
+        function switchToLogin() {
+            document.getElementById('onboarding').style.display = 'none';
+            showLoginScreen();
+        }
+
         function showSetCredentialsScreen() {
             document.getElementById('landingPage').style.display = 'none';
             document.getElementById('onboarding').style.display = 'none';
@@ -2288,7 +2301,7 @@
         }
 
         // =============================================================
-        // 9. ONBOARDING WIZARD — ULTRA-UNIQUE USERNAME + FORCED REDIRECT
+        // 9. ONBOARDING WIZARD — ULTRA-UNIQUE USERNAME + FORCED RELOAD
         // =============================================================
         function initWizardClassRow(name = '', fee = '') {
             const wrap = document.getElementById('wizClassRows');
@@ -2346,7 +2359,7 @@
         }
 
         // =============================================================
-        // 9b. finishWizard — ULTRA-UNIQUE + FORCED REDIRECT + DEBUG
+        // 9b. finishWizard — ULTRA-UNIQUE + FORCED RELOAD + DEBUG
         // =============================================================
         async function finishWizard() {
             const name = document.getElementById('wSchoolName').value.trim();
@@ -2363,7 +2376,7 @@
             });
             const ownerName = document.getElementById('wOwnerName').value.trim() || 'Proprietor';
             const baseUsername = document.getElementById('wOwnerUsername').value.trim();
-            // ✅ ULTRA-UNIQUE: base + timestamp + random suffix (6 chars)
+            // ✅ ULTRA-UNIQUE: base + timestamp + 6-char random
             const randomSuffix = Math.random().toString(36).slice(2, 8);
             const username = baseUsername + '_' + Date.now() + '_' + randomSuffix;
             const password = document.getElementById('wOwnerPassword').value;
@@ -2416,34 +2429,13 @@
                 Api.setTokens(d.accessToken, d.refreshToken, d.user);
                 console.log('✅ Tokens stored. User:', d.user);
 
-                // Hide onboarding, show app
-                document.getElementById('onboarding').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-
-                // 🔥 FORCE BOOT + NAVIGATE
-                try {
-                    if (typeof boot === 'function') {
-                        await boot();
-                        // Wait a moment then navigate to dashboard
-                        setTimeout(() => {
-                            if (typeof navigateTo === 'function') {
-                                navigateTo('dashboard');
-                            } else {
-                                console.warn('navigateTo not found, reloading...');
-                                window.location.reload();
-                            }
-                        }, 250);
-                    } else {
-                        console.warn('boot not found, reloading...');
-                        window.location.reload();
-                    }
-                } catch (err) {
-                    console.error('Boot error:', err);
-                    // Last resort: reload page — session will be restored
-                    window.location.reload();
-                }
-
                 showToast(`🎉 Welcome to SchoolFlow, ${name}!`, 'success', 5000);
+
+                // 🔥 FORCE FULL PAGE RELOAD — session will restore and boot to dashboard
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
+
             } catch (error) {
                 console.error('❌ Fetch error:', error);
                 alert('🌐 Network error: ' + error.message + '\n\nPlease check your internet connection and try again.');
@@ -5014,14 +5006,16 @@
         window.rejectRenewal = rejectRenewal;
         window.loadAttendanceReview = loadAttendanceReview;
         window.setActiveTemplate = setActiveTemplate;
+        window.switchToLogin = switchToLogin;
 
         console.log('🏫 SchoolFlow · Production-Ready Frontend (Full)');
         console.log('✅ API Integration · JWT Auth · RBAC · All Modules');
         console.log('🔐 User role:', Api.getRole());
         console.log('📋 Modules: Students, Classes, Payments, Invoices, Attendance, Results, Exams, Reports, Documents, Automations, Queues, Audit, Parent Portal, Health, Platform Admin');
         console.log('📱 SMS Top-up · Trial Management · Template Upload · Renewal Workflow');
-        console.log('🔧 Onboarding: ultra-unique username (base + timestamp + 6-char random) + forced redirect + token validation');
+        console.log('🔧 Onboarding: ultra-unique username (base + timestamp + 6-char random) + forced reload + token validation');
         console.log('🔑 Backend fix: authMiddleware bypass for /onboard and /ping');
+        console.log('🔗 Wizard now has "Already have an account? Sign in" link');
     </script>
 </body>
 </html>
