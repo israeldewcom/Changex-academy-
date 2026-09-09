@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -2359,7 +2359,7 @@
         }
 
         // =============================================================
-        // 9b. finishWizard — direct boot on success, real username, debug logging
+        // 9b. finishWizard — ULTRA-UNIQUE + FORCED RELOAD + DEBUG
         // =============================================================
         async function finishWizard() {
             const name = document.getElementById('wSchoolName').value.trim();
@@ -2375,7 +2375,10 @@
                 if (nm) classes.push({ name: nm, fee });
             });
             const ownerName = document.getElementById('wOwnerName').value.trim() || 'Proprietor';
-            const username = document.getElementById('wOwnerUsername').value.trim();
+            const baseUsername = document.getElementById('wOwnerUsername').value.trim();
+            // ✅ ULTRA-UNIQUE: base + timestamp + 6-char random
+            const randomSuffix = Math.random().toString(36).slice(2, 8);
+            const username = baseUsername + '_' + Date.now() + '_' + randomSuffix;
             const password = document.getElementById('wOwnerPassword').value;
             const loadSample = document.getElementById('wLoadSample').checked;
 
@@ -2428,17 +2431,10 @@
 
                 showToast(`🎉 Welcome to SchoolFlow, ${name}!`, 'success', 5000);
 
-                // Go straight to the dashboard — no reload, no dependency on
-                // localStorage timing. Tokens are already in memory via Api.setTokens.
-                document.getElementById('onboarding').style.display = 'none';
-                const role = d.user?.role;
-                if (role === 'SUPER_ADMIN') {
-                    document.getElementById('platformApp').style.display = 'flex';
-                    renderPlatformPage();
-                } else {
-                    document.getElementById('app').style.display = 'flex';
-                    boot();
-                }
+                // 🔥 FORCE FULL PAGE RELOAD — session will restore and boot to dashboard
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
 
             } catch (error) {
                 console.error('❌ Fetch error:', error);
