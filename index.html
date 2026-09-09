@@ -1958,7 +1958,6 @@
             async _fetch(endpoint, opts = {}) {
                 const url = endpoint.startsWith('http') ? endpoint : API_BASE + endpoint;
                 const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
-                // ✅ FIX: Only send Authorization header if we have a token
                 if (this._token) {
                     headers['Authorization'] = 'Bearer ' + this._token;
                 }
@@ -1974,7 +1973,6 @@
                             const refBody = await ref.json();
                             const data = refBody.data || refBody;
                             this.setTokens(data.accessToken, data.refreshToken, data.user || this._user);
-                            // Retry with new token
                             const retryHeaders = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
                             if (this._token) retryHeaders['Authorization'] = 'Bearer ' + this._token;
                             const retry = await fetch(url, { ...opts, headers: retryHeaders });
@@ -2045,7 +2043,7 @@
                 hour: '2-digit', minute: '2-digit' }); }
 
         function initials(name) { return (name || '').split(' ').filter(Boolean).slice(0, 2).map(s => s[0]).join('')
-            .toUpperCase(); }
+                .toUpperCase(); }
 
         function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;',
                 '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
@@ -2290,7 +2288,7 @@
         }
 
         // =============================================================
-        // 9. ONBOARDING WIZARD — FIXED with direct fetch + debug + unique username
+        // 9. ONBOARDING WIZARD — ULTRA-UNIQUE USERNAME + FORCED REDIRECT
         // =============================================================
         function initWizardClassRow(name = '', fee = '') {
             const wrap = document.getElementById('wizClassRows');
@@ -2348,7 +2346,7 @@
         }
 
         // =============================================================
-        // 9b. finishWizard — FIXED with direct fetch, debug, and unique username
+        // 9b. finishWizard — ULTRA-UNIQUE + FORCED REDIRECT + DEBUG
         // =============================================================
         async function finishWizard() {
             const name = document.getElementById('wSchoolName').value.trim();
@@ -2365,8 +2363,9 @@
             });
             const ownerName = document.getElementById('wOwnerName').value.trim() || 'Proprietor';
             const baseUsername = document.getElementById('wOwnerUsername').value.trim();
-            // ✅ Append timestamp to make it unique
-            const username = baseUsername + '_' + Date.now();
+            // ✅ ULTRA-UNIQUE: base + timestamp + random suffix (6 chars)
+            const randomSuffix = Math.random().toString(36).slice(2, 8);
+            const username = baseUsername + '_' + Date.now() + '_' + randomSuffix;
             const password = document.getElementById('wOwnerPassword').value;
             const loadSample = document.getElementById('wLoadSample').checked;
 
@@ -2379,7 +2378,7 @@
                 term,
                 classes,
                 ownerName,
-                username,   // <-- unique now
+                username,
                 password,
                 loadSample,
                 slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -2407,10 +2406,43 @@
                 }
 
                 const d = data.data || data;
+                if (!d.accessToken || !d.refreshToken) {
+                    alert('❌ Missing tokens in response. Raw: ' + JSON.stringify(d));
+                    showToast('Missing tokens in server response', 'error');
+                    return;
+                }
+
+                // Store tokens
                 Api.setTokens(d.accessToken, d.refreshToken, d.user);
+                console.log('✅ Tokens stored. User:', d.user);
+
+                // Hide onboarding, show app
                 document.getElementById('onboarding').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                boot();
+
+                // 🔥 FORCE BOOT + NAVIGATE
+                try {
+                    if (typeof boot === 'function') {
+                        await boot();
+                        // Wait a moment then navigate to dashboard
+                        setTimeout(() => {
+                            if (typeof navigateTo === 'function') {
+                                navigateTo('dashboard');
+                            } else {
+                                console.warn('navigateTo not found, reloading...');
+                                window.location.reload();
+                            }
+                        }, 250);
+                    } else {
+                        console.warn('boot not found, reloading...');
+                        window.location.reload();
+                    }
+                } catch (err) {
+                    console.error('Boot error:', err);
+                    // Last resort: reload page — session will be restored
+                    window.location.reload();
+                }
+
                 showToast(`🎉 Welcome to SchoolFlow, ${name}!`, 'success', 5000);
             } catch (error) {
                 console.error('❌ Fetch error:', error);
@@ -2516,7 +2548,6 @@
             { key: 'parentportal', icon: 'bi-person-lock', label: 'Parent Portal', group: 'People' }
         ];
 
-        // Platform admin extra nav item
         if (Api.getRole() === 'SUPER_ADMIN') {
             NAV_ITEMS.push({ group: 'Platform', items: [{ key: 'platformRenewals', icon: 'bi-arrow-repeat',
                     label: 'Renewal Approvals' }] });
@@ -2608,7 +2639,6 @@
             container.innerHTML = `<div class="page-enter">${renderer()}</div>`;
             updateBadges();
             if (POST_RENDER_HOOKS[page]) POST_RENDER_HOOKS[page]();
-            // Trial banner check for dashboard
             if (page === 'dashboard') checkTrialStatus();
         }
 
@@ -2922,7 +2952,6 @@
                 if (!resp.ok) { showToast('Student not found', 'error'); return; }
                 const s = await resp.json();
                 const out = Math.max(0, (s.fees?.expected || 0) - (s.fees?.paid || 0));
-                // Fetch attendance summary
                 let attHTML = '';
                 try {
                     const attResp = await Api.get('/attendance/summary/' + id);
@@ -4991,7 +5020,7 @@
         console.log('🔐 User role:', Api.getRole());
         console.log('📋 Modules: Students, Classes, Payments, Invoices, Attendance, Results, Exams, Reports, Documents, Automations, Queues, Audit, Parent Portal, Health, Platform Admin');
         console.log('📱 SMS Top-up · Trial Management · Template Upload · Renewal Workflow');
-        console.log('🔧 Onboarding: unique username with timestamp, direct fetch with debug');
+        console.log('🔧 Onboarding: ultra-unique username (base + timestamp + 6-char random) + forced redirect + token validation');
         console.log('🔑 Backend fix: authMiddleware bypass for /onboard and /ping');
     </script>
 </body>
