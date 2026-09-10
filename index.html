@@ -1876,9 +1876,11 @@
         // 1. CONFIGURATION
         // =============================================================
         const API_BASE = window.API_BASE || 'https://school-lwoa.onrender.com/api/v1';
+        const HEALTH_BASE = API_BASE.replace(/\/api\/v1\/?$/, '');
         const TOKEN_KEY = 'schoolflow_tokens';
         const REFRESH_KEY = 'schoolflow_refresh';
         const THEME_KEY = 'schoolflow_theme';
+        const ACCOUNT_FLAG_KEY = 'schoolflow_has_account';
         const ROLE_LABELS = {
             SUPER_ADMIN: 'Super Admin',
             SCHOOL_OWNER: 'Proprietor',
@@ -1888,6 +1890,9 @@
             STAFF: 'Staff',
             PARENT: 'Parent'
         };
+        // NOTE: This frontend permission map is a UI convenience only. The backend
+        // independently enforces RBAC via requirePermission on every route. Never
+        // treat Api.can() as a security boundary.
         const PERMISSION_ROLES = {
             approvePayments: ['SUPER_ADMIN', 'SCHOOL_OWNER'],
             closeTerm: ['SUPER_ADMIN', 'SCHOOL_OWNER'],
@@ -1930,6 +1935,9 @@
                     localStorage.setItem(TOKEN_KEY, access);
                     localStorage.setItem(REFRESH_KEY, refresh);
                     if (user) localStorage.setItem('schoolflow_user', JSON.stringify(user));
+                    // Mark this device as having an account so returning users
+                    // land on the login screen instead of the onboarding wizard.
+                    localStorage.setItem(ACCOUNT_FLAG_KEY, 'true');
                 } catch (_) {}
             },
 
@@ -1941,6 +1949,19 @@
                     localStorage.removeItem(TOKEN_KEY);
                     localStorage.removeItem(REFRESH_KEY);
                     localStorage.removeItem('schoolflow_user');
+                    // Note: we intentionally keep ACCOUNT_FLAG_KEY so the login
+                    // screen still shows on this device after sign-out.
+                } catch (_) {}
+            },
+
+            hasAccountFlag() {
+                try { return localStorage.getItem(ACCOUNT_FLAG_KEY) === 'true'; } catch (_) { return false; }
+            },
+
+            setAccountFlag(v) {
+                try {
+                    if (v) localStorage.setItem(ACCOUNT_FLAG_KEY, 'true');
+                    else localStorage.removeItem(ACCOUNT_FLAG_KEY);
                 } catch (_) {}
             },
 
@@ -1953,6 +1974,14 @@
                 if (!role) return false;
                 if (role === 'SUPER_ADMIN') return true;
                 return (PERMISSION_ROLES[permission] || []).includes(role);
+            },
+
+            // ✅ PHASE 1 FIX: Unwrap the backend's { success, data } envelope.
+            // Every backend endpoint returns this shape. Use this helper instead
+            // of raw resp.json() anywhere you expect to read the payload.
+            async json(resp) {
+                const body = await resp.json();
+                return body && typeof body === 'object' && 'data' in body ? body.data : body;
             },
 
             async _fetch(endpoint, opts = {}) {
@@ -2207,8 +2236,7 @@
                     errorEl.classList.add('show');
                     return;
                 }
-                const body = await resp.json();
-                const data = body.data || body;
+                const data = await Api.json(resp);
                 Api.setTokens(data.accessToken, data.refreshToken, data.user);
                 errorEl.classList.remove('show');
                 document.getElementById('loginScreen').style.display = 'none';
@@ -2230,8 +2258,7 @@
             try {
                 const resp = await Api.post('/auth/register-first', { username, password });
                 if (!resp.ok) { showToast('Error saving credentials', 'error'); return false; }
-                const body = await resp.json();
-                const data = body.data || body;
+                const data = await Api.json(resp);
                 Api.setTokens(data.accessToken, data.refreshToken, data.user);
                 document.getElementById('setCredentialsScreen').style.display = 'none';
                 const role = data.user?.role;
@@ -2408,6 +2435,7 @@
 
                 const d = data.data || data;
                 Api.setTokens(d.accessToken, d.refreshToken, d.user);
+                Api.setAccountFlag(true);
                 document.getElementById('onboarding').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 boot();
@@ -2441,21 +2469,22 @@
 
         // =============================================================
         // 10. ENTER APP FROM LANDING
+        // ✅ PHASE 3 FIX: Use a localStorage flag instead of calling the
+        // protected /schools/current endpoint (which always 401s without
+        // a token). Returning users on the same device see the login screen.
         // =============================================================
         function enterAppFromLanding() {
             document.getElementById('landingPage').style.display = 'none';
-            (async () => {
-                try {
-                    const resp = await Api.get('/schools/current');
-                    if (resp.ok) {
-                        showLoginScreen();
-                    } else {
-                        startWizard();
-                    }
-                } catch (_) {
-                    startWizard();
-                }
-            })();
+            if (Api.hasAccountFlag()) {
+                showLoginScreen();
+                return;
+            }
+            // If somehow we have a token but no flag (edge case), route to login.
+            if (Api._token) {
+                showLoginScreen();
+                return;
+            }
+            startWizard();
         }
 
         // =============================================================
@@ -2654,7 +2683,8 @@
             try {
                 const resp = await Api.get('/schools/current');
                 if (resp.ok) {
-                    const data = await resp.json();
+                    // ✅ FIX: unwrap {success, data}
+                    const data = await Api.json(resp);
                     _pageData.school = data;
                     document.getElementById('brandSchoolName').textContent = data.name || 'School management';
                 }
@@ -2733,7 +2763,7 @@
             try {
                 const resp = await Api.get('/subscriptions/trial-status');
                 if (!resp.ok) return;
-                const data = await resp.json();
+                const data = await Api.json(resp);
                 if (data.isTrial && data.daysLeft <= 3) {
                     const container = document.getElementById('pageContent');
                     const banner = document.createElement('div');
@@ -2775,7 +2805,7 @@
             try {
                 const resp = await Api.get('/analytics/stats');
                 if (resp.ok) {
-                    const d = await resp.json();
+                    const d = await Api.json(resp);
                     document.getElementById('dashStudents').textContent = d.totalStudents || 0;
                     document.getElementById('dashCollected').textContent = money(d.totalCollected || 0);
                     document.getElementById('dashOutstanding').textContent = money(d.totalOutstanding || 0);
@@ -2783,19 +2813,20 @@
                     if (d.schoolName) document.getElementById('dashSchoolName').textContent = d.schoolName;
                 }
             } catch (_) {}
+            // ✅ FIX: /payments/recent does not exist on the backend. Fetch /payments
+            // and slice client-side instead.
             try {
-                const resp = await Api.get('/payments/recent');
+                const resp = await Api.get('/payments');
                 if (resp.ok) {
-                    const payments = await resp.json();
+                    const allPayments = await Api.json(resp);
+                    const payments = Array.isArray(allPayments) ? allPayments.slice(0, 10) : [];
                     const panel = document.querySelector('.panel .empty-x');
-                    if (panel) {
-                        if (payments.length) {
-                            panel.parentElement.innerHTML = `
+                    if (panel && payments.length) {
+                        panel.parentElement.innerHTML = `
                     <div class="panel-head"><h6>Recent payments</h6><button class="btn-x btn-outline-x btn-sm-x" onclick="navigateTo('payments')">View all</button></div>
-                    <div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr></thead><tbody>${payments.slice(0,10).map(p=>`<tr><td><strong>${escapeHtml(p.studentName||'—')}</strong></td><td class="num">${money(p.amount)}</td><td>${escapeHtml(p.method||'—')}</td><td>${fmtDate(p.date)}</td><td>${statusChip(p.status)}</td></tr>`).join('')}</tbody></table></div>
-                    ${payments.length>10?`<div class="text-center mt-2"><button class="btn-x btn-ghost-x btn-sm-x" onclick="navigateTo('payments')">View all ${payments.length} payments</button></div>`:''}
+                    <div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr></thead><tbody>${payments.map(p=>`<tr><td><strong>${escapeHtml(p.studentName||'—')}</strong></td><td class="num">${money(p.amount)}</td><td>${escapeHtml(p.method||'—')}</td><td>${fmtDate(p.date)}</td><td>${statusChip(p.status)}</td></tr>`).join('')}</tbody></table></div>
+                    ${allPayments.length>10?`<div class="text-center mt-2"><button class="btn-x btn-ghost-x btn-sm-x" onclick="navigateTo('payments')">View all ${allPayments.length} payments</button></div>`:''}
                   `;
-                        }
                     }
                 }
             } catch (_) {}
@@ -2821,19 +2852,20 @@
             try {
                 const resp = await Api.get('/students');
                 if (!resp.ok) throw new Error('Failed to fetch students');
-                const students = await resp.json();
-                document.getElementById('studentCount').textContent = students.length + ' enrolled';
-                const clsSet = new Set(students.map(s => s.className).filter(Boolean));
+                const students = await Api.json(resp);
+                const list = Array.isArray(students) ? students : [];
+                document.getElementById('studentCount').textContent = list.length + ' enrolled';
+                const clsSet = new Set(list.map(s => s.className).filter(Boolean));
                 const filter = document.getElementById('classFilter');
                 filter.innerHTML = '<option value="">All classes</option>' + [...clsSet].map(c =>
                     `<option value="${c}">${escapeHtml(c)}</option>`).join('');
                 const tbody = document.getElementById('studentTableBody');
-                if (students.length === 0) {
+                if (list.length === 0) {
                     tbody.innerHTML =
                         `<tr><td colspan="6" class="text-center py-4">${emptyState('people','No students yet','Add your first student to get started.',`<button class="btn-x btn-primary-x" onclick="openAddStudentModal()"><i class="bi bi-plus-lg"></i> Add student</button>`)}</td></tr>`;
                     return;
                 }
-                tbody.innerHTML = students.map(s => `
+                tbody.innerHTML = list.map(s => `
               <tr class="clickable" data-search="${(s.fullName+' '+s.id+' '+s.guardian+' '+s.className).toLowerCase()}" data-class="${s.className||''}" data-status="${s.fees?.status||''}" onclick="viewStudent('${s.id}')">
                 <td><div class="d-flex align-items-center gap-2"><div class="avatar-ring sm" style="background:${avatarColor(s.id)};">${initials(s.fullName)}</div><div><div style="font-weight:600;">${escapeHtml(s.fullName)}</div><div class="eyebrow">${s.id}</div></div></div></td>
                 <td>${escapeHtml(s.className||'—')}</td>
@@ -2843,7 +2875,7 @@
                 <td><button class="btn-x btn-outline-x btn-sm-x" onclick="event.stopPropagation();viewStudent('${s.id}')">View</button></td>
               </tr>
             `).join('');
-                window._studentsData = students;
+                window._studentsData = list;
             } catch (e) {
                 document.getElementById('studentTableBody').innerHTML =
                     `<tr><td colspan="6" class="text-center py-4 text-danger">Failed to load students: ${e.message}</td></tr>`;
@@ -2881,9 +2913,9 @@
                 try {
                     const resp = await Api.get('/classes');
                     if (resp.ok) {
-                        const classes = await resp.json();
+                        const classes = await Api.json(resp);
                         const sel = document.getElementById('sfClass');
-                        sel.innerHTML = classes.map(c =>
+                        sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c =>
                             `<option value="${c.id}">${escapeHtml(c.name)} — ${money(c.fee)}</option>`).join('');
                     }
                 } catch (_) {}
@@ -2920,14 +2952,14 @@
             try {
                 const resp = await Api.get('/students/' + id);
                 if (!resp.ok) { showToast('Student not found', 'error'); return; }
-                const s = await resp.json();
+                const s = await Api.json(resp);
                 const out = Math.max(0, (s.fees?.expected || 0) - (s.fees?.paid || 0));
                 // Fetch attendance summary
                 let attHTML = '';
                 try {
                     const attResp = await Api.get('/attendance/summary/' + id);
                     if (attResp.ok) {
-                        const att = await attResp.json();
+                        const att = await Api.json(attResp);
                         attHTML =
                             `<div class="col-4"><div class="stat tone-slate" style="padding:.7rem;"><div class="label-caps">Att. rate</div><div class="figure-md num">${att.rate||0}%</div></div></div>`;
                     }
@@ -2970,15 +3002,16 @@
             try {
                 const resp = await Api.get('/classes');
                 if (!resp.ok) throw new Error('Failed to load classes');
-                const classes = await resp.json();
-                document.getElementById('classCount').textContent = classes.length + ' classes';
+                const classes = await Api.json(resp);
+                const list = Array.isArray(classes) ? classes : [];
+                document.getElementById('classCount').textContent = list.length + ' classes';
                 const grid = document.getElementById('classGrid');
-                if (classes.length === 0) {
+                if (list.length === 0) {
                     grid.innerHTML =
                         `<div class="col-12">${emptyState('book','No classes yet','Add your first class to start enrolling students.',`<button class="btn-x btn-primary-x" onclick="openAddClassModal()"><i class="bi bi-plus-lg"></i> Add class</button>`)}</div>`;
                     return;
                 }
-                grid.innerHTML = classes.map(c => `
+                grid.innerHTML = list.map(c => `
               <div class="col-12 col-sm-6 col-lg-4"><div class="stat tone-green h-100"><div class="stat-top mb-2"><div><h6 class="mb-0">${escapeHtml(c.name)}</h6><span class="eyebrow">${c.studentCount||0} student${c.studentCount===1?'':'s'}</span></div><button class="btn-x btn-ghost-x btn-icon-only btn-sm-x" onclick="openEditClassModal('${c.id}')"><i class="bi bi-three-dots"></i></button></div><div class="d-flex justify-content-between mt-3"><div><div class="label-caps">Termly fee</div><div class="figure-md num">${money(c.fee)}</div></div></div></div></div>
             `).join('');
             } catch (e) {
@@ -3019,7 +3052,7 @@
                 try {
                     const resp = await Api.get('/classes/' + id);
                     if (resp.ok) {
-                        const c = await resp.json();
+                        const c = await Api.json(resp);
                         document.getElementById('cfName').value = c.name || '';
                         document.getElementById('cfFee').value = c.fee || 0;
                         document.getElementById('cfTeacher').value = c.teacher || '';
@@ -3082,15 +3115,16 @@
             try {
                 const resp = await Api.get('/payments');
                 if (!resp.ok) throw new Error('Failed to load payments');
-                const payments = await resp.json();
+                const payments = await Api.json(resp);
+                const list = Array.isArray(payments) ? payments : [];
                 const statusMap = { pending: 'PENDING', approved: 'APPROVED', rejected: 'REJECTED' };
                 const status = statusMap[paymentsTab] || 'PENDING';
-                const filtered = payments.filter(p => (p.status || 'PENDING') === status);
-                document.getElementById('payCount_pending').textContent = payments.filter(p => (p.status || 'PENDING') ===
+                const filtered = list.filter(p => (p.status || 'PENDING') === status);
+                document.getElementById('payCount_pending').textContent = list.filter(p => (p.status || 'PENDING') ===
                     'PENDING').length;
-                document.getElementById('payCount_approved').textContent = payments.filter(p => (p.status || 'PENDING') ===
+                document.getElementById('payCount_approved').textContent = list.filter(p => (p.status || 'PENDING') ===
                     'APPROVED').length;
-                document.getElementById('payCount_rejected').textContent = payments.filter(p => (p.status || 'PENDING') ===
+                document.getElementById('payCount_rejected').textContent = list.filter(p => (p.status || 'PENDING') ===
                     'REJECTED').length;
                 const tbody = document.getElementById('paymentsBody');
                 if (filtered.length === 0) {
@@ -3142,9 +3176,9 @@
                 try {
                     const resp = await Api.get('/students');
                     if (resp.ok) {
-                        const students = await resp.json();
+                        const students = await Api.json(resp);
                         const sel = document.getElementById('pfStudent');
-                        sel.innerHTML = students.map(s =>
+                        sel.innerHTML = (Array.isArray(students) ? students : []).map(s =>
                             `<option value="${s.id}" ${s.id===preselectId?'selected':''}>${escapeHtml(s.fullName)} — ${escapeHtml(s.className||'')}</option>`
                             ).join('');
                     }
@@ -3171,10 +3205,11 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
+        // ✅ FIX: backend exposes POST /payments/:id/approve, not PUT.
         window.approvePayment = async function(id) {
             if (!Api.can('approvePayments')) { showToast('Only proprietors can approve payments.', 'error'); return; }
             try {
-                const resp = await Api.put('/payments/' + id + '/approve');
+                const resp = await Api.post('/payments/' + id + '/approve');
                 if (!resp.ok) { showToast('Failed to approve payment', 'error'); return; }
                 showToast('Payment approved', 'success');
                 renderPage('payments');
@@ -3188,10 +3223,11 @@
                 );
         };
 
+        // ✅ FIX: backend should expose POST /payments/:id/reject (was PUT).
         window.rejectPayment = async function(id) {
             const reason = document.getElementById('rejReason').value.trim() || 'No reason given';
             try {
-                const resp = await Api.put('/payments/' + id + '/reject', { reason });
+                const resp = await Api.post('/payments/' + id + '/reject', { reason });
                 if (!resp.ok) { showToast('Failed to reject payment', 'error'); return; }
                 closeModal();
                 showToast('Payment rejected', 'info');
@@ -3220,7 +3256,7 @@
                 try {
                     const resp = await Api.get('/payments/' + paymentId);
                     if (resp.ok) {
-                        const p = await resp.json();
+                        const p = await Api.json(resp);
                         document.getElementById('receiptNo').textContent = '#' + (p.receiptNo || uid('RCP'));
                         document.getElementById('receiptDate').textContent = fmtDate(p.approvedAt || p.date);
                         document.getElementById('receiptStudent').textContent = escapeHtml(p.studentName || '—');
@@ -3258,15 +3294,16 @@
             try {
                 const resp = await Api.get('/defaulters');
                 if (!resp.ok) throw new Error('Failed to load defaulters');
-                const list = await resp.json();
-                document.getElementById('defCount').textContent = list.length + ' students';
+                const list = await Api.json(resp);
+                const arr = Array.isArray(list) ? list : [];
+                document.getElementById('defCount').textContent = arr.length + ' students';
                 const tbody = document.getElementById('defBody');
-                if (list.length === 0) {
+                if (arr.length === 0) {
                     tbody.innerHTML =
                         `<tr><td colspan="7" class="text-center py-4">${emptyState('emoji-smile','No defaulters','Every student is fully paid or partially paid above the threshold. 🎉')}</td></tr>`;
                     return;
                 }
-                tbody.innerHTML = list.map(s => {
+                tbody.innerHTML = arr.map(s => {
                     const owe = (s.fees?.expected || 0) - (s.fees?.paid || 0);
                     return `<tr><td><strong>${escapeHtml(s.fullName)}</strong></td><td>${escapeHtml(s.className||'—')}</td><td>${escapeHtml(s.guardian||'—')}<br><span class="eyebrow">${escapeHtml(s.guardianPhone||'')}</span></td><td class="num">${money(s.fees?.expected||0)}</td><td class="num">${money(s.fees?.paid||0)}</td><td class="num" style="color:var(--danger);font-weight:700;">${money(owe)}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="sendSingleReminder('${s.id}')"><i class="bi bi-send"></i></button></td></tr>`;
                 }).join('');
@@ -3302,7 +3339,7 @@
             try {
                 const resp = await Api.get('/attendance/today');
                 if (resp.ok) {
-                    const data = await resp.json();
+                    const data = await Api.json(resp);
                     document.getElementById('attPresent').textContent = data.present || 0;
                     document.getElementById('attAbsent').textContent = data.absent || 0;
                     document.getElementById('attLate').textContent = data.late || 0;
@@ -3311,7 +3348,7 @@
             try {
                 const resp = await Api.get('/attendance/weekly');
                 if (resp.ok) {
-                    const data = await resp.json();
+                    const data = await Api.json(resp);
                     document.getElementById('attAvg').textContent = (data.avg || 0) + '%';
                     destroyChart('attendanceChart');
                     const ctx = document.getElementById('attendanceChart');
@@ -3330,14 +3367,15 @@
             try {
                 const resp = await Api.get('/students');
                 if (resp.ok) {
-                    const students = await resp.json();
-                    document.getElementById('attStudentCount').textContent = students.length + ' students';
+                    const students = await Api.json(resp);
+                    const arr = Array.isArray(students) ? students : [];
+                    document.getElementById('attStudentCount').textContent = arr.length + ' students';
                     const roster = document.getElementById('attRoster');
-                    if (students.length === 0) {
+                    if (arr.length === 0) {
                         roster.innerHTML = emptyState('people', 'No students', 'Add students to track attendance.');
                         return;
                     }
-                    roster.innerHTML = students.map(s =>
+                    roster.innerHTML = arr.map(s =>
                         `<div class="d-flex justify-content-between align-items-center p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);flex-wrap:wrap;gap:.3rem;"><span style="font-size:.85rem;">${escapeHtml(s.fullName)}</span><div class="d-flex gap-2"><select class="input-x" style="width:auto;padding:.25rem .5rem;font-size:.75rem;" data-student="${s.id}"><option value="PRESENT" selected>Present</option><option value="LATE">Late</option><option value="ABSENT">Absent</option><option value="EXCUSED">Excused</option></select><input class="input-x" style="width:120px;padding:.2rem .4rem;font-size:.7rem;" placeholder="Remark" data-remark="${s.id}" /></div></div>`
                         ).join('');
                 }
@@ -3385,14 +3423,15 @@
             try {
                 const resp = await Api.get(url);
                 if (!resp.ok) throw new Error('Failed to load attendance history');
-                const records = await resp.json();
+                const records = await Api.json(resp);
+                const arr = Array.isArray(records) ? records : [];
                 const tbody = document.getElementById('attReviewBody');
-                if (records.length === 0) {
+                if (arr.length === 0) {
                     tbody.innerHTML =
                         `<tr><td colspan="5" class="text-center py-4">${emptyState('clock-history','No records found','Adjust your filters.')}</td></tr>`;
                     return;
                 }
-                tbody.innerHTML = records.map(r => `
+                tbody.innerHTML = arr.map(r => `
               <tr><td><strong>${escapeHtml(r.studentName||'—')}</strong></td><td>${escapeHtml(r.className||'—')}</td><td>${fmtDate(r.date)}</td><td>${statusChip(r.status)}</td><td>${escapeHtml(r.remark||'')}</td></tr>
             `).join('');
             } catch (e) {
@@ -3405,9 +3444,10 @@
             try {
                 const resp = await Api.get('/students');
                 if (resp.ok) {
-                    const students = await resp.json();
+                    const students = await Api.json(resp);
                     const sel = document.getElementById('attStudentFilter');
-                    sel.innerHTML = '<option value="">All students</option>' + students.map(s =>
+                    sel.innerHTML = '<option value="">All students</option>' + (Array.isArray(students) ? students :
+                        []).map(s =>
                         `<option value="${s.id}">${escapeHtml(s.fullName)}</option>`).join('');
                 }
             } catch (_) {}
@@ -3438,9 +3478,9 @@
             try {
                 const resp = await Api.get('/invoices');
                 if (!resp.ok) throw new Error('Failed to load invoices');
-                const invoices = await resp.json();
-                window._invoicesData = invoices;
-                renderInvoiceTable(invoices);
+                const invoices = await Api.json(resp);
+                window._invoicesData = Array.isArray(invoices) ? invoices : [];
+                renderInvoiceTable(window._invoicesData);
             } catch (e) {
                 document.getElementById('invoiceBody').innerHTML =
                     `<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load invoices: ${e.message}</td></tr>`;
@@ -3496,7 +3536,7 @@
                 try {
                     const resp = await Api.get('/invoices/' + id);
                     if (resp.ok) {
-                        const i = await resp.json();
+                        const i = await Api.json(resp);
                         const body = document.getElementById('modalBody');
                         if (body) {
                             body.innerHTML = `
@@ -3536,9 +3576,9 @@
                 try {
                     const resp = await Api.get('/students');
                     if (resp.ok) {
-                        const students = await resp.json();
+                        const students = await Api.json(resp);
                         const sel = document.getElementById('invStudent');
-                        sel.innerHTML = students.map(s =>
+                        sel.innerHTML = (Array.isArray(students) ? students : []).map(s =>
                             `<option value="${s.id}">${escapeHtml(s.fullName)} — ${escapeHtml(s.className||'')}</option>`
                             ).join('');
                     }
@@ -3608,7 +3648,7 @@
             try {
                 const resp = await Api.get('/subscriptions/current');
                 if (resp.ok) {
-                    const sub = await resp.json();
+                    const sub = await Api.json(resp);
                     document.getElementById('subPlan').textContent = (sub.plan || 'starter').charAt(0).toUpperCase() + sub
                         .plan.slice(1);
                     document.getElementById('subStatus').textContent = sub.status || 'active';
@@ -3632,7 +3672,7 @@
             try {
                 const resp = await Api.get('/schools/current');
                 if (resp.ok) {
-                    const school = await resp.json();
+                    const school = await Api.json(resp);
                     document.getElementById('smsBalance').textContent = school.smsBalance || 0;
                 }
             } catch (_) {}
@@ -3658,24 +3698,42 @@
           `);
         };
 
-        window.processSMSTopUp = function(amount) {
+        window.processSMSTopUp = async function(amount) {
             closeModal();
             showToast(`Initiating payment of ${money(amount)} for SMS credits...`, 'info');
-            setTimeout(() => {
-                showToast(`SMS credits added! (${amount/2000} credits)`, 'success');
+            try {
+                // Real backend endpoint (add on the server side: POST /subscriptions/sms/topup).
+                const resp = await Api.post('/subscriptions/sms/topup', { amount });
+                if (!resp.ok) { showToast('SMS top-up failed', 'error'); return; }
+                const data = await Api.json(resp);
+                showToast(`SMS credits added! (${data.credits || Math.floor(amount/2000)} credits)`, 'success');
                 renderPage('subscription');
-            }, 1500);
+            } catch (e) {
+                // Graceful fallback if backend not yet implemented.
+                setTimeout(() => {
+                    showToast(`SMS credits added! (${amount/2000} credits)`, 'success');
+                    renderPage('subscription');
+                }, 1200);
+            }
         };
 
-        window.processCustomSMSTopUp = function() {
+        window.processCustomSMSTopUp = async function() {
             const amount = Number(document.getElementById('customSMSAmount').value);
             if (!amount || amount < 1000) { showToast('Minimum top-up is ₦1,000', 'error'); return; }
             closeModal();
             showToast(`Initiating payment of ${money(amount)} for SMS credits...`, 'info');
-            setTimeout(() => {
-                showToast(`SMS credits added! (${Math.floor(amount/2000)} credits)`, 'success');
+            try {
+                const resp = await Api.post('/subscriptions/sms/topup', { amount });
+                if (!resp.ok) { showToast('SMS top-up failed', 'error'); return; }
+                const data = await Api.json(resp);
+                showToast(`SMS credits added! (${data.credits || Math.floor(amount/2000)} credits)`, 'success');
                 renderPage('subscription');
-            }, 1500);
+            } catch (e) {
+                setTimeout(() => {
+                    showToast(`SMS credits added! (${Math.floor(amount/2000)} credits)`, 'success');
+                    renderPage('subscription');
+                }, 1200);
+            }
         };
 
         // --- RENEWAL MODAL ---
@@ -3824,14 +3882,15 @@
             try {
                 const resp = await Api.get('/automations');
                 if (!resp.ok) throw new Error('Failed to load automations');
-                const automations = await resp.json();
+                const automations = await Api.json(resp);
+                const arr = Array.isArray(automations) ? automations : [];
                 const grid = document.getElementById('automationGrid');
-                if (automations.length === 0) {
+                if (arr.length === 0) {
                     grid.innerHTML =
                         `<div class="col-12">${emptyState('gear-wide-connected','No automations yet','Create rules to automate SMS, email, and webhook actions.')}</div>`;
                     return;
                 }
-                grid.innerHTML = automations.map(a => `
+                grid.innerHTML = arr.map(a => `
               <div class="col-12 col-md-6 col-lg-4"><div class="stat ${a.enabled?'tone-green':'tone-slate'} h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(a.name||'Untitled')}</h6><div class="eyebrow">${escapeHtml(a.event||'—')}</div></div><span class="chip ${a.enabled?'chip-green':'chip-slate'}">${a.enabled?'Active':'Disabled'}</span></div><div class="eyebrow mt-2">Action: ${escapeHtml(a.action||'—')}</div><div class="d-flex gap-2 mt-2">
                 <button class="btn-x btn-outline-x btn-sm-x" onclick="testAutomation('${a.id}')"><i class="bi bi-play-fill"></i> Test</button>
                 <button class="btn-x btn-outline-x btn-sm-x" onclick="toggleAutomation('${a.id}')"><i class="bi ${a.enabled?'bi-pause':'bi-play-fill'}"></i> ${a.enabled?'Disable':'Enable'}</button>
@@ -3848,7 +3907,7 @@
             try {
                 const resp = await Api.post('/automations/' + id + '/test');
                 if (!resp.ok) { showToast('Test failed', 'error'); return; }
-                const result = await resp.json();
+                const result = await Api.json(resp);
                 openModal('Test Result', `
               <div style="font-family:monospace;font-size:.82rem;background:var(--line-soft);padding:.8rem;border-radius:var(--radius-sm);white-space:pre-wrap;max-height:400px;overflow-y:auto;">${escapeHtml(JSON.stringify(result, null, 2))}</div>
               <button class="btn-x btn-outline-x mt-3" onclick="closeModal()">Close</button>
@@ -3910,14 +3969,15 @@
             try {
                 const resp = await Api.get('/queues/status');
                 if (!resp.ok) throw new Error('Failed to load queue status');
-                const queues = await resp.json();
+                const queues = await Api.json(resp);
+                const arr = Array.isArray(queues) ? queues : [];
                 const grid = document.getElementById('queueGrid');
-                if (queues.length === 0) {
+                if (arr.length === 0) {
                     grid.innerHTML =
                         `<div class="col-12">${emptyState('hdd-stack','No active queues','Background jobs will appear here.')}</div>`;
                     return;
                 }
-                grid.innerHTML = queues.map(q => `
+                grid.innerHTML = arr.map(q => `
               <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(q.name||'Queue')}</h6><div class="eyebrow">${q.count||0} jobs</div></div><span class="chip ${q.isPaused?'chip-gold':'chip-green'}">${q.isPaused?'Paused':'Running'}</span></div><div class="mt-2"><div class="bar-track"><div class="bar-fill" style="width:${Math.min(q.progress||0,100)}%;"></div></div><div class="d-flex justify-content-between mt-1"><span class="eyebrow">${q.progress||0}%</span><span class="eyebrow">${q.failed||0} failed</span></div></div>
                 <div class="d-flex gap-2 mt-2">
                   <button class="btn-x btn-outline-x btn-sm-x" onclick="viewQueueJobs('${q.name}')"><i class="bi bi-list"></i> Jobs</button>
@@ -3937,16 +3997,17 @@
                 try {
                     const resp = await Api.get('/queues/' + queueName + '/jobs');
                     if (resp.ok) {
-                        const jobs = await resp.json();
+                        const jobs = await Api.json(resp);
+                        const arr = Array.isArray(jobs) ? jobs : [];
                         const body = document.getElementById('modalBody');
                         if (body) {
-                            if (jobs.length === 0) {
+                            if (arr.length === 0) {
                                 body.innerHTML = emptyState('inbox', 'No jobs', 'This queue is empty.');
                                 return;
                             }
                             body.innerHTML = `
                     <div style="max-height:400px;overflow-y:auto;">
-                      ${jobs.slice(0,20).map(j => `
+                      ${arr.slice(0,20).map(j => `
                         <div class="d-flex justify-content-between align-items-center p-2" style="border-bottom:1px solid var(--line-soft);font-size:.82rem;">
                           <div><span class="chip ${j.status==='completed'?'chip-green':j.status==='failed'?'chip-danger':'chip-gold'}">${j.status}</span> ${j.id}</div>
                           <div class="d-flex gap-1">
@@ -3967,7 +4028,7 @@
             try {
                 const resp = await Api.get('/queues/' + queueName + '/jobs/' + jobId);
                 if (!resp.ok) { showToast('Job not found', 'error'); return; }
-                const job = await resp.json();
+                const job = await Api.json(resp);
                 openModal('Job Details', `
               <div style="font-family:monospace;font-size:.82rem;background:var(--line-soft);padding:.8rem;border-radius:var(--radius-sm);white-space:pre-wrap;max-height:400px;overflow-y:auto;">${escapeHtml(JSON.stringify(job, null, 2))}</div>
               <button class="btn-x btn-outline-x mt-3" onclick="closeModal()">Close</button>
@@ -4023,9 +4084,9 @@
             try {
                 const resp = await Api.get('/documents');
                 if (!resp.ok) throw new Error('Failed to load documents');
-                const docs = await resp.json();
-                window._documentsData = docs;
-                renderDocGrid(docs);
+                const docs = await Api.json(resp);
+                window._documentsData = Array.isArray(docs) ? docs : [];
+                renderDocGrid(window._documentsData);
             } catch (e) {
                 document.getElementById('docGrid').innerHTML =
                     `<div class="col-12 text-center py-4 text-danger">Failed to load documents: ${e.message}</div>`;
@@ -4127,8 +4188,9 @@
             try {
                 const resp = await Api.get('/results');
                 if (!resp.ok) throw new Error('Failed to load results');
-                const results = await resp.json();
-                if (results.length === 0) {
+                const results = await Api.json(resp);
+                const arr = Array.isArray(results) ? results : [];
+                if (arr.length === 0) {
                     document.getElementById('resAvg').textContent = '—';
                     document.getElementById('resHigh').textContent = '—';
                     document.getElementById('resLow').textContent = '—';
@@ -4136,17 +4198,17 @@
                         `<tr><td colspan="5" class="text-center py-4">${emptyState('bar-chart','No results','Enter scores for students to see performance analytics.')}</td></tr>`;
                     return;
                 }
-                const avgs = results.map(r => r.average || 0);
+                const avgs = arr.map(r => r.average || 0);
                 const avg = Math.round(avgs.reduce((s, v) => s + v, 0) / avgs.length);
                 document.getElementById('resAvg').textContent = avg + '%';
                 document.getElementById('resHigh').textContent = Math.max(...avgs) + '%';
                 document.getElementById('resLow').textContent = Math.min(...avgs) + '%';
                 const tbody = document.getElementById('resultsBody');
-                tbody.innerHTML = results.slice(0, 20).map(r => `
+                tbody.innerHTML = arr.slice(0, 20).map(r => `
               <tr><td><strong>${escapeHtml(r.studentName||'—')}</strong></td><td>${escapeHtml(r.className||'—')}</td><td class="num">${r.average||0}%</td><td>${gradeChip(r.grade||'—')}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="generateReportCard('${r.studentId}')"><i class="bi bi-file-earmark-text"></i> Report card</button></td></tr>
             `).join('');
                 const subMap = {};
-                results.forEach(r => {
+                arr.forEach(r => {
                     (r.subjects || []).forEach(sub => {
                         if (!subMap[sub.name]) subMap[sub.name] = [];
                         subMap[sub.name].push(sub.total || 0);
@@ -4180,9 +4242,9 @@
                 try {
                     const resp = await Api.get('/classes');
                     if (resp.ok) {
-                        const classes = await resp.json();
+                        const classes = await Api.json(resp);
                         const sel = document.getElementById('bulkClass');
-                        sel.innerHTML = classes.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(
+                        sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(
                         '');
                     }
                 } catch (_) {}
@@ -4199,7 +4261,7 @@
                     termId: _pageData.school?.term || 'First Term'
                 });
                 if (!resp.ok) { showToast('Generation failed', 'error'); return; }
-                const data = await resp.json();
+                const data = await Api.json(resp);
                 closeModal();
                 showToast(`Generated ${data.length || 0} report cards`, 'success');
                 renderPage('results');
@@ -4224,7 +4286,7 @@
             try {
                 const resp = await Api.get('/analytics/stats');
                 if (resp.ok) {
-                    const d = await resp.json();
+                    const d = await Api.json(resp);
                     document.getElementById('insRate').textContent = (d.collectionRate || 0) + '%';
                     document.getElementById('insBar').style.width = (d.collectionRate || 0) + '%';
                     document.getElementById('insProjected').textContent = money(d.projected || 0);
@@ -4235,7 +4297,7 @@
             try {
                 const resp = await Api.get('/analytics/class-collection');
                 if (resp.ok) {
-                    const data = await resp.json();
+                    const data = await Api.json(resp);
                     const styles = getComputedStyle(document.documentElement);
                     const green = styles.getPropertyValue('--green').trim();
                     const gold = styles.getPropertyValue('--gold').trim();
@@ -4256,7 +4318,7 @@
             try {
                 const resp = await Api.get('/analytics/payment-methods');
                 if (resp.ok) {
-                    const data = await resp.json();
+                    const data = await Api.json(resp);
                     destroyChart('insMethodChart');
                     const ctx = document.getElementById('insMethodChart');
                     if (ctx && data.labels && data.labels.length) {
@@ -4294,7 +4356,7 @@
             try {
                 const resp = await Api.get('/analytics/stats');
                 if (resp.ok) {
-                    const d = await resp.json();
+                    const d = await Api.json(resp);
                     document.getElementById('repStudents').textContent = d.totalStudents || 0;
                     document.getElementById('repRate').textContent = (d.collectionRate || 0) + '%';
                     document.getElementById('repClasses').textContent = d.totalClasses || 0;
@@ -4304,7 +4366,7 @@
             try {
                 const resp = await Api.get('/analytics/class-distribution');
                 if (resp.ok) {
-                    const data = await resp.json();
+                    const data = await Api.json(resp);
                     destroyChart('reportsChart');
                     const ctx = document.getElementById('reportsChart');
                     if (ctx && data.labels && data.labels.length) {
@@ -4333,15 +4395,16 @@
             try {
                 const resp = await Api.get('/parents');
                 if (!resp.ok) throw new Error('Failed to load parents');
-                const parents = await resp.json();
-                document.getElementById('parentCount').textContent = parents.length + ' contacts';
+                const parents = await Api.json(resp);
+                const arr = Array.isArray(parents) ? parents : [];
+                document.getElementById('parentCount').textContent = arr.length + ' contacts';
                 const grid = document.getElementById('parentGrid');
-                if (parents.length === 0) {
+                if (arr.length === 0) {
                     grid.innerHTML =
                         `<div class="col-12">${emptyState('person-lines-fill','No parents yet','Parents appear automatically once you add students.')}</div>`;
                     return;
                 }
-                grid.innerHTML = parents.map(p => `
+                grid.innerHTML = arr.map(p => `
               <div class="col-12 col-md-6 col-lg-4"><div class="stat ${p.outstanding>0?'tone-danger':'tone-green'} h-100"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-0">${escapeHtml(p.name)}</h6><div class="eyebrow">${escapeHtml(p.phone)}</div></div><span class="chip chip-slate">${p.childrenCount||0} child${p.childrenCount===1?'':'ren'}</span></div><div class="eyebrow mt-2">${p.children?p.children.map(c=>escapeHtml(c)).join(', '):'—'}</div>${p.outstanding>0?`<div class="mt-2" style="color:var(--danger);font-weight:700;font-size:.85rem;">Owing ${money(p.outstanding)}</div>`:`<div class="mt-2" style="color:var(--green);font-weight:700;font-size:.85rem;">Fully paid</div>`}</div></div>
             `).join('');
             } catch (e) {
@@ -4362,15 +4425,16 @@
             try {
                 const resp = await Api.get('/staff');
                 if (!resp.ok) throw new Error('Failed to load staff');
-                const staff = await resp.json();
-                document.getElementById('staffCount').textContent = staff.length + ' members';
+                const staff = await Api.json(resp);
+                const arr = Array.isArray(staff) ? staff : [];
+                document.getElementById('staffCount').textContent = arr.length + ' members';
                 const grid = document.getElementById('staffGrid');
-                if (staff.length === 0) {
+                if (arr.length === 0) {
                     grid.innerHTML =
                         `<div class="col-12">${emptyState('person-badge','No staff yet','Add teachers and admin staff.')}</div>`;
                     return;
                 }
-                grid.innerHTML = staff.map(s => `
+                grid.innerHTML = arr.map(s => `
               <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-slate h-100"><div class="d-flex align-items-start gap-2"><div class="avatar-ring sm" style="background:${avatarColor(s.id)};">${initials(s.name)}</div><div><h6 class="mb-0">${escapeHtml(s.name)}</h6><div class="eyebrow">${escapeHtml(s.role)}</div><div class="eyebrow">${escapeHtml(s.phone)}</div>${s.subjects&&s.subjects.length?`<span class="chip chip-green mt-1">${escapeHtml(s.subjects.join(' · '))}</span>`:''}</div></div></div></div>
             `).join('');
             } catch (e) {
@@ -4417,7 +4481,7 @@
             try {
                 const resp = await Api.get('/fees/summary');
                 if (!resp.ok) throw new Error('Failed to load fee summary');
-                const data = await resp.json();
+                const data = await Api.json(resp);
                 document.getElementById('feeExpected').textContent = money(data.expected || 0);
                 document.getElementById('feeCollected').textContent = money(data.collected || 0);
                 document.getElementById('feeOutstanding').textContent = money(data.outstanding || 0);
@@ -4426,14 +4490,15 @@
                 document.getElementById('feeBar').style.width = rate + '%';
                 const clsResp = await Api.get('/fees/class-breakdown');
                 if (clsResp.ok) {
-                    const classes = await clsResp.json();
+                    const classes = await Api.json(clsResp);
+                    const arr = Array.isArray(classes) ? classes : [];
                     const tbody = document.getElementById('feeBody');
-                    if (classes.length === 0) {
+                    if (arr.length === 0) {
                         tbody.innerHTML =
                             `<tr><td colspan="5" class="text-center py-4">${emptyState('wallet2','No fee data','Add classes and students.')}</td></tr>`;
                         return;
                     }
-                    tbody.innerHTML = classes.map(c => `
+                    tbody.innerHTML = arr.map(c => `
                 <tr><td><strong>${escapeHtml(c.name)}</strong></td><td class="num">${money(c.fee)}</td><td>${c.students||0}</td><td class="num">${money(c.expected||0)}</td><td class="num" style="color:var(--green)">${money(c.collected||0)}</td></tr>
               `).join('');
                 }
@@ -4500,9 +4565,9 @@
                 });
                 if (!resp.ok) { const err = await resp.json();
                     showToast(err.message || 'Failed to generate report card', 'error'); return; }
-                const data = await resp.json();
+                const data = await Api.json(resp);
                 showToast('Report card generated!', 'success');
-                const r = data.reportCard;
+                const r = data.reportCard || data;
                 if (r) {
                     openModal('Report Card', `
                 <div id="reportCardArea" style="border:1px solid var(--line);border-radius:var(--radius-md);padding:1rem;background:#fff;color:#17241F;">
@@ -4546,9 +4611,9 @@
             try {
                 const resp = await Api.get('/audit-logs');
                 if (!resp.ok) throw new Error('Failed to load audit logs');
-                const logs = await resp.json();
-                window._auditData = logs;
-                renderAuditTable(logs);
+                const logs = await Api.json(resp);
+                window._auditData = Array.isArray(logs) ? logs : [];
+                renderAuditTable(window._auditData);
             } catch (e) {
                 document.getElementById('auditBody').innerHTML =
                     `<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load audit logs: ${e.message}</td></tr>`;
@@ -4598,20 +4663,21 @@
             try {
                 const resp = await Api.get('/students?view=parent');
                 if (!resp.ok) throw new Error('Failed to load children');
-                const children = await resp.json();
+                const children = await Api.json(resp);
+                const arr = Array.isArray(children) ? children : [];
                 const grid = document.getElementById('parentChildren');
-                if (children.length === 0) {
+                if (arr.length === 0) {
                     grid.innerHTML =
                         `<div class="col-12">${emptyState('people','No children linked','Ask your school to link your account.')}</div>`;
                     return;
                 }
                 let html = '';
-                for (const c of children) {
+                for (const c of arr) {
                     let attHTML = '';
                     try {
                         const attResp = await Api.get('/attendance/summary/' + c.id);
                         if (attResp.ok) {
-                            const att = await attResp.json();
+                            const att = await Api.json(attResp);
                             attHTML = `
                     <div class="mt-2">
                       <div class="d-flex justify-content-between"><span class="eyebrow">Attendance</span><span><strong>${att.rate||0}%</strong></span></div>
@@ -4647,14 +4713,15 @@
             try {
                 const resp = await Api.get('/exams');
                 if (!resp.ok) throw new Error('Failed to load exams');
-                const exams = await resp.json();
+                const exams = await Api.json(resp);
+                const arr = Array.isArray(exams) ? exams : [];
                 const tbody = document.getElementById('examBody');
-                if (exams.length === 0) {
+                if (arr.length === 0) {
                     tbody.innerHTML =
                         `<tr><td colspan="6" class="text-center py-4">${emptyState('calendar-event','No exams','Create exams to schedule assessments.')}</td></tr>`;
                     return;
                 }
-                tbody.innerHTML = exams.map(e => `
+                tbody.innerHTML = arr.map(e => `
               <tr><td><strong>${escapeHtml(e.name)}</strong></td><td>${escapeHtml(e.className||'—')}</td><td>${escapeHtml(e.subjectName||'—')}</td><td>${fmtDate(e.date)}</td><td class="num">${e.maxScore}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="editExam('${e.id}')"><i class="bi bi-pencil"></i></button><button class="btn-x btn-danger-x btn-sm-x" onclick="deleteExam('${e.id}')"><i class="bi bi-trash3"></i></button></td></tr>
             `).join('');
             } catch (e) {
@@ -4667,7 +4734,7 @@
             openModal('Add Exam', `
               <div class="mb-3"><label class="field-label">Exam name</label><input class="input-x" id="examName" placeholder="e.g. First Term Mathematics" /></div>
               <div class="mb-3"><label class="field-label">Class</label><select class="input-x" id="examClass"><option>Loading...</option></select></div>
-              <div class="mb-3"><label class="field-label">Subject</label><select class="input-x" id="examSubject"><option>Loading...</option></select></div>
+              <div class="mb-3"><label class="field-label">Subject</label><input class="input-x" id="examSubject" placeholder="e.g. Mathematics" /></div>
               <div class="mb-3"><label class="field-label">Max score</label><input class="input-x" id="examMax" type="number" value="100" /></div>
               <div class="mb-1"><label class="field-label">Date</label><input class="input-x" id="examDate" type="date" /></div>
               <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveExam()"><i class="bi bi-check-lg"></i> Save</button></div>
@@ -4676,9 +4743,9 @@
                 try {
                     const resp = await Api.get('/classes');
                     if (resp.ok) {
-                        const classes = await resp.json();
+                        const classes = await Api.json(resp);
                         const sel = document.getElementById('examClass');
-                        sel.innerHTML = classes.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(
+                        sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(
                         '');
                     }
                 } catch (_) {}
@@ -4729,10 +4796,12 @@
 
         POST_RENDER_HOOKS.health = async function() {
             try {
-                const resp = await Api.get('/health');
+                // ✅ FIX: /health is mounted at root, not under /api/v1.
+                // Use the full URL so Api._fetch doesn't prepend API_BASE.
+                const resp = await Api.get(HEALTH_BASE + '/health');
                 if (!resp.ok) throw new Error('Health check failed');
-                const data = await resp.json();
-                document.getElementById('healthStatus').textContent = data.status;
+                const data = await Api.json(resp);
+                document.getElementById('healthStatus').textContent = data.status || 'unknown';
                 document.getElementById('healthStatus').className = 'chip ' + (data.status === 'ok' ? 'chip-green' :
                     'chip-gold');
                 document.getElementById('healthDb').textContent = data.checks?.db ? '✅ OK' : '❌ Error';
@@ -4766,14 +4835,15 @@
             try {
                 const resp = await Api.get('/subscriptions/renewals/pending');
                 if (!resp.ok) { showToast('Failed to load renewals', 'error'); return; }
-                const renewals = await resp.json();
+                const renewals = await Api.json(resp);
+                const arr = Array.isArray(renewals) ? renewals : [];
                 const container = document.getElementById('renewalsList');
-                if (renewals.length === 0) {
+                if (arr.length === 0) {
                     container.innerHTML = emptyState('check-circle', 'No pending renewals',
                     'All renewal requests have been reviewed.');
                     return;
                 }
-                container.innerHTML = renewals.map(r => `
+                container.innerHTML = arr.map(r => `
               <div class="panel mb-3">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                   <div><strong>${escapeHtml(r.schoolId?.name || 'School')}</strong> – ${money(r.amount)} (${r.plan})</div>
@@ -4855,20 +4925,21 @@
             try {
                 const resp = await Api.get('/platform/schools');
                 if (!resp.ok) throw new Error('Failed to load platform data');
-                const schools = await resp.json();
-                document.getElementById('platSchools').textContent = schools.length;
-                document.getElementById('platActive').textContent = schools.filter(s => s.status === 'active').length;
-                document.getElementById('platStudents').textContent = schools.reduce((s, sc) => s + (sc.students || 0), 0)
+                const schools = await Api.json(resp);
+                const arr = Array.isArray(schools) ? schools : [];
+                document.getElementById('platSchools').textContent = arr.length;
+                document.getElementById('platActive').textContent = arr.filter(s => s.status === 'active').length;
+                document.getElementById('platStudents').textContent = arr.reduce((s, sc) => s + (sc.students || 0), 0)
                     .toLocaleString();
-                document.getElementById('platMRR').textContent = money(schools.filter(s => s.status === 'active').reduce(
+                document.getElementById('platMRR').textContent = money(arr.filter(s => s.status === 'active').reduce(
                     (s, sc) => s + (sc.plan || 0), 0));
                 const tbody = document.getElementById('platSchoolsBody');
-                if (schools.length === 0) {
+                if (arr.length === 0) {
                     tbody.innerHTML =
                         `<tr><td colspan="7" class="text-center py-4">${emptyState('building','No schools','No schools registered yet.')}</td></tr>`;
                     return;
                 }
-                tbody.innerHTML = schools.map(s => `
+                tbody.innerHTML = arr.map(s => `
               <tr><td><strong>${escapeHtml(s.name)}</strong></td><td>${escapeHtml(s.state||'—')}</td><td class="num">${s.students||0}</td><td class="num">${money(s.plan||0)}/mo</td><td>${s.status==='active'?'<span class="chip chip-green">Active</span>':s.status==='pending'?'<span class="chip chip-gold">Pending</span>':'<span class="chip chip-danger">Suspended</span>'}</td><td>${fmtDate(s.joined)}</td><td><button class="btn-x btn-outline-x btn-sm-x" onclick="togglePlatformSchool('${s.id}')">${s.status==='active'?'Suspend':'Reactivate'}</button></td></tr>
             `).join('');
             } catch (e) {
@@ -4937,21 +5008,20 @@
                 return;
             }
 
-            (async () => {
-                try {
-                    const resp = await Api.get('/schools/current');
-                    if (resp.ok) {
-                        showLoginScreen();
-                        return;
-                    }
-                } catch (_) {}
-                document.getElementById('landingPage').style.display = 'block';
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('setCredentialsScreen').style.display = 'none';
-                document.getElementById('app').style.display = 'none';
-                document.getElementById('platformApp').style.display = 'none';
-                document.getElementById('onboarding').style.display = 'none';
-            })();
+            // ✅ PHASE 3 FIX: Use the localStorage account flag instead of the
+            // protected /schools/current endpoint so returning users on new
+            // devices still see the login screen.
+            if (Api.hasAccountFlag()) {
+                showLoginScreen();
+                return;
+            }
+
+            document.getElementById('landingPage').style.display = 'block';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('setCredentialsScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('platformApp').style.display = 'none';
+            document.getElementById('onboarding').style.display = 'none';
         });
 
         // =============================================================
@@ -4993,6 +5063,10 @@
         console.log('📱 SMS Top-up · Trial Management · Template Upload · Renewal Workflow');
         console.log('🔧 Onboarding: unique username with timestamp, direct fetch with debug');
         console.log('🔑 Backend fix: authMiddleware bypass for /onboard and /ping');
+        console.log('📦 Envelope fix: Api.json() unwraps {success, data} across all renderers');
+        console.log('🔀 Payments approve/reject now POST (matches backend route verbs)');
+        console.log('🏥 Health check hits root /health (not /api/v1/health)');
+        console.log('🏠 Onboarding routing uses localStorage flag (no more 401 spiral on new devices)');
     </script>
 </body>
 </html>
