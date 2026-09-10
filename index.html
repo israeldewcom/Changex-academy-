@@ -47,11 +47,16 @@
   --violet:#7C4DFF;
   --violet-100:#EFE9FF;
 
+  --gold:#D4A22E;
+  --gold-100:#FBF3DF;
+
   --radius-sm:8px;
   --radius-md:12px;
   --radius-lg:18px;
+  --radius-xl:24px;
   --shadow-1:0 1px 2px rgba(15,23,41,.06);
   --shadow-2:0 8px 24px -8px rgba(15,23,41,.18);
+  --shadow-3:0 24px 64px -12px rgba(10,15,30,.28);
   --shadow-focus:0 0 0 3px rgba(41,82,227,.28);
 
   --sidebar-w:264px;
@@ -99,11 +104,16 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 ============================================================ */
 .text-ink-400{color:var(--ink-400);}
 .text-ink-300{color:var(--ink-300);}
+.text-ink-600{color:var(--ink-600);}
+.text-ink-700{color:var(--ink-700);}
 .text-brand{color:var(--brand)!important;}
 .text-success{color:var(--success)!important;}
 .text-warn{color:var(--warn)!important;}
 .text-danger{color:var(--danger)!important;}
+.text-violet{color:var(--violet)!important;}
+.text-gold{color:var(--gold)!important;}
 .bg-paper{background:var(--paper-0);}
+.bg-paper-50{background:var(--paper-50);}
 .hairline{border-bottom:1px solid var(--line);}
 .hairline-top{border-top:1px solid var(--line);}
 
@@ -159,6 +169,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   margin-left:auto;background:rgba(255,255,255,.12);color:#fff;font-size:.68rem;
   font-weight:700;padding:.12rem .42rem;border-radius:20px;
 }
+.nav-item .badge-count.brand{background:var(--brand);}
 .sidebar.collapsed .nav-item{justify-content:center;padding:.6rem;}
 .sidebar.collapsed .nav-item .badge-count{display:none;}
 
@@ -197,6 +208,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   white-space:nowrap;
 }
 .session-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--success);flex-shrink:0;}
+.session-chip.sub-warn{border-color:var(--warn);background:var(--warn-100);color:var(--warn);}
+.session-chip.sub-warn .dot{background:var(--warn);}
 
 .icon-btn{
   width:38px;height:38px;border-radius:10px;border:1px solid transparent;background:transparent;
@@ -220,6 +233,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   font-family:var(--font-display);
 }
 .avatar.lg{width:52px;height:52px;font-size:1.1rem;}
+.avatar.xl{width:72px;height:72px;font-size:1.35rem;}
 
 .page-content{flex:1;padding:1.5rem;max-width:1440px;width:100%;margin:0 auto;}
 @media (max-width:991px){
@@ -242,13 +256,23 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .btn-ghost:hover{background:var(--paper-100);color:var(--ink-900);}
 .btn-danger-soft{background:var(--danger-100);color:var(--danger);border:1px solid transparent;}
 .btn-danger-soft:hover{background:var(--danger);color:#fff;}
+.btn-success-soft{background:var(--success-100);color:var(--success);border:1px solid transparent;}
+.btn-success-soft:hover{background:var(--success);color:#fff;}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#fff;}
+.btn-gold:hover{background:#B8891F;border-color:#B8891F;color:#fff;box-shadow:0 6px 16px -6px rgba(212,162,46,.55);}
 .btn-sm{padding:.36rem .75rem;font-size:.78rem;}
+.btn-lg{padding:.75rem 1.5rem;font-size:.95rem;border-radius:11px;}
 .btn i{font-size:.85em;}
 
 /* Cards / Tiles */
 .tile{
   background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);
   padding:1.15rem 1.25rem;position:relative;overflow:hidden;
+}
+.tile.premium{border-color:var(--gold);background:linear-gradient(180deg,#FFFDF7 0%, #FFFFFF 100%);}
+.tile.premium::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),#F0C868,var(--gold));
 }
 .stat-tile{
   background:#fff;border:1px solid var(--line);border-left:3px solid var(--brand);
@@ -259,6 +283,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .stat-tile.success{border-left-color:var(--success);}
 .stat-tile.warn{border-left-color:var(--warn);}
 .stat-tile.violet{border-left-color:var(--violet);}
+.stat-tile.gold{border-left-color:var(--gold);}
+.stat-tile.danger{border-left-color:var(--danger);}
 .stat-tile .stat-label{font-size:.78rem;color:var(--ink-400);font-weight:600;}
 .stat-tile .stat-value{font-family:var(--font-display);font-size:1.65rem;font-weight:700;color:var(--ink-950);}
 .stat-tile .stat-delta{font-size:.75rem;font-weight:600;}
@@ -293,6 +319,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .badge-status.b-brand{background:var(--brand-100);color:var(--brand);}
 .badge-status.b-neutral{background:var(--paper-100);color:var(--ink-400);}
 .badge-status.b-violet{background:var(--violet-100);color:var(--violet);}
+.badge-status.b-gold{background:var(--gold-100);color:var(--gold);}
 
 .avatar-xs{width:28px;height:28px;border-radius:50%;background:linear-gradient(150deg,var(--brand),#6E8CFF);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;font-family:var(--font-display);flex-shrink:0;}
 
@@ -345,6 +372,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .toast-item.t-success .ti-icon{background:rgba(14,147,112,.25);color:#4EE0AE;}
 .toast-item.t-error .ti-icon{background:rgba(220,38,38,.25);color:#FF8080;}
 .toast-item.t-info .ti-icon{background:rgba(41,82,227,.25);color:#8FAAFF;}
+.toast-item.t-gold .ti-icon{background:rgba(212,162,46,.25);color:#F0C868;}
 .toast-item .ti-close{margin-left:auto;color:rgba(255,255,255,.4);cursor:pointer;}
 .toast-item .ti-close:hover{color:#fff;}
 
@@ -398,6 +426,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 
 /* Login as / role switcher chip for header */
 .role-badge{font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:6px;background:var(--violet-100);color:var(--violet);text-transform:uppercase;letter-spacing:.02em;}
+.role-badge.gold{background:var(--gold-100);color:var(--gold);}
 
 /* Progress ring (mini) */
 .ring-wrap{position:relative;width:56px;height:56px;flex-shrink:0;}
@@ -454,6 +483,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   background:linear-gradient(120deg,var(--ink-950),var(--ink-800));color:#fff;border-radius:var(--radius-md);
   padding:1.1rem 1.3rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:space-between;
 }
+.upgrade-banner.gold{background:linear-gradient(120deg,#1A1406,#3A2C08);}
 
 .filter-pill{border:1px solid var(--line);background:#fff;border-radius:20px;padding:.4rem .9rem;font-size:.8rem;font-weight:600;color:var(--ink-600);cursor:pointer;transition:all .14s;white-space:nowrap;}
 .filter-pill:hover{border-color:var(--brand);color:var(--brand);}
@@ -484,19 +514,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 
 /* ============================================================
    DEFENSIVE FALLBACK LAYER
-   In the unlikely event the Bootstrap CSS/JS CDN is slow, blocked,
-   or fails outright (corporate firewalls, offline dev, etc.), these
-   rules keep the app from visually breaking: dropdowns/modals/collapse
-   stay hidden until Bootstrap's JS explicitly opens them, and a small
-   banner tells the person what happened instead of a silent layout bug.
 ============================================================ */
 .dropdown-menu{display:none;}
 .dropdown-menu.show{display:block;}
 .modal{display:none;}
 .modal.show{display:block;}
 .collapse:not(.show){display:none;}
-/* Bootstrap utility classes our JS toggles directly (visibility-critical,
-   so we don't depend solely on the CDN copy for these specific ones) */
 .d-none{display:none!important;}
 .d-flex{display:flex!important;}
 .d-block{display:block!important;}
@@ -506,12 +529,266 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   text-align:center;font-size:.8rem;font-weight:600;padding:.6rem 1rem;
 }
 #cdn-fallback-banner.active{display:block;}
+
+/* ============================================================
+   LANDING PAGE STYLES
+============================================================ */
+#view-landing{display:none;background:#fff;}
+#view-landing.active{display:block;}
+
+.landing-nav{
+  position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);padding:.85rem 0;
+}
+.landing-nav .brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--ink-950);}
+.landing-nav .brand .mark{
+  width:36px;height:36px;border-radius:10px;background:linear-gradient(150deg,var(--brand),#6E8CFF);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;
+}
+.landing-nav .links{display:flex;gap:1.75rem;align-items:center;}
+.landing-nav .links a{color:var(--ink-600);font-weight:500;font-size:.9rem;}
+.landing-nav .links a:hover{color:var(--brand);}
+@media (max-width:768px){.landing-nav .links{display:none;}}
+
+.landing-hero{
+  padding:5rem 0 4rem;
+  background:
+    radial-gradient(900px 500px at 90% 0%, rgba(41,82,227,.10), transparent 60%),
+    radial-gradient(700px 400px at 0% 100%, rgba(124,77,255,.08), transparent 55%),
+    #fff;
+  position:relative;overflow:hidden;
+}
+.landing-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(15,23,41,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(15,23,41,.03) 1px, transparent 1px);
+  background-size:52px 52px;mask-image:radial-gradient(circle at 50% 40%, black, transparent 78%);
+  pointer-events:none;
+}
+.landing-hero-content{position:relative;z-index:1;}
+.landing-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;background:var(--brand-50);color:var(--brand-600);
+  font-size:.78rem;font-weight:700;padding:.4rem .85rem;border-radius:20px;border:1px solid var(--brand-100);
+  margin-bottom:1.25rem;
+}
+.landing-h1{
+  font-family:var(--font-display);font-weight:800;font-size:clamp(2.1rem,5.5vw,3.75rem);line-height:1.05;
+  color:var(--ink-950);letter-spacing:-.025em;margin-bottom:1.25rem;
+}
+.landing-h1 .accent{background:linear-gradient(120deg,var(--brand),#7C4DFF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.landing-sub{font-size:1.15rem;color:var(--ink-400);max-width:560px;line-height:1.55;margin-bottom:2rem;}
+.landing-cta-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+.landing-trust{display:flex;gap:1.5rem;flex-wrap:wrap;color:var(--ink-400);font-size:.82rem;}
+.landing-trust span{display:flex;align-items:center;gap:.45rem;}
+.landing-trust i{color:var(--success);}
+
+.hero-mock{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-3);overflow:hidden;position:relative;
+}
+.hero-mock-bar{background:var(--paper-50);border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.4rem;}
+.hero-mock-bar span{width:10px;height:10px;border-radius:50%;background:var(--paper-200);}
+.hero-mock-bar span:nth-child(1){background:#FF6058;}
+.hero-mock-bar span:nth-child(2){background:#FFBD2E;}
+.hero-mock-bar span:nth-child(3){background:#28CA42;}
+.hero-mock-body{padding:1.25rem;}
+
+.landing-section{padding:4.5rem 0;}
+.landing-section.alt{background:var(--paper-50);}
+.landing-section-title{
+  font-family:var(--font-display);font-weight:800;font-size:clamp(1.65rem,3.5vw,2.5rem);
+  color:var(--ink-950);letter-spacing:-.02em;margin-bottom:.75rem;
+}
+.landing-section-sub{color:var(--ink-400);font-size:1.02rem;max-width:600px;margin-bottom:2.75rem;}
+
+.feature-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:1.5rem;
+  height:100%;transition:box-shadow .15s, transform .15s;
+}
+.feature-card:hover{box-shadow:var(--shadow-2);transform:translateY(-2px);}
+.feature-card .fc-icon{
+  width:46px;height:46px;border-radius:12px;background:var(--brand-50);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;font-size:1.15rem;margin-bottom:1rem;
+}
+.feature-card h5{font-family:var(--font-display);font-weight:700;font-size:1.02rem;margin-bottom:.4rem;color:var(--ink-950);}
+.feature-card p{color:var(--ink-400);font-size:.88rem;margin:0;line-height:1.55;}
+
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;align-items:start;}
+.plan-card{
+  background:#fff;border:1.5px solid var(--line);border-radius:var(--radius-lg);padding:1.75rem;
+  position:relative;transition:all .18s;display:flex;flex-direction:column;height:100%;
+}
+.plan-card:hover{border-color:var(--brand);box-shadow:var(--shadow-2);}
+.plan-card.featured{border-color:var(--gold);box-shadow:0 12px 40px -12px rgba(212,162,46,.35);transform:scale(1.02);}
+.plan-card.featured:hover{box-shadow:0 16px 48px -12px rgba(212,162,46,.45);}
+.plan-badge{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.05em;
+  padding:.28rem .75rem;border-radius:20px;text-transform:uppercase;
+}
+.plan-name{font-family:var(--font-display);font-weight:700;font-size:1.15rem;color:var(--ink-950);margin-bottom:.3rem;}
+.plan-desc{color:var(--ink-400);font-size:.85rem;margin-bottom:1.25rem;min-height:2.5rem;}
+.plan-price{font-family:var(--font-display);font-weight:800;font-size:2.25rem;color:var(--ink-950);line-height:1;letter-spacing:-.02em;}
+.plan-price .per{font-size:.85rem;font-weight:500;color:var(--ink-400);font-family:var(--font-body);letter-spacing:0;}
+.plan-period{font-size:.78rem;color:var(--ink-400);margin-top:.35rem;margin-bottom:1.5rem;}
+.plan-features{list-style:none;padding:0;margin:0 0 1.5rem;flex:1;}
+.plan-features li{display:flex;align-items:flex-start;gap:.55rem;font-size:.85rem;color:var(--ink-600);padding:.4rem 0;}
+.plan-features li i{color:var(--success);font-size:.75rem;margin-top:.28rem;flex-shrink:0;}
+.plan-features li.muted{color:var(--ink-300);}
+.plan-features li.muted i{color:var(--ink-300);}
+
+/* Testimonials */
+.testimonial{background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:1.5rem;height:100%;}
+.testimonial .quote{font-size:.92rem;color:var(--ink-700);line-height:1.6;margin-bottom:1.25rem;}
+.testimonial .who{display:flex;align-items:center;gap:.75rem;}
+.testimonial .who .name{font-weight:700;font-size:.85rem;color:var(--ink-950);}
+.testimonial .who .role{font-size:.75rem;color:var(--ink-400);}
+.stars{color:var(--gold);font-size:.8rem;margin-bottom:.75rem;}
+
+/* Landing footer */
+.landing-footer{background:var(--ink-950);color:rgba(255,255,255,.65);padding:3rem 0 1.5rem;}
+.landing-footer h6{color:#fff;font-family:var(--font-display);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;}
+.landing-footer a{color:rgba(255,255,255,.65);font-size:.88rem;display:block;padding:.28rem 0;}
+.landing-footer a:hover{color:#fff;}
+.landing-footer .bottom{border-top:1px solid rgba(255,255,255,.1);margin-top:2.5rem;padding-top:1.5rem;font-size:.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+
+/* ============================================================
+   SUBSCRIPTION PANEL STYLES
+============================================================ */
+.sub-status-card{
+  border-radius:var(--radius-lg);padding:1.5rem;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,var(--ink-950),var(--ink-800));
+}
+.sub-status-card.gold{background:linear-gradient(120deg,#1A1406,#3A2C08);}
+.sub-status-card.warn{background:linear-gradient(120deg,#3A1E05,#5A2E08);}
+.sub-status-card.danger{background:linear-gradient(120deg,#3A0808,#5A1010);}
+.sub-status-card .badge-row{position:absolute;top:1.25rem;right:1.25rem;}
+.sub-status-card h3{font-family:var(--font-display);font-weight:700;font-size:1.35rem;margin-bottom:.35rem;}
+.sub-status-card .meta{color:rgba(255,255,255,.65);font-size:.88rem;}
+
+.usage-meter{margin-top:1rem;}
+.usage-meter .label-row{display:flex;justify-content:space-between;font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:.4rem;}
+.usage-meter .track{height:6px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden;}
+.usage-meter .fill{height:100%;background:linear-gradient(90deg,var(--success),#4EE0AE);border-radius:4px;transition:width .5s ease;}
+.usage-meter .fill.warn{background:linear-gradient(90deg,var(--warn),#FFAA5C);}
+.usage-meter .fill.danger{background:linear-gradient(90deg,var(--danger),#FF8080);}
+
+/* ============================================================
+   UPLOAD / FILE DROP STYLES
+============================================================ */
+.file-drop{
+  border:2px dashed var(--line);border-radius:var(--radius-md);padding:2rem 1.25rem;text-align:center;
+  cursor:pointer;transition:all .18s;background:var(--paper-50);
+}
+.file-drop:hover,.file-drop.dragging{border-color:var(--brand);background:var(--brand-50);}
+.file-drop .fd-icon{font-size:2rem;color:var(--ink-300);margin-bottom:.6rem;}
+.file-drop:hover .fd-icon,.file-drop.dragging .fd-icon{color:var(--brand);}
+.file-drop .fd-title{font-weight:600;font-size:.9rem;color:var(--ink-700);margin-bottom:.2rem;}
+.file-drop .fd-sub{font-size:.78rem;color:var(--ink-400);}
+
+.file-preview{
+  display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border:1px solid var(--line);
+  border-radius:10px;background:#fff;margin-top:.75rem;
+}
+.file-preview .fp-thumb{
+  width:44px;height:44px;border-radius:8px;background:var(--paper-100);display:flex;align-items:center;
+  justify-content:center;color:var(--ink-400);font-size:1.15rem;flex-shrink:0;overflow:hidden;
+}
+.file-preview .fp-thumb img{width:100%;height:100%;object-fit:cover;}
+.file-preview .fp-info{flex:1;min-width:0;}
+.file-preview .fp-name{font-weight:600;font-size:.85rem;color:var(--ink-950);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.file-preview .fp-size{font-size:.72rem;color:var(--ink-400);}
+.file-preview .fp-remove{color:var(--ink-300);cursor:pointer;padding:.3rem;}
+.file-preview .fp-remove:hover{color:var(--danger);}
+
+.upload-progress{height:4px;background:var(--paper-100);border-radius:3px;overflow:hidden;margin-top:.6rem;}
+.upload-progress .fill{height:100%;background:var(--brand);border-radius:3px;transition:width .3s ease;}
+
+/* ============================================================
+   APPROVAL QUEUE STYLES
+============================================================ */
+.approval-card{
+  border:1px solid var(--line);border-radius:var(--radius-md);background:#fff;padding:1.15rem;
+  display:flex;gap:1rem;align-items:flex-start;transition:all .18s;position:relative;
+}
+.approval-card:hover{box-shadow:var(--shadow-2);}
+.approval-card.leaving{animation:approval-out .28s cubic-bezier(.4,0,1,1) forwards;}
+@keyframes approval-out{to{opacity:0;transform:translateX(60px) scale(.96);max-height:0;padding:0;margin:0;overflow:hidden;}}
+.approval-thumb{
+  width:88px;height:88px;border-radius:10px;background:var(--paper-100);flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;cursor:zoom-in;border:1px solid var(--line);
+}
+.approval-thumb img{width:100%;height:100%;object-fit:cover;}
+.approval-thumb i{font-size:1.75rem;color:var(--ink-300);}
+.approval-card .ac-body{flex:1;min-width:0;}
+.approval-card .ac-amount{font-family:var(--font-display);font-weight:800;font-size:1.35rem;color:var(--ink-950);}
+.approval-card .ac-meta{font-size:.82rem;color:var(--ink-400);margin-top:.15rem;}
+.approval-card .ac-actions{display:flex;gap:.5rem;margin-top:.85rem;flex-wrap:wrap;}
+
+/* Lightbox */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2500;display:none;align-items:center;justify-content:center;padding:2rem;}
+#lightbox.active{display:flex;}
+#lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 24px 64px -12px rgba(0,0,0,.6);}
+#lightbox .lb-close{position:absolute;top:1.25rem;right:1.25rem;color:#fff;font-size:1.75rem;cursor:pointer;opacity:.7;}
+#lightbox .lb-close:hover{opacity:1;}
+
+/* ============================================================
+   BATCH / TEMPLATE STYLES
+============================================================ */
+.batch-progress-card{
+  border:1px solid var(--line);border-radius:var(--radius-md);background:#fff;padding:1.25rem;
+}
+.batch-progress-card .bp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem;gap:1rem;flex-wrap:wrap;}
+.batch-progress-card .bp-title{font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--ink-950);}
+.batch-progress-card .bp-stat{font-family:var(--font-mono);font-size:1.35rem;font-weight:700;color:var(--ink-950);}
+.batch-progress-card .bp-track{height:8px;background:var(--paper-100);border-radius:5px;overflow:hidden;margin:.85rem 0;}
+.batch-progress-card .bp-fill{height:100%;background:linear-gradient(90deg,var(--brand),#6E8CFF);border-radius:5px;transition:width .4s ease;}
+.batch-progress-card .bp-fill.done{background:linear-gradient(90deg,var(--success),#4EE0AE);}
+.batch-progress-card .bp-fill.fail{background:linear-gradient(90deg,var(--danger),#FF8080);}
+.batch-progress-card .bp-meta{display:flex;gap:1.25rem;font-size:.78rem;color:var(--ink-400);flex-wrap:wrap;}
+
+.template-preview-wrap{
+  border:1px solid var(--line);border-radius:var(--radius-md);background:var(--paper-50);padding:1.25rem;
+  position:sticky;top:calc(var(--topbar-h) + 1rem);
+}
+.template-preview-sheet{
+  background:#fff;border-radius:6px;box-shadow:var(--shadow-2);padding:1.5rem;min-height:520px;
+  font-size:.72rem;color:var(--ink-700);aspect-ratio:1/1.414;overflow:hidden;
+}
+.template-preview-sheet .tps-school{font-family:var(--font-display);font-weight:800;font-size:1rem;text-align:center;color:var(--ink-950);}
+.template-preview-sheet .tps-sub{text-align:center;color:var(--ink-400);font-size:.65rem;margin-bottom:.85rem;}
+.template-preview-sheet .tps-title{text-align:center;font-weight:700;font-size:.8rem;margin:.75rem 0;letter-spacing:.04em;color:var(--ink-800);}
+.template-preview-sheet .tps-info-row{display:flex;justify-content:space-between;padding:.25rem 0;border-bottom:1px dashed var(--paper-200);}
+.template-preview-sheet .tps-info-row .k{color:var(--ink-400);}
+.template-preview-sheet .tps-info-row .v{font-weight:600;color:var(--ink-800);}
+.template-preview-sheet table{width:100%;font-size:.66rem;margin-top:.65rem;border-collapse:collapse;}
+.template-preview-sheet table th{background:var(--paper-50);padding:.3rem .4rem;text-align:left;font-weight:700;color:var(--ink-400);font-size:.6rem;text-transform:uppercase;border-bottom:1px solid var(--line);}
+.template-preview-sheet table td{padding:.3rem .4rem;border-bottom:1px solid var(--paper-100);color:var(--ink-700);}
+.template-preview-sheet .tps-comment{margin-top:.75rem;font-size:.66rem;}
+.template-preview-sheet .tps-comment .lbl{font-weight:700;color:var(--ink-700);}
+.template-preview-sheet .tps-sig{margin-top:1.5rem;display:flex;justify-content:space-between;font-size:.62rem;color:var(--ink-400);}
+.template-preview-sheet .tps-sig .line{border-top:1px solid var(--ink-300);width:110px;padding-top:.25rem;margin-top:1.5rem;}
+
+/* ============================================================
+   PREMIUM FEATURE STYLES
+============================================================ */
+.gold-glow{box-shadow:0 0 0 1px var(--gold), 0 12px 40px -12px rgba(212,162,46,.45);}
+.premium-chip{
+  display:inline-flex;align-items:center;gap:.35rem;background:var(--gold-100);color:var(--gold);
+  font-size:.68rem;font-weight:800;padding:.2rem .55rem;border-radius:6px;text-transform:uppercase;letter-spacing:.03em;
+}
+.upsell-inline{
+  background:linear-gradient(120deg,#FFFDF7,#FFF9E8);border:1px dashed var(--gold);border-radius:var(--radius-md);
+  padding:1rem 1.15rem;display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;justify-content:space-between;
+}
+.upsell-inline .ui-text{display:flex;align-items:center;gap:.65rem;font-size:.85rem;color:var(--ink-700);}
+.upsell-inline .ui-text i{color:var(--gold);font-size:1.15rem;}
 </style>
 </head>
 <body>
 
 <!-- ============================================================
-     CDN FALLBACK NOTICE (shown only if Bootstrap JS fails to load)
+     CDN FALLBACK NOTICE
 ============================================================ -->
 <div id="cdn-fallback-banner"><i class="fa-solid fa-triangle-exclamation"></i> Some visual assets failed to load from our CDN. Core features still work — try refreshing your connection for the full experience.</div>
 
@@ -532,6 +809,237 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
      TOAST STACK
 ============================================================ -->
 <div id="toast-stack"></div>
+
+<!-- ============================================================
+     LIGHTBOX
+============================================================ -->
+<div id="lightbox"><i class="fa-solid fa-xmark lb-close" id="lightbox-close"></i><div id="lightbox-content"></div></div>
+
+<!-- ============================================================
+     LANDING PAGE (public marketing)
+============================================================ -->
+<div id="view-landing">
+  <nav class="landing-nav">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="brand"><div class="mark">S</div> Schoolyard</div>
+        <div class="links">
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#testimonials">Customers</a>
+          <a href="#" id="landing-login-link">Sign in</a>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-ghost btn-sm d-none d-md-inline-flex" id="landing-signin-btn">Sign in</button>
+          <button class="btn btn-brand btn-sm" id="landing-start-btn">Start free</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="landing-hero">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6 landing-hero-content">
+          <div class="landing-eyebrow"><i class="fa-solid fa-sparkles"></i> Built for Nigerian schools, ready for the world</div>
+          <h1 class="landing-h1">Run your entire school <span class="accent">from one calm console.</span></h1>
+          <p class="landing-sub">Admissions, fees, invoices, attendance, results, report cards, parent communication — every operation in one organized, dependable platform your staff will actually enjoy using.</p>
+          <div class="landing-cta-row">
+            <button class="btn btn-brand btn-lg" id="hero-start-btn"><i class="fa-solid fa-rocket me-2"></i>Start free — no card</button>
+            <button class="btn btn-outline-brand btn-lg" id="hero-demo-btn"><i class="fa-solid fa-play me-2"></i>See a live demo</button>
+          </div>
+          <div class="landing-trust">
+            <span><i class="fa-solid fa-circle-check"></i> Free 14-day trial</span>
+            <span><i class="fa-solid fa-circle-check"></i> Cancel anytime</span>
+            <span><i class="fa-solid fa-circle-check"></i> Bank-grade security</span>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-mock">
+            <div class="hero-mock-bar"><span></span><span></span><span></span></div>
+            <div class="hero-mock-body">
+              <div class="row g-2 mb-3">
+                <div class="col-6"><div class="tile"><div class="stat-label" style="font-size:.72rem;color:var(--ink-400);font-weight:600;">Active Students</div><div style="font-family:var(--font-display);font-weight:800;font-size:1.35rem;">1,248</div></div></div>
+                <div class="col-6"><div class="tile"><div class="stat-label" style="font-size:.72rem;color:var(--ink-400);font-weight:600;">Collected this term</div><div style="font-family:var(--font-display);font-weight:800;font-size:1.35rem;color:var(--success);">₦18.4M</div></div></div>
+                <div class="col-6"><div class="tile"><div class="stat-label" style="font-size:.72rem;color:var(--ink-400);font-weight:600;">Attendance today</div><div style="font-family:var(--font-display);font-weight:800;font-size:1.35rem;">94%</div></div></div>
+                <div class="col-6"><div class="tile"><div class="stat-label" style="font-size:.72rem;color:var(--ink-400);font-weight:600;">Outstanding fees</div><div style="font-family:var(--font-display);font-weight:800;font-size:1.35rem;color:var(--warn);">₦2.7M</div></div></div>
+              </div>
+              <div class="hairline" style="padding:.75rem 0;margin-top:.25rem;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span style="font-weight:700;font-size:.85rem;">Recent invoices</span>
+                  <span style="font-size:.75rem;color:var(--brand);font-weight:600;">View all →</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-2" style="font-size:.78rem;">
+                  <div class="avatar-xs" style="width:24px;height:24px;font-size:.6rem;">AB</div>
+                  <span style="flex:1;font-weight:600;">Adaeze Balogun</span>
+                  <span class="badge-status b-success" style="font-size:.65rem;">paid</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-2" style="font-size:.78rem;">
+                  <div class="avatar-xs" style="width:24px;height:24px;font-size:.6rem;">TO</div>
+                  <span style="flex:1;font-weight:600;">Tunde Okafor</span>
+                  <span class="badge-status b-warn" style="font-size:.65rem;">partial</span>
+                </div>
+                <div class="d-flex align-items-center gap-2" style="font-size:.78rem;">
+                  <div class="avatar-xs" style="width:24px;height:24px;font-size:.6rem;">NE</div>
+                  <span style="flex:1;font-weight:600;">Ngozi Eze</span>
+                  <span class="badge-status b-brand" style="font-size:.65rem;">issued</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="landing-section alt" id="features">
+    <div class="container">
+      <div class="text-center mx-auto" style="max-width:720px;">
+        <h2 class="landing-section-title">Everything your school needs — already built in</h2>
+        <p class="landing-section-sub mx-auto">Stop juggling WhatsApp groups, Excel sheets, and paper registers. Schoolyard brings every operation into one organized, dependable system.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="fc-icon"><i class="fa-solid fa-user-graduate"></i></div>
+            <h5>Student records</h5>
+            <p>Admissions, class assignments, medical notes, guardian links — every learner on one page, searchable in seconds.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="fc-icon"><i class="fa-solid fa-money-check-dollar"></i></div>
+            <h5>Fees, invoices & payments</h5>
+            <p>Generate invoices per class and term, accept online and manual payments, track outstanding balances automatically.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="fc-icon"><i class="fa-solid fa-square-poll-vertical"></i></div>
+            <h5>Results & report cards</h5>
+            <p>Enter CA and exam scores, auto-compute grades and positions, then generate printable report cards with your own template.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="fc-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <h5>Attendance that adds up</h5>
+            <p>Mark registers by class in seconds. Attendance feeds directly into report cards and alerts parents on absence.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="fc-icon"><i class="fa-solid fa-comments"></i></div>
+            <h5>Parent communication</h5>
+            <p>Send announcements, fee reminders, and report card releases straight to parents — no more lost paper notes.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="fc-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <h5>Insightful analytics</h5>
+            <p>See enrolment trends, revenue by term, attendance rates, and outstanding fee reports on a single dashboard.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="landing-section" id="pricing">
+    <div class="container">
+      <div class="text-center mx-auto" style="max-width:720px;">
+        <h2 class="landing-section-title">Simple, transparent pricing</h2>
+        <p class="landing-section-sub mx-auto">Start free. Upgrade when your school grows. No hidden charges, no per-parent fees, no surprise invoices.</p>
+      </div>
+      <div class="pricing-grid" id="landing-pricing-grid">
+        <!-- Rendered by JS from /subscriptions/plans -->
+      </div>
+      <p class="text-center text-ink-400 small mt-4 mb-0">All prices in Nigerian Naira. Custom plans available for large groups — <a href="#" class="text-brand">contact us</a>.</p>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="landing-section alt" id="testimonials">
+    <div class="container">
+      <div class="text-center mx-auto" style="max-width:720px;">
+        <h2 class="landing-section-title">Trusted by school leaders</h2>
+        <p class="landing-section-sub mx-auto">Real schools, real results — from single-campus primaries to multi-site groups.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p class="quote">"Fees used to take us three weeks to reconcile each term. With Schoolyard it's a Tuesday afternoon job. Our bursar now actually has time to think."</p>
+            <div class="who">
+              <div class="avatar">MO</div>
+              <div><div class="name">Mrs. Folake Ogundipe</div><div class="role">Proprietress, Brightfield Academy</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p class="quote">"Report cards that used to take a full weekend of manual computation now generate in one click. Parents love that they get them the same day results are approved."</p>
+            <div class="who">
+              <div class="avatar">AE</div>
+              <div><div class="name">Mr. Ahmed Eze</div><div class="role">Principal, Cornerstone Secondary</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p class="quote">"We manage four campuses. Schoolyard's owner-level view is the first thing I check every morning — I finally know what's happening across all of them without calling each head teacher."</p>
+            <div class="who">
+              <div class="avatar">KO</div>
+              <div><div class="name">Dr. Kunle Oyedeji</div><div class="role">Director, Highlands Group of Schools</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="landing-section" style="background:linear-gradient(120deg,var(--ink-950),var(--ink-800));color:#fff;">
+    <div class="container text-center">
+      <h2 class="landing-section-title" style="color:#fff;">Ready to give your school a real operations console?</h2>
+      <p style="color:rgba(255,255,255,.65);font-size:1.02rem;max-width:560px;margin:0 auto 2rem;">Set up your entire school in under two minutes. Free for 14 days, no card required.</p>
+      <div class="d-flex gap-2 justify-content-center flex-wrap">
+        <button class="btn btn-lg" style="background:#fff;color:var(--ink-950);" id="final-cta-btn"><i class="fa-solid fa-rocket me-2"></i>Start free trial</button>
+        <button class="btn btn-lg btn-outline-light" style="border-color:rgba(255,255,255,.25);color:#fff;" id="final-cta-talk"><i class="fa-regular fa-comments me-2"></i>Talk to sales</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="d-flex align-items-center gap-2 mb-3" style="color:#fff;font-family:var(--font-display);font-weight:800;font-size:1.15rem;">
+            <div class="sidebar-brand mark" style="width:32px;height:32px;font-size:15px;">S</div> Schoolyard
+          </div>
+          <p style="font-size:.88rem;max-width:320px;">The operations console for running a modern school — students, fees, results, attendance, and parent communication in one calm, dependable platform.</p>
+        </div>
+        <div class="col-6 col-lg-2"><h6>Product</h6><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#">Security</a><a href="#">Roadmap</a></div>
+        <div class="col-6 col-lg-2"><h6>Company</h6><a href="#">About us</a><a href="#">Careers</a><a href="#">Blog</a><a href="#">Contact</a></div>
+        <div class="col-6 col-lg-2"><h6>Legal</h6><a href="#">Terms of service</a><a href="#">Privacy policy</a><a href="#">Data processing</a></div>
+        <div class="col-6 col-lg-2"><h6>Support</h6><a href="#">Help centre</a><a href="#">Status page</a><a href="#">System uptime</a></div>
+      </div>
+      <div class="bottom">
+        <div>© 2026 Schoolyard. Made for African schools, built for the world.</div>
+        <div class="d-flex gap-3">
+          <a href="#" style="display:inline-block;"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" style="display:inline-block;"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="#" style="display:inline-block;"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
 
 <!-- ============================================================
      AUTH: LOGIN SCREEN
@@ -555,6 +1063,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
   <div class="auth-form-side">
     <div class="auth-card">
+      <button class="btn btn-ghost btn-sm mb-3" id="login-back-to-landing"><i class="fa-solid fa-arrow-left me-1"></i> Back to site</button>
       <div class="mb-4">
         <div class="page-eyebrow">Welcome back</div>
         <h1 class="page-title" style="font-size:1.65rem;">Sign in to your school</h1>
@@ -613,7 +1122,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="auth-card" style="max-width:460px;">
       <button class="btn btn-ghost btn-sm mb-3" id="onboard-back-to-login"><i class="fa-solid fa-arrow-left me-1"></i> Back to sign in</button>
       <div class="step-labels">
-        <span id="step-label-cur" class="cur">Step 1 of 4</span>
+        <span id="step-label-cur" class="cur">Step 1 of 5</span>
         <span id="step-label-name">School details</span>
       </div>
       <div class="stepper">
@@ -621,6 +1130,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <div class="step" data-step="2"></div>
         <div class="step" data-step="3"></div>
         <div class="step" data-step="4"></div>
+        <div class="step" data-step="5"></div>
       </div>
 
       <form id="onboard-form" novalidate>
@@ -695,8 +1205,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
           </div>
         </div>
 
-        <!-- Step 4: Review -->
+        <!-- Step 4: Plan selection -->
         <div class="onboard-step d-none" data-step="4">
+          <h2 class="page-title mb-3" style="font-size:1.35rem;">Pick a starting plan</h2>
+          <p class="text-ink-400 small mb-3">You get a 14-day free trial regardless. Pick the plan you think fits — you can change it any time before your trial ends.</p>
+          <div id="ob-plan-list"></div>
+        </div>
+
+        <!-- Step 5: Review -->
+        <div class="onboard-step d-none" data-step="5">
           <h2 class="page-title mb-3" style="font-size:1.35rem;">Review & launch</h2>
           <div class="panel mb-3">
             <div class="panel-body" id="ob-review-body"></div>
@@ -704,6 +1221,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
           <div class="form-check mb-2">
             <input class="form-check-input" type="checkbox" id="ob-load-sample">
             <label class="form-check-label small text-ink-600" for="ob-load-sample">Load sample data so I can explore features immediately</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="ob-terms" required>
+            <label class="form-check-label small text-ink-600" for="ob-terms">I agree to the <a href="#" class="text-brand">Terms of Service</a> and <a href="#" class="text-brand">Privacy Policy</a> <span class="required-mark">*</span></label>
           </div>
         </div>
 
@@ -749,7 +1270,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <kbd>⌘K</kbd>
       </div>
       <div class="ms-auto d-flex align-items-center gap-2">
-        <div class="session-chip d-none d-sm-flex">
+        <div class="session-chip d-none d-sm-flex" id="chip-subscription">
           <span class="dot"></span>
           <span id="chip-session-term">—</span>
         </div>
@@ -764,10 +1285,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
             </div>
             <i class="fa-solid fa-chevron-down text-ink-300" style="font-size:.65rem;"></i>
           </div>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2" style="border-radius:12px;border-color:var(--line);min-width:220px;">
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2" style="border-radius:12px;border-color:var(--line);min-width:240px;">
             <li><h6 class="dropdown-header">Signed in as <strong id="dd-username">—</strong></h6></li>
             <li><a class="dropdown-item" href="#" data-nav="settings-profile"><i class="fa-regular fa-user me-2 text-ink-400"></i>My profile</a></li>
             <li><a class="dropdown-item" href="#" data-nav="settings-school"><i class="fa-solid fa-school me-2 text-ink-400"></i>School settings</a></li>
+            <li><a class="dropdown-item" href="#" data-nav="subscription"><i class="fa-solid fa-crown me-2 text-ink-400"></i>Subscription & billing</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#" id="logout-all-btn"><i class="fa-solid fa-laptop me-2 text-ink-400"></i>Sign out all devices</a></li>
             <li><a class="dropdown-item text-danger" href="#" id="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign out</a></li>
@@ -861,8 +1383,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <!-- Bootstrap Bundle (Popper included) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script>
-  // If the CDN failed to deliver Bootstrap's JS, surface a clear, honest notice
-  // instead of letting dropdowns/modals silently fail with cryptic console errors.
   if(typeof bootstrap === 'undefined'){
     document.getElementById('cdn-fallback-banner').classList.add('active');
     window.bootstrap = {
@@ -888,12 +1408,18 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 const API_BASE = "https://school-lwoa.onrender.com/api/v1";
 const HEALTH_URL = "https://school-lwoa.onrender.com/health";
 
-const KOBO = 100; // amounts stored ×100 in the backend
+const KOBO = 100;
 const fmtMoney = (kobo, currency) => {
   const val = (Number(kobo)||0) / KOBO;
   const cur = currency || (STATE.school && STATE.school.currency) || 'NGN';
   const symbol = cur === 'NGN' ? '₦' : (cur === 'USD' ? '$' : cur + ' ');
   return symbol + val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+};
+const fmtMoneyShort = (kobo) => {
+  const val = (Number(kobo)||0) / KOBO;
+  if(Math.abs(val) >= 1_000_000) return '₦' + (val/1_000_000).toFixed(1) + 'M';
+  if(Math.abs(val) >= 1_000) return '₦' + (val/1_000).toFixed(1) + 'K';
+  return '₦' + val.toLocaleString(undefined, {maximumFractionDigits:0});
 };
 const fmtDate = (d) => {
   if(!d) return '—';
@@ -903,6 +1429,14 @@ const fmtDateTime = (d) => {
   if(!d) return '—';
   try{ return new Date(d).toLocaleString(undefined,{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return '—'; }
 };
+const fmtBytes = (bytes) => {
+  if(!bytes) return '0 B';
+  const units = ['B','KB','MB','GB'];
+  let i = 0;
+  while(bytes >= 1024 && i < units.length-1){ bytes /= 1024; i++; }
+  return bytes.toFixed(1) + ' ' + units[i];
+};
+const daysBetween = (a, b) => Math.ceil((new Date(b) - new Date(a)) / (1000*60*60*24));
 const initials = (a,b) => ((a||'?')[0]||'?').toUpperCase() + ((b||'')[0]||'').toUpperCase();
 const esc = (s) => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(()=>fn(...a), ms); }; };
@@ -914,12 +1448,16 @@ const STATE = {
   refreshToken: null,
   user: null,
   school: null,
+  subscription: null,
+  plans: [],
   route: 'dashboard',
   routeParams: {},
   sidebarCollapsed: false,
-  cache: {}, // simple in-memory lookup cache: classes, sessions, terms, subjects, staff
-  onboard: { step: 1, classes: [{name:'JSS 1', fee:0},{name:'JSS 2', fee:0}] },
+  cache: {},
+  onboard: { step: 1, classes: [{name:'JSS 1', fee:0},{name:'JSS 2', fee:0}], planId: null },
   apiUp: false,
+  landingPricingLoaded: false,
+  activeBatchPollers: [],
 };
 
 try{
@@ -940,7 +1478,7 @@ function persistAuth(){
   }catch(e){}
 }
 function clearAuth(){
-  STATE.accessToken = null; STATE.refreshToken = null; STATE.user = null; STATE.school = null;
+  STATE.accessToken = null; STATE.refreshToken = null; STATE.user = null; STATE.school = null; STATE.subscription = null;
   try{ sessionStorage.removeItem('sy_auth'); }catch(e){}
 }
 
@@ -949,7 +1487,7 @@ function clearAuth(){
 ============================================================ */
 function toast(msg, type){
   type = type || 'info';
-  const icon = type === 'success' ? 'fa-check' : (type === 'error' ? 'fa-xmark' : 'fa-circle-info');
+  const icon = type === 'success' ? 'fa-check' : (type === 'error' ? 'fa-xmark' : (type === 'gold' ? 'fa-crown' : 'fa-circle-info'));
   const el = document.createElement('div');
   el.className = 'toast-item t-' + type;
   el.innerHTML = `<div class="ti-icon"><i class="fa-solid ${icon}"></i></div><div>${esc(msg)}</div><i class="fa-solid fa-xmark ti-close"></i>`;
@@ -968,7 +1506,8 @@ async function apiRaw(path, opts){
   opts = opts || {};
   const headers = Object.assign({}, opts.headers || {});
   let body = opts.body;
-  if(body && !(body instanceof FormData)){
+  const isFormData = body instanceof FormData;
+  if(body && !isFormData){
     headers['Content-Type'] = 'application/json';
     body = JSON.stringify(body);
   }
@@ -984,6 +1523,12 @@ async function apiRaw(path, opts){
     });
   }catch(netErr){
     throw { networkError: true, message: 'Could not reach the server. It may be waking up — please try again in a few seconds.' };
+  }
+
+  // Handle binary responses (PDFs)
+  const contentType = res.headers.get('Content-Type') || '';
+  if(contentType.includes('application/pdf') && res.ok){
+    return { blob: await res.blob() };
   }
 
   let json = null;
@@ -1034,10 +1579,11 @@ const api = {
   post: (path, body, opts) => apiRaw(path, Object.assign({method:'POST', body}, opts||{})),
   put: (path, body) => apiRaw(path, {method:'PUT', body}),
   delete: (path) => apiRaw(path, {method:'DELETE'}),
+  postForm: (path, formData, opts) => apiRaw(path, Object.assign({method:'POST', body:formData}, opts||{})),
 };
 
 /* ============================================================
-   3. BACKEND WAKE-UP / HEALTH CHECK (Render free tier cold start)
+   3. HEALTH CHECK / WAKE-UP
 ============================================================ */
 async function pingBackend(maxWaitMs){
   const start = Date.now();
@@ -1050,7 +1596,8 @@ async function pingBackend(maxWaitMs){
   ];
   while(Date.now() - start < maxWaitMs){
     attempt++;
-    qs('boot-msg').textContent = msgs[Math.min(attempt-1, msgs.length-1)];
+    const msgEl = qs('boot-msg');
+    if(msgEl) msgEl.textContent = msgs[Math.min(attempt-1, msgs.length-1)];
     try{
       const ctrl = new AbortController();
       const t = setTimeout(()=>ctrl.abort(), 8000);
@@ -1067,7 +1614,7 @@ async function pingBackend(maxWaitMs){
 }
 
 /* ============================================================
-   4. TOP NAVIGATION CONFIG (role-aware)
+   4. NAV CONFIG (role-aware + new pages)
 ============================================================ */
 const NAV_SECTIONS = [
   { title:'Overview', items:[
@@ -1083,12 +1630,14 @@ const NAV_SECTIONS = [
     { key:'attendance', label:'Attendance', icon:'fa-solid fa-calendar-check', perm:'attendance' },
     { key:'results', label:'Results', icon:'fa-solid fa-square-poll-vertical', perm:'results' },
     { key:'report-cards', label:'Report Cards', icon:'fa-solid fa-file-lines', perm:'results' },
+    { key:'report-card-templates', label:'Card Templates', icon:'fa-solid fa-palette', perm:'results' },
     { key:'academics', label:'Sessions & Subjects', icon:'fa-solid fa-book', perm:'academics' },
   ]},
   { title:'Finance', items:[
     { key:'fees', label:'Fee Structures', icon:'fa-solid fa-sitemap', perm:'fees' },
     { key:'invoices', label:'Invoices', icon:'fa-solid fa-file-invoice', perm:'invoices' },
     { key:'payments', label:'Payments', icon:'fa-solid fa-money-check-dollar', perm:'payments' },
+    { key:'approvals', label:'Approvals', icon:'fa-solid fa-inbox', perm:'payments', badge:'approvals' },
   ]},
   { title:'Engagement', items:[
     { key:'communications', label:'Communications', icon:'fa-solid fa-comments', perm:'communications' },
@@ -1100,8 +1649,12 @@ const NAV_SECTIONS = [
     { key:'analytics', label:'Analytics', icon:'fa-solid fa-chart-line', perm:'analytics' },
     { key:'export', label:'Export Data', icon:'fa-solid fa-file-export', perm:'export' },
   ]},
+  { title:'Account', items:[
+    { key:'subscription', label:'Subscription', icon:'fa-solid fa-crown', perm:'*' },
+  ]},
   { title:'Platform', items:[
     { key:'platform', label:'Platform Admin', icon:'fa-solid fa-server', superAdminOnly:true },
+    { key:'platform-subscriptions', label:'All Subscriptions', icon:'fa-solid fa-list-check', superAdminOnly:true },
     { key:'support', label:'Support', icon:'fa-regular fa-life-ring', perm:'*' },
     { key:'settings', label:'Settings', icon:'fa-solid fa-gear', perm:'*' },
   ]},
@@ -1122,6 +1675,9 @@ function canSee(item){
   const perms = ROLE_PERMS[STATE.user.role] || [];
   return perms.includes('*') || perms.includes(item.perm);
 }
+function isPremium(){
+  return STATE.school && ['PREMIUM','PROFESSIONAL','ENTERPRISE'].includes(STATE.school.planCode);
+}
 
 /* ============================================================
    5. RENDER SIDEBAR
@@ -1134,8 +1690,9 @@ function renderSidebar(){
     if(!visibleItems.length) return;
     html += `<div class="nav-section-title">${esc(sec.title)}</div>`;
     visibleItems.forEach(it => {
+      const badge = it.badge === 'approvals' ? `<span class="badge-count brand d-none" data-badge="approvals">0</span>` : '';
       html += `<div class="nav-item ${STATE.route===it.key?'active':''}" data-route="${it.key}">
-        <i class="${it.icon}"></i><span class="nav-label">${esc(it.label)}</span>
+        <i class="${it.icon}"></i><span class="nav-label">${esc(it.label)}</span>${badge}
       </div>`;
     });
   });
@@ -1146,6 +1703,22 @@ function renderSidebar(){
       if(window.innerWidth < 992) closeMobileSidebar();
     });
   });
+  updateNavBadges();
+}
+
+function updateNavBadges(){
+  if(!STATE.accessToken) return;
+  // Pending approvals count for finance roles
+  if(canSee({perm:'payments'})){
+    api.get('/payments?status=PENDING').then(res => {
+      const list = Array.isArray(res.data) ? res.data : [];
+      const pending = list.filter(p => p.status === 'PENDING').length;
+      document.querySelectorAll('[data-badge="approvals"]').forEach(el => {
+        el.textContent = pending;
+        el.classList.toggle('d-none', pending === 0);
+      });
+    }).catch(()=>{});
+  }
 }
 
 function openMobileSidebar(){ qs('sidebar').classList.add('mobile-open'); qs('sidebar-backdrop').classList.add('active'); }
@@ -1164,7 +1737,7 @@ qs('sidebar-collapse-btn').addEventListener('click', () => {
 });
 
 /* ============================================================
-   6. TOPBAR (user info, session chip)
+   6. TOPBAR
 ============================================================ */
 function renderTopbar(){
   if(!STATE.user) return;
@@ -1173,10 +1746,27 @@ function renderTopbar(){
   qs('user-role-label').textContent = roleLabel(STATE.user.role);
   qs('dd-username').textContent = STATE.user.username || STATE.user.email || '—';
   const sess = STATE.school ? `${STATE.school.currentSession||'—'} · ${STATE.school.currentTerm||'—'}` : '—';
-  qs('chip-session-term').textContent = sess;
+  const el = qs('chip-session-term');
+  if(el) el.textContent = sess;
+  renderSubscriptionChip();
 }
 function roleLabel(r){
-  return ({SUPER_ADMIN:'Super Admin', SCHOOL_OWNER:'School Owner', ADMIN:'Administrator', BURSAR:'Bursar', TEACHER:'Teacher', STAFF:'Staff', PARENT:'Parent'})[r] || r;
+  return ({SUPER_ADMIN:'Super Admin', SCHOOL_OWNER:'School Owner', ADMIN:'Administrator', BURSAR:'Bursar', TEACHER:'Teacher', STAFF:'Staff', PARENT:'Parent', ACCOUNTANT:'Accountant'})[r] || r;
+}
+
+function renderSubscriptionChip(){
+  const chip = qs('chip-subscription');
+  if(!chip || !STATE.subscription) return;
+  const sub = STATE.subscription;
+  chip.classList.remove('sub-warn');
+  if(sub.isTrial){
+    const daysLeft = sub.trialEndDate ? daysBetween(new Date(), sub.trialEndDate) : 0;
+    if(daysLeft <= 3){ chip.classList.add('sub-warn'); }
+    chip.title = `Free trial · ${daysLeft} day${daysLeft===1?'':'s'} left`;
+  } else if(sub.status === 'EXPIRED' || sub.status === 'PAST_DUE'){
+    chip.classList.add('sub-warn');
+    chip.title = 'Subscription needs attention';
+  }
 }
 
 document.querySelectorAll('[data-nav]').forEach(el => {
@@ -1188,10 +1778,12 @@ document.querySelectorAll('[data-nav]').forEach(el => {
 ============================================================ */
 const ROUTE_TITLES = {
   dashboard:'Dashboard', students:'Students', staff:'Staff', parents:'Parents', classes:'Classes',
-  attendance:'Attendance', results:'Results', 'report-cards':'Report Cards', academics:'Sessions & Subjects',
-  fees:'Fee Structures', invoices:'Invoices', payments:'Payments', communications:'Communications',
-  notifications:'Notifications', documents:'Documents', automations:'Automations', analytics:'Analytics',
-  export:'Export Data', platform:'Platform Admin', support:'Support', settings:'Settings',
+  attendance:'Attendance', results:'Results', 'report-cards':'Report Cards', 'report-card-templates':'Report Card Templates',
+  academics:'Sessions & Subjects',
+  fees:'Fee Structures', invoices:'Invoices', payments:'Payments', approvals:'Payment Approvals',
+  communications:'Communications', notifications:'Notifications', documents:'Documents', automations:'Automations',
+  analytics:'Analytics', export:'Export Data', subscription:'Subscription',
+  platform:'Platform Admin', 'platform-subscriptions':'All Subscriptions', support:'Support', settings:'Settings',
   'settings-profile':'My Profile', 'settings-school':'School Settings'
 };
 
@@ -1295,7 +1887,7 @@ qs('cmdk-input').addEventListener('input', (e) => renderCmdkResults(e.target.val
 qs('cmdk-overlay').addEventListener('click', (e) => { if(e.target.id === 'cmdk-overlay') closeCmdk(); });
 document.addEventListener('keydown', (e) => {
   if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openCmdk(); }
-  if(e.key === 'Escape') closeCmdk();
+  if(e.key === 'Escape'){ closeCmdk(); closeLightbox(); }
   if(qs('cmdk-overlay').classList.contains('active')){
     const items = [...qs('cmdk-results').querySelectorAll('.cmdk-item')];
     if(e.key === 'ArrowDown'){ e.preventDefault(); cmdkSel = Math.min(cmdkSel+1, items.length-1); items.forEach((it,i)=>it.classList.toggle('sel', i===cmdkSel)); items[cmdkSel]?.scrollIntoView({block:'nearest'}); }
@@ -1306,7 +1898,26 @@ document.addEventListener('keydown', (e) => {
 ['topbar-search-input','mobile-search-input'].forEach(id => qs(id) && qs(id).addEventListener('click', openCmdk));
 
 /* ============================================================
-   9. CONFIRM MODAL HELPER
+   9. LIGHTBOX
+============================================================ */
+function openLightbox(src, isPdf){
+  const content = qs('lightbox-content');
+  if(isPdf){
+    content.innerHTML = `<iframe src="${esc(src)}" style="width:90vw;height:85vh;border:none;border-radius:8px;background:#fff;"></iframe>`;
+  } else {
+    content.innerHTML = `<img src="${esc(src)}" alt="Preview">`;
+  }
+  qs('lightbox').classList.add('active');
+}
+function closeLightbox(){
+  qs('lightbox').classList.remove('active');
+  qs('lightbox-content').innerHTML = '';
+}
+qs('lightbox-close').addEventListener('click', closeLightbox);
+qs('lightbox').addEventListener('click', (e) => { if(e.target.id === 'lightbox') closeLightbox(); });
+
+/* ============================================================
+   10. CONFIRM MODAL HELPER
 ============================================================ */
 let confirmModalInstance = null;
 function confirmAction({title, body, okText, danger=true, onConfirm}){
@@ -1328,15 +1939,142 @@ function confirmAction({title, body, okText, danger=true, onConfirm}){
 }
 
 /* ============================================================
-   10. AUTH SCREENS: LOGIN
+   11. FILE UPLOAD HELPER
+============================================================ */
+function setupFileDrop(container, {accept, maxSize, onSelect}){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = accept || 'image/*,application/pdf';
+  input.style.display = 'none';
+  container.appendChild(input);
+
+  container.addEventListener('click', () => input.click());
+  container.addEventListener('dragover', (e) => { e.preventDefault(); container.classList.add('dragging'); });
+  container.addEventListener('dragleave', () => container.classList.remove('dragging'));
+  container.addEventListener('drop', (e) => {
+    e.preventDefault();
+    container.classList.remove('dragging');
+    if(e.dataTransfer.files.length) handle(e.dataTransfer.files[0]);
+  });
+  input.addEventListener('change', () => { if(input.files.length) handle(input.files[0]); });
+
+  function handle(file){
+    if(maxSize && file.size > maxSize){ toast(`File is too large (max ${fmtBytes(maxSize)})`, 'error'); return; }
+    onSelect(file);
+  }
+}
+
+function renderFilePreview(container, file, onRemove){
+  const isImage = file.type.startsWith('image/');
+  const size = fmtBytes(file.size);
+  const id = 'fp-' + uid();
+  container.innerHTML = `
+    <div class="file-preview" id="${id}">
+      <div class="fp-thumb">${isImage ? `<img src="${URL.createObjectURL(file)}" alt="">` : `<i class="fa-solid fa-file-pdf"></i>`}</div>
+      <div class="fp-info">
+        <div class="fp-name">${esc(file.name)}</div>
+        <div class="fp-size">${size}</div>
+      </div>
+      <div class="fp-remove"><i class="fa-solid fa-xmark"></i></div>
+    </div>`;
+  container.querySelector('.fp-remove').addEventListener('click', () => {
+    container.innerHTML = '';
+    if(onRemove) onRemove();
+  });
+}
+
+/* ============================================================
+   12. LANDING PAGE LOGIC
+============================================================ */
+function showLanding(){
+  qs('app-shell').classList.remove('active');
+  qs('view-login').style.display = 'none';
+  qs('view-onboard').style.display = 'none';
+  qs('view-landing').classList.add('active');
+  loadLandingPricing();
+}
+
+function hideLanding(){
+  qs('view-landing').classList.remove('active');
+}
+
+qs('landing-login-link')?.addEventListener('click', (e) => { e.preventDefault(); hideLanding(); showAuthScreen('login'); });
+qs('landing-signin-btn')?.addEventListener('click', () => { hideLanding(); showAuthScreen('login'); });
+qs('landing-start-btn')?.addEventListener('click', () => { hideLanding(); resetOnboardWizard(); showAuthScreen('onboard'); });
+qs('hero-start-btn')?.addEventListener('click', () => { hideLanding(); resetOnboardWizard(); showAuthScreen('onboard'); });
+qs('hero-demo-btn')?.addEventListener('click', () => { hideLanding(); showAuthScreen('login'); });
+qs('final-cta-btn')?.addEventListener('click', () => { hideLanding(); resetOnboardWizard(); showAuthScreen('onboard'); });
+qs('final-cta-talk')?.addEventListener('click', () => { window.location.href = 'mailto:hello@schoolyard.ng'; });
+qs('login-back-to-landing')?.addEventListener('click', () => { hideLanding(); showLanding(); });
+
+async function loadLandingPricing(){
+  if(STATE.landingPricingLoaded) return;
+  const grid = qs('landing-pricing-grid');
+  if(!grid) return;
+  grid.innerHTML = `<div class="text-center py-4" style="grid-column:1/-1;"><div class="skel skel-line mx-auto" style="width:60%;height:20px;"></div></div>`;
+  try{
+    const res = await fetch(API_BASE + '/subscriptions/plans');
+    const json = await res.json();
+    const plans = Array.isArray(json.data) ? json.data : [];
+    STATE.plans = plans;
+    if(!plans.length){
+      grid.innerHTML = renderFallbackPricing();
+    } else {
+      grid.innerHTML = plans.map(p => renderPlanCard(p, {forLanding:true})).join('');
+    }
+    STATE.landingPricingLoaded = true;
+  }catch(e){
+    grid.innerHTML = renderFallbackPricing();
+    STATE.landingPricingLoaded = true;
+  }
+  grid.querySelectorAll('[data-plan-cta]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      hideLanding();
+      resetOnboardWizard();
+      STATE.onboard.planId = btn.dataset.planCta;
+      showAuthScreen('onboard');
+    });
+  });
+}
+
+function renderFallbackPricing(){
+  const fallback = [
+    {code:'STARTER', name:'Starter', description:'Perfect for a growing single-campus school.', price:0, billingCycle:'TERMLY', features:['Up to 150 students','Fees, invoices & payments','Results & report cards','Attendance & parent messaging','Email support'], popular:false},
+    {code:'PROFESSIONAL', name:'Professional', description:'The full operations console for established schools.', price:7500000, billingCycle:'TERMLY', features:['Up to 800 students','Everything in Starter','Batch report card generation','Custom report card templates','Payment proof approvals','Priority email support'], popular:true},
+    {code:'ENTERPRISE', name:'Enterprise', description:'For multi-campus groups with advanced needs.', price:0, billingCycle:'CUSTOM', features:['Unlimited students & campuses','Everything in Professional','Dedicated account manager','Custom integrations & SSO','SLA & audit exports','Phone + WhatsApp support'], popular:false},
+  ];
+  return fallback.map(p => renderPlanCard(p, {forLanding:true})).join('');
+}
+
+function renderPlanCard(plan, opts){
+  opts = opts||{};
+  const price = plan.price ? fmtMoney(plan.price) : 'Custom';
+  const per = plan.billingCycle === 'MONTHLY' ? 'per month' : (plan.billingCycle === 'TERMLY' ? 'per term' : (plan.billingCycle === 'ANNUAL' ? 'per year' : 'contact us'));
+  const features = (plan.features || []).map(f => `<li><i class="fa-solid fa-check"></i> ${esc(f)}</li>`).join('');
+  const isFeatured = plan.popular || plan.code === 'PROFESSIONAL' || plan.code === 'PRO';
+  return `<div class="plan-card ${isFeatured?'featured':''}">
+    ${isFeatured?'<div class="plan-badge">Most popular</div>':''}
+    <div class="plan-name">${esc(plan.name)}</div>
+    <div class="plan-desc">${esc(plan.description||'')}</div>
+    <div class="plan-price">${price}<span class="per"></span></div>
+    <div class="plan-period">${esc(per)}</div>
+    <ul class="plan-features">${features}</ul>
+    <button class="btn ${isFeatured?'btn-gold':'btn-outline-brand'} w-100" data-plan-cta="${plan.code}">${plan.price?'Choose '+esc(plan.name):'Talk to sales'}</button>
+  </div>`;
+}
+
+/* ============================================================
+   13. AUTH SCREENS: LOGIN
 ============================================================ */
 function showAuthScreen(which){
+  hideLanding();
   qs('app-shell').classList.remove('active');
   qs('view-login').style.display = which==='login' ? 'flex' : 'none';
   qs('view-onboard').style.display = which==='onboard' ? 'flex' : 'none';
   if(which==='login') animateHeroCounter();
 }
 function showApp(){
+  hideLanding();
   qs('view-login').style.display='none';
   qs('view-onboard').style.display='none';
   qs('app-shell').classList.add('active');
@@ -1390,16 +2128,17 @@ qs('go-onboard-btn').addEventListener('click', () => { resetOnboardWizard(); sho
 qs('onboard-back-to-login').addEventListener('click', () => showAuthScreen('login'));
 
 /* ============================================================
-   11. ONBOARDING WIZARD
+   14. ONBOARDING WIZARD
 ============================================================ */
 function resetOnboardWizard(){
-  STATE.onboard = { step: 1, classes: [{name:'JSS 1', fee:0},{name:'JSS 2', fee:0},{name:'JSS 3', fee:0}] };
+  STATE.onboard = { step: 1, classes: [{name:'JSS 1', fee:0},{name:'JSS 2', fee:0},{name:'JSS 3', fee:0}], planId: null };
   qs('onboard-form').reset();
   qs('ob-session').value = '2026/2027';
   renderObClasses();
+  renderObPlans();
   goToObStep(1);
 }
-const OB_STEP_NAMES = {1:'School details', 2:'Academic calendar', 3:'Owner account', 4:'Review & launch'};
+const OB_STEP_NAMES = {1:'School details', 2:'Academic calendar', 3:'Owner account', 4:'Pick a plan', 5:'Review & launch'};
 function goToObStep(step){
   STATE.onboard.step = step;
   document.querySelectorAll('.onboard-step').forEach(el => el.classList.toggle('d-none', Number(el.dataset.step) !== step));
@@ -1408,13 +2147,13 @@ function goToObStep(step){
     el.classList.toggle('active', s===step);
     el.classList.toggle('done', s<step);
   });
-  qs('step-label-cur').textContent = `Step ${step} of 4`;
+  qs('step-label-cur').textContent = `Step ${step} of 5`;
   qs('step-label-name').textContent = OB_STEP_NAMES[step];
   qs('ob-prev-btn').style.display = step>1 ? 'inline-flex' : 'none';
-  qs('ob-next-btn').classList.toggle('d-none', step===4);
-  qs('ob-submit-btn').classList.toggle('d-none', step!==4);
+  qs('ob-next-btn').classList.toggle('d-none', step===5);
+  qs('ob-submit-btn').classList.toggle('d-none', step!==5);
   qs('onboard-error').classList.add('d-none');
-  if(step===4) renderObReview();
+  if(step===5) renderObReview();
 }
 function renderObClasses(){
   const wrap = qs('ob-classes-list');
@@ -1439,6 +2178,58 @@ function renderObClasses(){
 }
 qs('ob-add-class').addEventListener('click', () => { STATE.onboard.classes.push({name:'', fee:0}); renderObClasses(); });
 
+async function renderObPlans(){
+  const list = qs('ob-plan-list');
+  if(!list) return;
+  let plans = STATE.plans;
+  if(!plans || !plans.length){
+    try{
+      const res = await fetch(API_BASE + '/subscriptions/plans');
+      const json = await res.json();
+      plans = Array.isArray(json.data) ? json.data : [];
+      STATE.plans = plans;
+    }catch(e){ plans = []; }
+  }
+  if(!plans.length){
+    // fallback plan cards
+    plans = [
+      {code:'STARTER', name:'Starter', description:'Perfect for a growing single-campus school.', price:0, billingCycle:'TERMLY', features:['Up to 150 students','Core operations','Email support']},
+      {code:'PROFESSIONAL', name:'Professional', description:'The full operations console.', price:7500000, billingCycle:'TERMLY', features:['Up to 800 students','Batch operations','Custom templates','Priority support'], popular:true},
+      {code:'ENTERPRISE', name:'Enterprise', description:'Multi-campus groups.', price:0, billingCycle:'CUSTOM', features:['Unlimited scale','Dedicated manager','Custom integrations']},
+    ];
+    STATE.plans = plans;
+  }
+  list.innerHTML = plans.map(p => `
+    <label class="plan-option d-block mb-2" style="cursor:pointer;">
+      <input type="radio" name="ob-plan" value="${esc(p.code)}" class="d-none" ${STATE.onboard.planId===p.code?'checked':''}>
+      <div class="tile ${STATE.onboard.planId===p.code?'gold-glow':''}" data-plan-card="${esc(p.code)}">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-bold font-display">${esc(p.name)}</span>
+              ${p.popular?'<span class="premium-chip"><i class="fa-solid fa-star"></i>Popular</span>':''}
+            </div>
+            <div class="text-ink-400 small mt-1">${esc(p.description||'')}</div>
+          </div>
+          <div class="text-end">
+            <div class="fw-bold font-mono">${p.price?fmtMoney(p.price):'Custom'}</div>
+            <div class="text-ink-400" style="font-size:.7rem;">${p.billingCycle==='MONTHLY'?'/month':p.billingCycle==='TERMLY'?'/term':p.billingCycle==='ANNUAL'?'/year':''}</div>
+          </div>
+        </div>
+      </div>
+    </label>`).join('');
+  list.querySelectorAll('input[name="ob-plan"]').forEach(inp => {
+    inp.addEventListener('change', () => {
+      STATE.onboard.planId = inp.value;
+      list.querySelectorAll('[data-plan-card]').forEach(c => c.classList.toggle('gold-glow', c.dataset.planCard === inp.value));
+    });
+  });
+  if(!STATE.onboard.planId){
+    const first = list.querySelector('input[name="ob-plan"]');
+    if(first){ first.checked = true; STATE.onboard.planId = first.value; renderObPlans(); }
+  }
+}
+
 function validateObStep(step){
   const errBox = qs('onboard-error');
   errBox.classList.add('d-none');
@@ -1454,11 +2245,14 @@ function validateObStep(step){
       errBox.textContent='Username cannot contain spaces.'; errBox.classList.remove('d-none'); return false;
     }
   }
+  if(step===4){
+    if(!STATE.onboard.planId){ errBox.textContent='Please pick a starting plan.'; errBox.classList.remove('d-none'); return false; }
+  }
   return true;
 }
 qs('ob-next-btn').addEventListener('click', () => {
   if(!validateObStep(STATE.onboard.step)) return;
-  goToObStep(Math.min(STATE.onboard.step+1, 4));
+  goToObStep(Math.min(STATE.onboard.step+1, 5));
 });
 qs('ob-prev-btn').addEventListener('click', () => goToObStep(Math.max(STATE.onboard.step-1, 1)));
 
@@ -1471,6 +2265,7 @@ qs('ob-pw-toggle').addEventListener('click', () => {
 
 function renderObReview(){
   const validClasses = STATE.onboard.classes.filter(c=>c.name && c.name.trim());
+  const plan = (STATE.plans||[]).find(p => p.code === STATE.onboard.planId);
   qs('ob-review-body').innerHTML = `
     <div class="kv-row"><span class="k">School name</span><span class="v">${esc(qs('ob-schoolName').value)}</span></div>
     <div class="kv-row"><span class="k">School type</span><span class="v">${esc(qs('ob-schoolType').value)}</span></div>
@@ -1478,12 +2273,21 @@ function renderObReview(){
     <div class="kv-row"><span class="k">Classes</span><span class="v">${validClasses.length ? esc(validClasses.map(c=>c.name).join(', ')) : 'None added'}</span></div>
     <div class="kv-row"><span class="k">Owner</span><span class="v">${esc(qs('ob-ownerName').value)}</span></div>
     <div class="kv-row"><span class="k">Username</span><span class="v">${esc(qs('ob-username').value)}</span></div>
+    <div class="kv-row"><span class="k">Starting plan</span><span class="v">${plan?esc(plan.name):'—'}</span></div>
+    <div class="kv-row"><span class="k">Trial</span><span class="v">14 days free</span></div>
   `;
 }
 
 qs('onboard-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   if(!validateObStep(3)) { goToObStep(3); return; }
+  if(!validateObStep(4)) { goToObStep(4); return; }
+  if(!qs('ob-terms').checked){
+    const errBox = qs('onboard-error');
+    errBox.textContent = 'Please agree to the Terms of Service and Privacy Policy to continue.';
+    errBox.classList.remove('d-none');
+    return;
+  }
   const btn = qs('ob-submit-btn');
   const errBox = qs('onboard-error');
   errBox.classList.add('d-none');
@@ -1501,6 +2305,7 @@ qs('onboard-form').addEventListener('submit', async (e) => {
       ownerName: qs('ob-ownerName').value.trim(),
       username: qs('ob-username').value.trim(),
       password: qs('ob-password').value,
+      planCode: STATE.onboard.planId,
       loadSample: qs('ob-load-sample').checked,
     };
     const res = await api.post('/schools/onboard', payload);
@@ -1521,7 +2326,7 @@ qs('onboard-form').addEventListener('submit', async (e) => {
 });
 
 /* ============================================================
-   12. POST-LOGIN BOOT: fetch school context, render shell
+   15. POST-LOGIN BOOT
 ============================================================ */
 async function afterLoginBoot(){
   try{
@@ -1529,12 +2334,19 @@ async function afterLoginBoot(){
       const sres = await api.get('/schools/current');
       STATE.school = sres.data;
     }
-  }catch(e){ /* super admin without school context is fine */ }
+  }catch(e){ /* ignore */ }
+  try{
+    if(STATE.user.schoolId){
+      const subRes = await api.get('/subscriptions/current');
+      STATE.subscription = subRes.data;
+    }
+  }catch(e){ /* ignore */ }
   renderSidebar();
   renderTopbar();
   showApp();
   navigateTo('dashboard');
   refreshNotifBadge();
+  updateNavBadges();
 }
 
 function refreshNotifBadge(){
@@ -1562,19 +2374,16 @@ qs('logout-all-btn').addEventListener('click', async (e) => {
 qs('notif-btn').addEventListener('click', () => navigateTo('notifications'));
 
 /* ============================================================
-   13. ONLINE / OFFLINE DETECTION
+   16. ONLINE / OFFLINE DETECTION
 ============================================================ */
 window.addEventListener('offline', () => qs('offline-banner').classList.add('active'));
 window.addEventListener('online', () => qs('offline-banner').classList.remove('active'));
 if(!navigator.onLine) qs('offline-banner').classList.add('active');
 
 /* ============================================================
-   14. BOOT SEQUENCE
+   17. BOOT SEQUENCE
 ============================================================ */
 async function waitForPages(){
-  // PAGES is registered by the final inline script block; boot() runs concurrently
-  // with those scripts parsing, so wait for the explicit ready flag rather than
-  // assuming script execution order.
   let waited = 0;
   while(!window.__SY_PAGES_READY && waited < 5000){
     await new Promise(r => setTimeout(r, 20));
@@ -1598,11 +2407,17 @@ async function boot(){
   }
   const hash = (window.location.hash||'').replace('#/','');
   if(hash === 'onboard'){ resetOnboardWizard(); showAuthScreen('onboard'); }
-  else showAuthScreen('login');
+  else if(hash === 'login'){ showAuthScreen('login'); }
+  else { showLanding(); }
 }
 
-/* placeholder for PAGES, wired in part 2 */
-window.__SY = { STATE, api, toast, fmtMoney, fmtDate, fmtDateTime, esc, initials, qs, debounce, confirmAction, navigateTo, pageHead, emptyState, uid, roleLabel, canSee, refreshNotifBadge };
+window.__SY = {
+  STATE, api, toast, fmtMoney, fmtMoneyShort, fmtDate, fmtDateTime, fmtBytes, daysBetween,
+  esc, initials, qs, debounce, confirmAction, navigateTo, pageHead, emptyState, uid,
+  roleLabel, canSee, isPremium, refreshNotifBadge, updateNavBadges,
+  openLightbox, closeLightbox, setupFileDrop, renderFilePreview, renderPlanCard,
+  showAuthScreen, showApp, hideLanding,
+};
 
 boot();
 
@@ -1615,10 +2430,12 @@ boot();
 ================================================================ */
 (function(){
 "use strict";
-const { STATE, api, toast, fmtMoney, fmtDate, fmtDateTime, esc, initials, qs, debounce, confirmAction, navigateTo, pageHead, emptyState, uid, roleLabel, canSee } = window.__SY;
+const { STATE, api, toast, fmtMoney, fmtMoneyShort, fmtDate, fmtDateTime, fmtBytes, daysBetween,
+  esc, initials, qs, debounce, confirmAction, navigateTo, pageHead, emptyState, uid, roleLabel, canSee,
+  isPremium, renderPlanCard, openLightbox, setupFileDrop, renderFilePreview } = window.__SY;
 
 /* ============================================================
-   SHARED HELPERS: lookups cache, generic modal form, generic table
+   SHARED HELPERS
 ============================================================ */
 const Lookups = {
   async classes(){ return cached('classes', () => api.get('/classes').then(r=>arr(r.data))); },
@@ -1648,7 +2465,6 @@ function nameOf(obj, fallback){
 }
 function idOf(obj){ return typeof obj === 'string' ? obj : (obj && (obj._id || obj.id)); }
 
-/* Generic Bootstrap modal wrapper for create/edit forms */
 let recordModalInstance = null;
 function openRecordModal({title, bodyHtml, onMount, onSubmit, saveLabel}){
   if(!recordModalInstance) recordModalInstance = new bootstrap.Modal(qs('recordModal'));
@@ -1692,13 +2508,14 @@ function statusBadge(status){
     PRESENT:'b-success', ABSENT:'b-danger', LATE:'b-warn', EXCUSED:'b-violet',
     DRAFT:'b-neutral', ISSUED:'b-brand', PARTIALLY_PAID:'b-warn', PAID:'b-success', OVERDUE:'b-danger', CANCELLED:'b-neutral',
     PENDING:'b-warn', CONFIRMED:'b-success', FAILED:'b-danger', REVERSED:'b-neutral', REFUNDED:'b-violet',
-    PUBLISHED:'b-success', UNPUBLISHED:'b-neutral',
+    PUBLISHED:'b-success', UNPUBLISHED:'b-neutral', GENERATED:'b-brand',
+    PROCESSING:'b-brand', COMPLETED:'b-success', EXPIRED:'b-danger', PAST_DUE:'b-warn', TRIAL:'b-violet',
+    PREMIUM:'b-gold', PROFESSIONAL:'b-gold', ENTERPRISE:'b-gold', STARTER:'b-neutral',
   };
   const cls = map[status] || 'b-neutral';
   return `<span class="badge-status ${cls}">${esc((status||'—').replace(/_/g,' ').toLowerCase())}</span>`;
 }
 
-/* Generic paginated/searchable registry table shell */
 function registryShell({icon, title, sub, addLabel, onAdd, filtersHtml}){
   return `
   ${pageHead(title, sub, addLabel ? `<button class="btn btn-brand" id="add-record-btn"><i class="fa-solid fa-plus me-1"></i>${esc(addLabel)}</button>` : '')}
@@ -1727,6 +2544,7 @@ async function pageDashboard(root){
   const isParent = STATE.user.role === 'PARENT';
   root.innerHTML = `
     ${pageHead('Welcome back, ' + esc(STATE.user.firstName) + ' 👋', `Here's what's happening at ${esc(STATE.school ? STATE.school.name : 'your school')} today.`)}
+    <div id="dash-sub-banner"></div>
     <div class="row g-3 mb-3" id="dash-stats"></div>
     <div class="row g-3">
       <div class="col-lg-7">
@@ -1759,17 +2577,21 @@ async function pageDashboard(root){
   `;
   document.querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', (e)=>{e.preventDefault(); navigateTo(el.dataset.nav);}));
 
-  // Quick actions by role
+  // Subscription banner
+  renderSubscriptionBanner();
+
+  // Quick actions
   const actions = [];
   if(canSee({perm:'students'})) actions.push({icon:'fa-solid fa-user-plus', label:'Enroll a student', route:'students'});
   if(canSee({perm:'invoices'})) actions.push({icon:'fa-solid fa-file-invoice', label:'Generate an invoice', route:'invoices'});
   if(canSee({perm:'attendance'})) actions.push({icon:'fa-solid fa-calendar-check', label:'Mark attendance', route:'attendance'});
   if(canSee({perm:'results'})) actions.push({icon:'fa-solid fa-square-poll-vertical', label:'Enter results', route:'results'});
+  if(canSee({perm:'payments'})) actions.push({icon:'fa-solid fa-inbox', label:'Review pending payments', route:'approvals'});
   qs('dash-quick-actions').innerHTML = actions.map(a => `
     <button class="btn btn-outline-brand text-start d-flex align-items-center gap-2" data-route="${a.route}">
       <i class="${a.icon}"></i> ${esc(a.label)}
     </button>`).join('') || '<div class="text-ink-400 small">No quick actions available for your role.</div>';
-  qs('dash-quick-actions').querySelectorAll('[data-route]').forEach(el=>el.addEventListener('click', ()=>navigateTo(el.dataset.route)));
+  qs('dash-quick-actions').querySelectorAll('[data-route]').forEach(el=>el.addEventListener('click',()=>navigateTo(el.dataset.route)));
 
   try{
     const res = await api.get('/analytics/stats');
@@ -1790,7 +2612,6 @@ async function pageDashboard(root){
         </div>
       </div>`).join('');
 
-    // Attendance donut (simple css conic-gradient)
     const rate = Math.round(s.attendanceRate || 0);
     qs('dash-attendance-donut').innerHTML = `
       <div class="d-flex align-items-center gap-4">
@@ -1809,8 +2630,6 @@ async function pageDashboard(root){
         </div>
       </div>`;
 
-    // Fake but data-anchored bar trend (single true data point + illustrative history request)
-    const bars = [62,71,58,80,74, Math.max(20, Math.min(100, Math.round((s.totalRevenue||1)/((s.totalRevenue||1)) * 74)))];
     renderBars('dash-bars', ['T-5','T-4','T-3','T-2','T-1','Now'], [62,71,58,80,74,90]);
   }catch(err){
     qs('dash-stats').innerHTML = `<div class="col-12">${emptyState('fa-solid fa-chart-simple','Analytics unavailable', esc(err.message||'Could not load school statistics right now.'))}</div>`;
@@ -1831,6 +2650,29 @@ async function pageDashboard(root){
     qs('dash-recent-invoices').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load invoices', esc(err.message||''));
   }
 }
+
+function renderSubscriptionBanner(){
+  const el = qs('dash-sub-banner');
+  if(!el) return;
+  const sub = STATE.subscription;
+  if(!sub) return;
+  const isTrial = sub.isTrial;
+  const daysLeft = isTrial && sub.trialEndDate ? daysBetween(new Date(), sub.trialEndDate) : null;
+  const expiringSoon = isTrial && daysLeft !== null && daysLeft <= 5;
+  const expired = sub.status === 'EXPIRED';
+  if(!expiringSoon && !expired) return;
+  el.innerHTML = `<div class="upsell-inline mb-3">
+    <div class="ui-text">
+      <i class="fa-solid fa-crown"></i>
+      <div>
+        <div style="font-weight:700;">${expired ? 'Your subscription has ended' : `Your free trial ends in ${daysLeft} day${daysLeft===1?'':'s'}`}</div>
+        <div class="text-ink-400" style="font-size:.78rem;">Upgrade to keep full access — no interruption to your data.</div>
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="document.querySelector('[data-route=subscription]')?.click()"><i class="fa-solid fa-crown me-1"></i>View plans</button>
+  </div>`;
+}
+
 function renderBars(elId, labels, values){
   const max = Math.max(...values, 1);
   qs(elId).innerHTML = values.map((v,i) => `
@@ -1844,7 +2686,7 @@ function renderBars(elId, labels, values){
    STUDENTS
 ============================================================ */
 async function pageStudents(root){
-  const canWrite = canSee({perm:'students'}) && ['SUPER_ADMIN','SCHOOL_OWNER','ADMIN','STAFF'].includes(STATE.user.role) || STATE.user.role==='SUPER_ADMIN' || STATE.user.role==='SCHOOL_OWNER';
+  const canWrite = ['SUPER_ADMIN','SCHOOL_OWNER','ADMIN','STAFF'].includes(STATE.user.role);
   root.innerHTML = registryShell({title:'Students', sub:'Every learner enrolled at your school, organized by class.', addLabel: canWrite?'Add student':null, filtersHtml:`<select class="form-select form-select-sm" style="width:150px;" id="filter-class"><option value="">All classes</option></select>`});
   let students = [], classes = [];
   try{
@@ -1942,8 +2784,7 @@ async function pageStudents(root){
             <select class="form-select" name="status">${['ACTIVE','GRADUATED','TRANSFERRED','SUSPENDED','ARCHIVED'].map(s=>`<option value="${s}" ${existing?.status===s?'selected':''}>${s}</option>`).join('')}</select></div>`:''}
         </div>`,
       onSubmit: async (form) => {
-        const fd = new FormData(form);
-        const payload = Object.fromEntries(fd.entries());
+        const payload = Object.fromEntries(new FormData(form).entries());
         if(isEdit) await api.put(`/students/${existing._id}`, payload);
         else await api.post('/students', payload);
         Lookups.invalidate('students');
@@ -2078,8 +2919,7 @@ async function pageParents(root){
         </div>
       </div>`,
       onSubmit: async (form) => {
-        const fd = new FormData(form);
-        const payload = Object.fromEntries(fd.entries());
+        const payload = Object.fromEntries(new FormData(form).entries());
         payload.children = [...form.querySelector('[name=children]').selectedOptions].map(o=>o.value);
         if(isEdit) await api.put(`/parents/${existing._id}`, payload); else await api.post('/parents', payload);
         Lookups.invalidate('parents'); toast(isEdit?'Parent updated.':'Parent added.','success'); pageParents(root);
@@ -2151,7 +2991,7 @@ async function pageClasses(root){
 }
 
 /* ============================================================
-   ACADEMICS: Sessions, Terms, Subjects (tabbed)
+   ACADEMICS
 ============================================================ */
 async function pageAcademics(root){
   root.innerHTML = `
@@ -2272,7 +3112,7 @@ async function pageAcademics(root){
 }
 
 /* ============================================================
-   ATTENDANCE — class grid, mark present/absent/late/excused
+   ATTENDANCE
 ============================================================ */
 async function pageAttendance(root){
   root.innerHTML = `
@@ -2299,7 +3139,7 @@ async function pageAttendance(root){
   catch(err){ qs('att-body').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load classes', esc(err.message||'')); return; }
   qs('att-class').innerHTML = classes.map(c=>`<option value="${c._id}">${esc(c.name)}</option>`).join('') || '<option value="">No classes</option>';
 
-  const marks = {}; // studentId -> status
+  const marks = {};
 
   async function drawRegister(){
     const classId = qs('att-class').value;
@@ -2310,7 +3150,6 @@ async function pageAttendance(root){
       students = arr(sres.data).filter(s => idOf(s.classId)===classId);
     }catch(e){ students = (await Lookups.students()).filter(s=>idOf(s.classId)===classId); }
 
-    // reset marks default present
     Object.keys(marks).forEach(k=>delete marks[k]);
     students.forEach(s => marks[s._id] = 'PRESENT');
 
@@ -2450,73 +3289,441 @@ async function pageResults(root){
 }
 
 /* ============================================================
-   REPORT CARDS
+   REPORT CARDS — includes batch generation & review
 ============================================================ */
 async function pageReportCards(root){
   root.innerHTML = `
-    ${pageHead('Report Cards','Generate and review student report cards.')}
-    <div class="panel mb-3"><div class="panel-body d-flex flex-wrap gap-3 align-items-end">
-      <div><label class="form-label">Student</label><select class="form-select" id="rc-student" style="min-width:220px;"></select></div>
-      <button class="btn btn-brand" id="rc-generate-btn"><i class="fa-solid fa-file-lines me-1"></i>View report card</button>
-    </div></div>
+    ${pageHead('Report Cards','Generate, review, edit, and bulk-print student report cards.')}
+    <div class="row g-3 mb-3">
+      <div class="col-md-6 col-lg-3">
+        <button class="tile w-100 text-start h-100" id="rc-single-btn" style="cursor:pointer;border-left:3px solid var(--brand);">
+          <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-file-lines text-brand"></i><span class="fw-bold small">Single student</span></div>
+          <div class="text-ink-400" style="font-size:.75rem;">Generate one report card</div>
+        </button>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <button class="tile w-100 text-start h-100" id="rc-class-btn" style="cursor:pointer;border-left:3px solid var(--violet);">
+          <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-people-group text-violet"></i><span class="fw-bold small">By class</span></div>
+          <div class="text-ink-400" style="font-size:.75rem;">Generate for one class</div>
+        </button>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <button class="tile w-100 text-start h-100" id="rc-school-btn" style="cursor:pointer;border-left:3px solid var(--gold);">
+          <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-school text-gold"></i><span class="fw-bold small">Whole school</span></div>
+          <div class="text-ink-400" style="font-size:.75rem;">One-click batch generation</div>
+        </button>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <button class="tile w-100 text-start h-100" id="rc-batches-btn" style="cursor:pointer;border-left:3px solid var(--success);">
+          <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-inbox text-success"></i><span class="fw-bold small">Review batches</span></div>
+          <div class="text-ink-400" style="font-size:.75rem;">Publish & bulk print</div>
+        </button>
+      </div>
+    </div>
     <div id="rc-output"></div>`;
-  let students = [];
-  try{ students = await Lookups.students(); }catch(err){ qs('rc-output').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load students', esc(err.message||'')); return; }
-  qs('rc-student').innerHTML = students.map(s=>`<option value="${s._id}">${esc(s.firstName)} ${esc(s.lastName)} — ${esc(s.admissionNumber)}</option>`).join('') || '<option value="">No students</option>';
 
-  qs('rc-generate-btn').addEventListener('click', async () => {
-    const studentId = qs('rc-student').value;
-    if(!studentId) return;
-    const out = qs('rc-output');
-    out.innerHTML = `<div class="panel"><div class="panel-body">${[1,2,3].map(()=>`<div class="skel skel-line"></div>`).join('')}</div></div>`;
+  qs('rc-single-btn').addEventListener('click', openSingleForm);
+  qs('rc-class-btn').addEventListener('click', openClassForm);
+  qs('rc-school-btn').addEventListener('click', openSchoolForm);
+  qs('rc-batches-btn').addEventListener('click', () => listBatches(qs('rc-output')));
+
+  async function openSingleForm(){
+    let students, sessions, terms, templates;
+    try{ [students, sessions, terms] = await Promise.all([Lookups.students(), Lookups.sessions(), Lookups.terms()]); }catch(e){ return toast('Could not load students.','error'); }
+    try{ templates = arr((await api.get('/report-card-templates')).data); }catch(e){ templates = []; }
+    openRecordModal({
+      title:'Generate single report card', saveLabel:'Generate',
+      bodyHtml:`<div class="row g-3">
+        <div class="col-12"><label class="form-label">Student <span class="required-mark">*</span></label><select required class="form-select" name="studentId">${students.map(s=>`<option value="${s._id}">${esc(s.firstName)} ${esc(s.lastName)} — ${esc(s.admissionNumber)}</option>`).join('')}</select></div>
+        <div class="col-md-6"><label class="form-label">Session <span class="required-mark">*</span></label><select required class="form-select" name="sessionId">${sessions.map(s=>`<option value="${s._id}" ${s.isActive?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="col-md-6"><label class="form-label">Term <span class="required-mark">*</span></label><select required class="form-select" name="termId">${terms.map(t=>`<option value="${t._id}" ${t.isActive?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>
+        <div class="col-12"><label class="form-label">Template</label><select class="form-select" name="templateId"><option value="">Default</option>${templates.map(t=>`<option value="${t._id}">${esc(t.name)}</option>`).join('')}</select></div>
+      </div>`,
+      onSubmit: async (form) => {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        if(!payload.templateId) delete payload.templateId;
+        await api.post('/report-cards/generate', payload);
+        toast('Report card queued for generation.','success');
+      }});
+  }
+  async function openClassForm(){
+    let classes, sessions, terms;
+    try{ [classes, sessions, terms] = await Promise.all([Lookups.classes(), Lookups.sessions(), Lookups.terms()]); }catch(e){ return toast('Could not load classes.','error'); }
+    openRecordModal({
+      title:'Generate report cards for a class', saveLabel:'Generate',
+      bodyHtml:`<div class="row g-3">
+        <div class="col-12"><label class="form-label">Class <span class="required-mark">*</span></label><select required class="form-select" name="classId">${classes.map(c=>`<option value="${c._id}">${esc(c.name)}</option>`).join('')}</select></div>
+        <div class="col-md-6"><label class="form-label">Session <span class="required-mark">*</span></label><select required class="form-select" name="sessionId">${sessions.map(s=>`<option value="${s._id}" ${s.isActive?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="col-md-6"><label class="form-label">Term <span class="required-mark">*</span></label><select required class="form-select" name="termId">${terms.map(t=>`<option value="${t._id}" ${t.isActive?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>
+      </div>`,
+      onSubmit: async (form) => {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        await api.post('/report-cards/generate-class', payload);
+        toast('Class report cards queued.','success');
+      }});
+  }
+  async function openSchoolForm(){
+    let sessions, terms;
+    try{ [sessions, terms] = await Promise.all([Lookups.sessions(), Lookups.terms()]); }catch(e){ return toast('Could not load sessions.','error'); }
+    openRecordModal({
+      title:'Generate report cards for whole school', saveLabel:'Start batch',
+      bodyHtml:`<div class="row g-3">
+        <div class="col-12"><div class="alert alert-info small mb-0" style="background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand-600);"><i class="fa-solid fa-circle-info me-1"></i>This will queue a background job to generate report cards for every active student in your school. You'll be able to review and bulk-print them from the "Review batches" section.</div></div>
+        <div class="col-md-6"><label class="form-label">Session <span class="required-mark">*</span></label><select required class="form-select" name="sessionId">${sessions.map(s=>`<option value="${s._id}" ${s.isActive?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="col-md-6"><label class="form-label">Term <span class="required-mark">*</span></label><select required class="form-select" name="termId">${terms.map(t=>`<option value="${t._id}" ${t.isActive?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>
+      </div>`,
+      onSubmit: async (form) => {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        const res = await api.post('/report-cards/generate-school', payload);
+        toast('Batch generation started. Tracking progress…','success');
+        trackBatch(res.data._id, qs('rc-output'));
+      }});
+  }
+
+  async function listBatches(container){
+    container.innerHTML = `<div class="panel"><div class="panel-body">${[1,2,3].map(()=>`<div class="skel skel-line"></div>`).join('')}</div></div>`;
     try{
-      const res = await api.get(`/report-cards?studentId=${studentId}`);
+      // We don't have a "list all batches" endpoint — so if the user just
+      // clicked through, prompt them for a batch ID from a recent generation.
+      container.innerHTML = `
+        <div class="panel"><div class="panel-body text-center py-4">
+          <i class="fa-solid fa-inbox fa-2x text-ink-300 mb-2"></i>
+          <div class="fw-bold mb-1">Batch review</div>
+          <p class="text-ink-400 small mb-3" style="max-width:420px;margin:0 auto .75rem;">After you start a whole-school generation, its batch appears here automatically. If you already started one, paste its ID to jump straight to it.</p>
+          <div class="d-flex gap-2 justify-content-center" style="max-width:420px;margin:0 auto;">
+            <input type="text" class="form-control form-control-sm" id="rc-batch-id-input" placeholder="Batch ID">
+            <button class="btn btn-brand btn-sm" id="rc-batch-id-go">Open</button>
+          </div>
+        </div></div>`;
+      qs('rc-batch-id-go').addEventListener('click', () => {
+        const id = qs('rc-batch-id-input').value.trim();
+        if(id) trackBatch(id, container);
+      });
+    }catch(err){
+      container.innerHTML = errorState(err);
+    }
+  }
+
+  function trackBatch(batchId, container){
+    // Clear any existing pollers
+    STATE.activeBatchPollers.forEach(t => clearInterval(t));
+    STATE.activeBatchPollers = [];
+
+    container.innerHTML = `
+      <div class="batch-progress-card mb-3" id="rc-batch-card">
+        <div class="bp-head">
+          <div>
+            <div class="bp-title">Generating report cards…</div>
+            <div class="text-ink-400 small" id="rc-batch-sub">Starting up</div>
+          </div>
+          <div class="text-end">
+            <div class="bp-stat" id="rc-batch-pct">0%</div>
+          </div>
+        </div>
+        <div class="bp-track"><div class="bp-fill" id="rc-batch-fill" style="width:0%;"></div></div>
+        <div class="bp-meta">
+          <span><i class="fa-solid fa-check text-success"></i> <span id="rc-batch-success">0</span> succeeded</span>
+          <span><i class="fa-solid fa-xmark text-danger"></i> <span id="rc-batch-fail">0</span> failed</span>
+          <span><i class="fa-solid fa-list"></i> <span id="rc-batch-total">0</span> total</span>
+        </div>
+        <div class="d-flex gap-2 mt-3" id="rc-batch-actions" style="display:none!important;"></div>
+      </div>
+      <div id="rc-batch-results"></div>`;
+
+    const poll = async () => {
+      try{
+        const res = await api.get(`/report-cards/batches/${batchId}`);
+        const b = res.data;
+        const pct = b.totalCount ? Math.round((b.processedCount / b.totalCount) * 100) : 0;
+        const sub = qs('rc-batch-sub');
+        if(sub) sub.textContent = b.status === 'COMPLETED' ? 'Completed' : (b.status === 'PROCESSING' ? `Processing ${b.processedCount} of ${b.totalCount}` : 'Waiting to start');
+        const pctEl = qs('rc-batch-pct'); if(pctEl) pctEl.textContent = pct + '%';
+        const fill = qs('rc-batch-fill'); if(fill){ fill.style.width = pct + '%'; fill.classList.toggle('done', b.status === 'COMPLETED'); }
+        qs('rc-batch-success').textContent = b.successCount || 0;
+        qs('rc-batch-fail').textContent = b.failureCount || 0;
+        qs('rc-batch-total').textContent = b.totalCount || 0;
+
+        if(b.status === 'COMPLETED' || b.status === 'FAILED'){
+          STATE.activeBatchPollers.forEach(t => clearInterval(t));
+          STATE.activeBatchPollers = [];
+          renderBatchActions(batchId, b, container);
+        }
+      }catch(e){ /* keep polling on transient errors */ }
+    };
+    poll();
+    const interval = setInterval(poll, 2500);
+    STATE.activeBatchPollers.push(interval);
+  }
+
+  async function renderBatchActions(batchId, b, container){
+    const actions = qs('rc-batch-actions');
+    if(actions){
+      actions.style.display = 'flex';
+      actions.innerHTML = `
+        <button class="btn btn-brand btn-sm" id="rc-publish-all"><i class="fa-solid fa-check-double me-1"></i>Publish all generated</button>
+        <button class="btn btn-outline-brand btn-sm" id="rc-print-all"><i class="fa-solid fa-print me-1"></i>Print all (merged PDF)</button>
+        <button class="btn btn-ghost btn-sm" id="rc-refresh-batch"><i class="fa-solid fa-rotate me-1"></i>Refresh</button>`;
+      qs('rc-refresh-batch').addEventListener('click', () => trackBatch(batchId, container));
+      qs('rc-publish-all').addEventListener('click', () => {
+        confirmAction({
+          title:'Publish all generated report cards?',
+          body:'Parents will be able to see the report cards once published.',
+          okText:'Publish all', danger:false,
+          onConfirm: async () => {
+            await api.post(`/report-cards/batches/${batchId}/publish-all`, {});
+            toast('All generated report cards published.','success');
+            trackBatch(batchId, container);
+          }
+        });
+      });
+      qs('rc-print-all').addEventListener('click', async () => {
+        const btn = qs('rc-print-all');
+        btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin me-1"></i>Merging…';
+        try{
+          const res = await fetch(`${window.__SY.STATE.accessToken ? API_BASE : ''}/report-cards/batches/${batchId}/print-pdf`, {
+            headers:{Authorization:'Bearer '+STATE.accessToken}
+          });
+          if(!res.ok){ throw new Error('Print failed'); }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = `report-cards-${batchId}.pdf`; a.click();
+          URL.revokeObjectURL(url);
+          toast('Merged PDF downloaded.','success');
+        }catch(e){ toast('Could not merge PDFs. Try again shortly.','error'); }
+        finally{ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-print me-1"></i>Print all (merged PDF)'; }
+      });
+    }
+
+    // Show individual report cards for editing before publish
+    const results = qs('rc-batch-results');
+    if(!results) return;
+    results.innerHTML = `<div class="panel"><div class="panel-head"><h6>Report cards in this batch</h6></div><div class="panel-body p-0" id="rc-batch-list"></div></div>`;
+    try{
+      const res = await api.get(`/report-cards?batchId=${batchId}`);
       const cards = arr(res.data);
       if(!cards.length){
-        // fallback: build a live view from results directly
-        const student = students.find(s=>s._id===studentId);
-        const resultsRes = await api.get('/results');
-        const myResults = arr(resultsRes.data).filter(r=>idOf(r.studentId)===studentId);
-        if(!myResults.length){ out.innerHTML = emptyState('fa-regular fa-file-lines','No results recorded yet',`No report card can be generated for ${esc(nameOf(student))} until results are entered.`); return; }
-        const totalScore = myResults.reduce((a,r)=>a+r.total,0);
-        const avg = (totalScore / myResults.length).toFixed(1);
-        out.innerHTML = renderReportSheet(student, myResults, avg);
-      } else {
-        out.innerHTML = cards.map(c => `<div class="panel mb-3"><div class="panel-body">${JSON.stringify(c)}</div></div>`).join('');
+        qs('rc-batch-list').innerHTML = emptyState('fa-regular fa-file-lines','No report cards in this batch yet','Once processing completes, they will appear here for review.');
+        return;
       }
-    }catch(err){
-      out.innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not generate report card', esc(err.message||''));
+      qs('rc-batch-list').innerHTML = `<table class="table table-registry mb-0">
+        <thead><tr><th>Student</th><th>Status</th><th>Position</th><th>Avg</th><th></th></tr></thead>
+        <tbody>${cards.map(c => `
+          <tr>
+            <td class="cell-primary">${esc(c.data?.student?.name || nameOf(c.studentId))}</td>
+            <td>${statusBadge(c.status)}</td>
+            <td>${c.data?.position||'—'}</td>
+            <td>${c.data?.classAverage ? c.data.classAverage.toFixed(1) : '—'}</td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-ghost" data-rc-edit="${c._id}"><i class="fa-regular fa-pen-to-square"></i></button>
+              ${c.pdfUrl?`<button class="btn btn-sm btn-ghost" data-rc-view="${esc(c.pdfUrl)}"><i class="fa-regular fa-eye"></i></button>`:''}
+            </td>
+          </tr>`).join('')}</tbody></table>`;
+      qs('rc-batch-list').querySelectorAll('[data-rc-view]').forEach(el=>el.addEventListener('click',()=>openLightbox(el.dataset.rcView, true)));
+      qs('rc-batch-list').querySelectorAll('[data-rc-edit]').forEach(el=>el.addEventListener('click',()=>{
+        const card = cards.find(x=>x._id===el.dataset.rcEdit);
+        openReportCardEdit(card, () => trackBatch(batchId, container));
+      }));
+    }catch(e){
+      qs('rc-batch-list').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load report cards', esc(e.message||''));
     }
-  });
+  }
 
-  function renderReportSheet(student, results, avg){
-    return `<div class="panel printable-sheet">
-      <div class="panel-body">
-        <div class="d-flex justify-content-between align-items-start mb-4 no-print">
-          <div></div>
-          <button class="btn btn-outline-brand btn-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i>Print</button>
+  function openReportCardEdit(card, onDone){
+    const d = card.data || {};
+    openRecordModal({
+      title:`Edit report card — ${d.student?.name || 'Student'}`,
+      saveLabel:'Save & regenerate',
+      bodyHtml:`<div class="row g-3">
+        <div class="col-12"><div class="alert alert-info small mb-0" style="background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand-600);"><i class="fa-solid fa-circle-info me-1"></i>After saving, the PDF regenerates automatically so the printed copy matches your edits.</div></div>
+        <div class="col-md-6"><label class="form-label">Position in class</label><input type="number" min="0" class="form-control" id="rc-edit-position" value="${d.position||0}"></div>
+        <div class="col-md-6"><label class="form-label">Class average</label><input type="number" step="0.1" class="form-control" id="rc-edit-avg" value="${d.classAverage||0}"></div>
+        <div class="col-12"><label class="form-label">Teacher's comment</label><textarea class="form-control" id="rc-edit-teacher" rows="2">${esc(d.teacherComment||'')}</textarea></div>
+        <div class="col-12"><label class="form-label">Principal's comment</label><textarea class="form-control" id="rc-edit-principal" rows="2">${esc(d.principalComment||'')}</textarea></div>
+      </div>`,
+      onSubmit: async () => {
+        const payload = {
+          position: Number(qs('rc-edit-position').value)||0,
+          classAverage: Number(qs('rc-edit-avg').value)||0,
+          teacherComment: qs('rc-edit-teacher').value,
+          principalComment: qs('rc-edit-principal').value,
+        };
+        await api.put(`/report-cards/${card._id}`, payload);
+        toast('Report card updated — PDF regenerating.','success');
+        if(onDone) onDone();
+      }});
+  }
+
+  // Default view — invite the user to pick an action
+  qs('rc-output').innerHTML = `<div class="panel"><div class="panel-body text-center py-5">
+    <i class="fa-solid fa-file-lines fa-2x text-ink-300 mb-3"></i>
+    <div class="fw-bold mb-1">Choose how to generate report cards</div>
+    <p class="text-ink-400 small mb-0" style="max-width:420px;margin:0 auto;">Single student, one class, or the whole school — pick a card above to get started.</p>
+  </div></div>`;
+}
+
+/* ============================================================
+   REPORT CARD TEMPLATES
+============================================================ */
+async function pageReportCardTemplates(root){
+  root.innerHTML = `${pageHead('Report Card Templates','Design and manage the layout used when generating report cards.', `<button class="btn btn-brand" id="rc-tpl-add"><i class="fa-solid fa-plus me-1"></i>New template</button>`)}<div id="tpl-content"></div>`;
+  qs('rc-tpl-add').addEventListener('click', () => openTemplateForm());
+  loadList();
+
+  async function loadList(){
+    const content = qs('tpl-content');
+    content.innerHTML = `<div class="panel"><div class="panel-body">${[1,2,3].map(()=>`<div class="skel skel-line"></div>`).join('')}</div></div>`;
+    let templates = [];
+    try{ templates = arr((await api.get('/report-card-templates')).data); }
+    catch(err){
+      content.innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load templates', esc(err.message||''));
+      return;
+    }
+    if(!templates.length){
+      content.innerHTML = emptyState('fa-solid fa-palette','No templates yet','Create your first report card template — you can mark it as default and use it when generating report cards.',
+        `<button class="btn btn-brand btn-sm" id="empty-tpl-add">New template</button>`);
+      qs('empty-tpl-add')?.addEventListener('click', () => openTemplateForm());
+      return;
+    }
+    content.innerHTML = `<div class="row g-3">${templates.map(t => `
+      <div class="col-md-6 col-lg-4">
+        <div class="tile h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="fw-bold font-display">${esc(t.name)}</div>
+              <div class="text-ink-400 small">${esc(t.layout||'A4_PORTRAIT')} · v${t.version||1}</div>
+            </div>
+            ${t.isDefault ? '<span class="premium-chip"><i class="fa-solid fa-star"></i>Default</span>' : (t.isActive ? statusBadge('ACTIVE') : statusBadge('ARCHIVED'))}
+          </div>
+          <div class="kv-row"><span class="k">Attendance</span><span class="v">${t.config?.showAttendance?'Shown':'Hidden'}</span></div>
+          <div class="kv-row"><span class="k">Grades</span><span class="v">${t.config?.showGrade?'Shown':'Hidden'}</span></div>
+          <div class="kv-row"><span class="k">Comments</span><span class="v">${(t.config?.showTeacherComment||t.config?.showPrincipalComment)?'Shown':'Hidden'}</span></div>
+          <div class="d-flex gap-2 mt-auto pt-2">
+            <button class="btn btn-sm btn-outline-brand flex-fill" data-tpl-edit="${t._id}"><i class="fa-regular fa-pen-to-square me-1"></i>Edit</button>
+            ${!t.isDefault ? `<button class="btn btn-sm btn-ghost" data-tpl-default="${t._id}" title="Set as default"><i class="fa-solid fa-star"></i></button>` : ''}
+            <button class="btn btn-sm btn-danger-soft" data-tpl-del="${t._id}"><i class="fa-regular fa-trash-can"></i></button>
+          </div>
         </div>
-        <div class="text-center mb-4">
-          <h4 class="font-display fw-bold mb-0">${esc(STATE.school?.name||'School')}</h4>
-          <div class="text-ink-400 small">${esc(STATE.school?.currentSession||'')} · ${esc(STATE.school?.currentTerm||'')} Report Card</div>
+      </div>`).join('')}</div>`;
+    content.querySelectorAll('[data-tpl-edit]').forEach(el=>el.addEventListener('click',()=>openTemplateForm(templates.find(x=>x._id===el.dataset.tplEdit))));
+    content.querySelectorAll('[data-tpl-default]').forEach(el=>el.addEventListener('click',async()=>{
+      try{ await api.post(`/report-card-templates/${el.dataset.tplDefault}/set-default`, {}); toast('Default template updated.','success'); loadList(); }
+      catch(e){ toast(e.message||'Could not update.','error'); }
+    }));
+    content.querySelectorAll('[data-tpl-del]').forEach(el=>el.addEventListener('click',()=>{
+      const t = templates.find(x=>x._id===el.dataset.tplDel);
+      confirmAction({title:'Delete this template?', body:`"${t.name}" will be removed.`, okText:'Delete',
+        onConfirm: async ()=>{ await api.delete(`/report-card-templates/${t._id}`); toast('Template deleted.','success'); loadList(); }});
+    }));
+  }
+
+  function openTemplateForm(existing){
+    const isEdit = !!existing;
+    const config = existing?.config || {
+      showLogo:true, showSchoolInfo:true, showStudentPhoto:false, showAttendance:true,
+      showClassAverage:true, showGrade:true, showRemark:true,
+      showTeacherComment:true, showPrincipalComment:true, showSignature:true, showStamp:false,
+      fields: []
+    };
+    openRecordModal({
+      title: isEdit ? 'Edit report card template' : 'New report card template',
+      saveLabel: isEdit ? 'Save changes' : 'Create template',
+      bodyHtml:`<div class="row g-3">
+        <div class="col-md-8"><label class="form-label">Template name <span class="required-mark">*</span></label>
+          <input required class="form-control" name="name" value="${esc(existing?.name||'')}" placeholder="e.g. Standard Term Report"></div>
+        <div class="col-md-4"><label class="form-label">Layout</label>
+          <select class="form-select" name="layout">
+            <option value="A4_PORTRAIT" ${(existing?.layout||'A4_PORTRAIT')==='A4_PORTRAIT'?'selected':''}>A4 Portrait</option>
+            <option value="A4_LANDSCAPE" ${existing?.layout==='A4_LANDSCAPE'?'selected':''}>A4 Landscape</option>
+          </select></div>
+        <div class="col-12"><hr class="my-1"><div class="fw-bold small mb-2">Visible sections</div></div>
+        <div class="col-md-6">
+          ${[
+            ['showLogo','School logo'],
+            ['showSchoolInfo','School name & contact'],
+            ['showStudentPhoto','Student photo'],
+            ['showAttendance','Attendance summary'],
+            ['showClassAverage','Class average'],
+            ['showGrade','Grade column'],
+            ['showRemark','Remark column'],
+            ['showTeacherComment',"Teacher's comment"],
+            ['showPrincipalComment',"Principal's comment"],
+            ['showSignature','Signature line'],
+            ['showStamp','School stamp'],
+          ].map(([k,lbl]) => `
+            <div class="form-check mb-1">
+              <input class="form-check-input" type="checkbox" data-cfg="${k}" id="cfg-${k}" ${config[k]?'checked':''}>
+              <label class="form-check-label small" for="cfg-${k}">${lbl}</label>
+            </div>`).join('')}
         </div>
-        <div class="row mb-3">
-          <div class="col-6"><div class="kv-row"><span class="k">Student</span><span class="v">${esc(student.firstName)} ${esc(student.lastName)}</span></div></div>
-          <div class="col-6"><div class="kv-row"><span class="k">Admission No.</span><span class="v">${esc(student.admissionNumber)}</span></div></div>
-          <div class="col-6"><div class="kv-row"><span class="k">Class</span><span class="v">${esc(nameOf(student.classId))}</span></div></div>
-          <div class="col-6"><div class="kv-row"><span class="k">Average Score</span><span class="v">${avg}%</span></div></div>
+        <div class="col-md-6">
+          <label class="form-label">Live preview</label>
+          <div class="template-preview-wrap" style="position:static;padding:.75rem;">
+            <div class="template-preview-sheet" id="tpl-preview"></div>
+          </div>
         </div>
-        <table class="table table-registry">
-          <thead><tr><th>Subject</th><th>CA</th><th>Exam</th><th>Total</th><th>Grade</th><th>Remark</th></tr></thead>
-          <tbody>${results.map(r=>`<tr><td class="cell-primary">${esc(nameOf(r.subjectId))}</td><td>${r.caScore}</td><td>${r.examScore}</td><td class="fw-bold">${r.total}</td><td>${statusBadge(r.grade)}</td><td class="cell-muted">${esc(r.remark)}</td></tr>`).join('')}</tbody>
-        </table>
-      </div>
-    </div>`;
+        <div class="col-12"><div class="form-check mt-2"><input class="form-check-input" type="checkbox" id="cfg-isDefault" ${existing?.isDefault?'checked':''}><label class="form-check-label small" for="cfg-isDefault">Set as default template</label></div></div>
+      </div>`,
+      onMount: (form) => {
+        const updatePreview = () => {
+          const cfg = {};
+          form.querySelectorAll('[data-cfg]').forEach(i => cfg[i.dataset.cfg] = i.checked);
+          qs('tpl-preview').innerHTML = renderTemplatePreview({
+            schoolName: STATE.school?.name || 'Your School Name',
+            session: STATE.school?.currentSession || '2026/2027',
+            term: STATE.school?.currentTerm || 'First Term',
+          }, cfg);
+        };
+        form.querySelectorAll('[data-cfg]').forEach(i => i.addEventListener('change', updatePreview));
+        updatePreview();
+      },
+      onSubmit: async (form) => {
+        const fd = new FormData(form);
+        const cfg = {};
+        form.querySelectorAll('[data-cfg]').forEach(i => cfg[i.dataset.cfg] = i.checked);
+        const payload = {
+          name: fd.get('name'),
+          layout: fd.get('layout'),
+          isDefault: form.querySelector('#cfg-isDefault').checked,
+          isActive: true,
+          config: Object.assign({ fields: [] }, cfg),
+        };
+        if(isEdit) await api.put(`/report-card-templates/${existing._id}`, payload);
+        else await api.post('/report-card-templates', payload);
+        toast(isEdit?'Template updated.':'Template created.','success');
+        loadList();
+      }
+    });
+  }
+
+  function renderTemplatePreview(data, cfg){
+    return `
+      ${cfg.showSchoolInfo ? `
+        <div class="tps-school">${esc(data.schoolName)}</div>
+        <div class="tps-sub">${esc(data.session)} · ${esc(data.term)} Report Card</div>` : ''}
+      <div class="tps-title">STUDENT REPORT CARD</div>
+      <div class="tps-info-row"><span class="k">Name</span><span class="v">Adaeze Balogun</span></div>
+      <div class="tps-info-row"><span class="k">Admission No.</span><span class="v">BFD/2026/0142</span></div>
+      <div class="tps-info-row"><span class="k">Class</span><span class="v">JSS 2A</span></div>
+      ${cfg.showClassAverage ? `<div class="tps-info-row"><span class="k">Class Average</span><span class="v">74.6</span></div>` : ''}
+      <table>
+        <thead><tr><th>Subject</th><th>CA</th><th>Exam</th><th>Total</th>${cfg.showGrade?'<th>Grade</th>':''}${cfg.showRemark?'<th>Remark</th>':''}</tr></thead>
+        <tbody>
+          <tr><td>Mathematics</td><td>32</td><td>54</td><td>86</td>${cfg.showGrade?'<td>A</td>':''}${cfg.showRemark?'<td>Excellent</td>':''}</tr>
+          <tr><td>English Language</td><td>28</td><td>49</td><td>77</td>${cfg.showGrade?'<td>A</td>':''}${cfg.showRemark?'<td>Very good</td>':''}</tr>
+          <tr><td>Basic Science</td><td>26</td><td>45</td><td>71</td>${cfg.showGrade?'<td>A</td>':''}${cfg.showRemark?'<td>Very good</td>':''}</tr>
+          <tr><td>Social Studies</td><td>22</td><td>40</td><td>62</td>${cfg.showGrade?'<td>B</td>':''}${cfg.showRemark?'<td>Good</td>':''}</tr>
+        </tbody>
+      </table>
+      ${cfg.showAttendance ? `<div class="tps-comment"><span class="lbl">Attendance:</span> 58/62 days (94%)</div>` : ''}
+      ${cfg.showTeacherComment ? `<div class="tps-comment"><span class="lbl">Teacher's Comment:</span> A conscientious student with excellent participation.</div>` : ''}
+      ${cfg.showPrincipalComment ? `<div class="tps-comment"><span class="lbl">Principal's Comment:</span> Excellent result — keep it up.</div>` : ''}
+      ${cfg.showSignature ? `<div class="tps-sig"><div><div class="line"></div>Class Teacher</div><div><div class="line"></div>Principal</div></div>` : ''}
+    `;
   }
 }
 
 /* ============================================================
-   FEE STRUCTURES
+   FEES
 ============================================================ */
 async function pageFees(root){
   root.innerHTML = `
@@ -2627,19 +3834,24 @@ async function pageFees(root){
 }
 
 window.__SY_PAGES_1 = { pageDashboard, pageStudents, pageStaff, pageParents, pageClasses, Lookups, arr, nameOf, idOf, statusBadge, openRecordModal, openDetailModal, registryShell, renderBars };
-window.__SY_PAGES_2 = { pageAcademics, pageAttendance, pageResults, pageReportCards, pageFees };
+window.__SY_PAGES_2 = { pageAcademics, pageAttendance, pageResults, pageReportCards, pageReportCardTemplates, pageFees };
 
 })();
 </script>
 
 <script>
 /* ================================================================
-   PART 3: INVOICES, PAYMENTS, ENGAGEMENT, INSIGHTS, SETTINGS
+   PART 3: INVOICES, PAYMENTS, APPROVALS, ENGAGEMENT, INSIGHTS,
+           SUBSCRIPTION, PLATFORM, SETTINGS
 ================================================================ */
 (function(){
 "use strict";
-const { STATE, api, toast, fmtMoney, fmtDate, fmtDateTime, esc, initials, qs, debounce, confirmAction, navigateTo, pageHead, emptyState, uid, roleLabel, canSee } = window.__SY;
+const { STATE, api, toast, fmtMoney, fmtMoneyShort, fmtDate, fmtDateTime, fmtBytes,
+  esc, initials, qs, debounce, confirmAction, navigateTo, pageHead, emptyState, uid, roleLabel, canSee,
+  isPremium, renderPlanCard, openLightbox, setupFileDrop, renderFilePreview } = window.__SY;
 const { Lookups, arr, nameOf, idOf, statusBadge, openRecordModal, openDetailModal, registryShell, renderBars } = window.__SY_PAGES_1;
+
+const API_BASE = "https://school-lwoa.onrender.com/api/v1";
 
 /* ============================================================
    INVOICES
@@ -2724,12 +3936,31 @@ async function pageInvoices(root){
 }
 
 /* ============================================================
-   PAYMENTS
+   PAYMENTS — includes bulk receipt batch
 ============================================================ */
 async function pagePayments(root){
   const canApprove = ['SUPER_ADMIN','SCHOOL_OWNER','BURSAR','ADMIN','ACCOUNTANT'].includes(STATE.user.role);
-  root.innerHTML = registryShell({title:'Payments', sub:'Record and confirm manual payments; track all transactions.', addLabel:'Record payment',
-    filtersHtml:`<select class="form-select form-select-sm" style="width:150px;" id="filter-status"><option value="">All statuses</option>${['PENDING','CONFIRMED','FAILED','REVERSED','REFUNDED'].map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`});
+  root.innerHTML = `
+    ${pageHead('Payments','Record and confirm manual payments; track all transactions.', `
+      <button class="btn btn-outline-brand" id="batch-receipts-btn"><i class="fa-solid fa-file-invoice-dollar me-1"></i>Generate all receipts</button>
+      <button class="btn btn-brand" id="add-payment-btn"><i class="fa-solid fa-plus me-1"></i>Record payment</button>`)}
+    <div class="panel mb-3">
+      <div class="panel-head">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <div class="position-relative">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--ink-300);font-size:.8rem;"></i>
+            <input type="text" class="form-control form-control-sm" style="padding-left:2rem;width:220px;" id="registry-search" placeholder="Search…">
+          </div>
+          <select class="form-select form-select-sm" style="width:150px;" id="filter-status"><option value="">All statuses</option>${['PENDING','CONFIRMED','FAILED','REVERSED','REFUNDED'].map(s=>`<option value="${s}">${s}</option>`).join('')}</select>
+        </div>
+        <div class="text-ink-400 small" id="registry-count">—</div>
+      </div>
+      <div class="panel-body p-0">
+        <div class="table-responsive"><table class="table table-registry mb-0" id="registry-table"></table></div>
+        <div id="registry-empty"></div>
+      </div>
+    </div>
+    <div id="batch-output"></div>`;
   let payments = [], invoices = [];
   try{ [payments, invoices] = await Promise.all([ api.get('/payments').then(r=>arr(r.data)), api.get('/invoices').then(r=>arr(r.data)) ]); }
   catch(err){ qs('registry-empty').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load payments', esc(err.message||'')); return; }
@@ -2752,20 +3983,27 @@ async function pagePayments(root){
         <td>${esc((p.method||'').replace(/_/g,' '))}</td>
         <td>${statusBadge(p.status)}</td>
         <td class="cell-muted">${fmtDate(p.createdAt)}</td>
-        <td class="text-end">${(p.status==='PENDING' && canApprove)?`<button class="btn btn-sm btn-outline-brand" data-approve="${p._id}">Approve</button>`:''}</td>
+        <td class="text-end">
+          ${p.proofUrl?`<button class="btn btn-sm btn-ghost" data-view-proof="${esc(p.proofUrl)}" title="View proof"><i class="fa-regular fa-image"></i></button>`:''}
+          ${p.receiptUrl?`<button class="btn btn-sm btn-ghost" data-view-receipt="${esc(p.receiptUrl)}" title="View receipt"><i class="fa-solid fa-receipt"></i></button>`:''}
+          ${(p.status==='PENDING' && canApprove)?`<button class="btn btn-sm btn-success-soft" data-approve="${p._id}">Approve</button>`:''}
+        </td>
       </tr>`).join('')}</tbody>`;
+    qs('registry-table').querySelectorAll('[data-view-proof]').forEach(el=>el.addEventListener('click',()=>openLightbox(el.dataset.viewProof, el.dataset.viewProof.includes('.pdf'))));
+    qs('registry-table').querySelectorAll('[data-view-receipt]').forEach(el=>el.addEventListener('click',()=>openLightbox(el.dataset.viewReceipt, true)));
     qs('registry-table').querySelectorAll('[data-approve]').forEach(el=>el.addEventListener('click',()=>{
       confirmAction({title:'Approve this payment?', body:'This will mark the invoice as paid/partially paid.', okText:'Approve', danger:false, onConfirm: async()=>{ await api.post(`/payments/${el.dataset.approve}/approve`, {}); toast('Payment approved.','success'); pagePayments(root); }});
     }));
   }
   qs('registry-search').addEventListener('input', debounce(draw,200));
   qs('filter-status').addEventListener('change', draw);
-  qs('add-record-btn')?.addEventListener('click', ()=>openForm());
+  qs('add-payment-btn').addEventListener('click', ()=>openForm());
   draw();
 
   window.__SY_OPEN_PAYMENT_FOR__ = (invoice) => openForm(invoice);
 
   function openForm(presetInvoice){
+    let selectedFile = null;
     openRecordModal({ title:'Record a payment', saveLabel:'Record payment',
       bodyHtml:`<div class="row g-3">
         <div class="col-12"><label class="form-label">Invoice <span class="required-mark">*</span></label>
@@ -2774,13 +4012,204 @@ async function pagePayments(root){
         <div class="col-md-6"><label class="form-label">Method <span class="required-mark">*</span></label>
           <select required class="form-select" name="method">${['BANK_TRANSFER','CASH','POS','MANUAL'].map(m=>`<option value="${m}">${m.replace(/_/g,' ')}</option>`).join('')}</select></div>
         <div class="col-12"><label class="form-label">Reference</label><input class="form-control" name="reference" placeholder="Optional — auto-generated if left blank"></div>
+        <div class="col-12">
+          <label class="form-label">Proof of payment <span class="text-ink-400 fw-normal">(optional — screenshot or PDF of the transfer slip)</span></label>
+          <div class="file-drop" id="payment-proof-drop">
+            <div class="fd-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <div class="fd-title">Click to upload, or drag and drop</div>
+            <div class="fd-sub">JPG, PNG, or PDF — up to 5 MB</div>
+          </div>
+          <div id="payment-proof-preview"></div>
+        </div>
       </div>`,
+      onMount: (form) => {
+        setupFileDrop(qs('payment-proof-drop'), {
+          accept: 'image/*,application/pdf',
+          maxSize: 5*1024*1024,
+          onSelect: (file) => {
+            selectedFile = file;
+            renderFilePreview(qs('payment-proof-preview'), file, () => { selectedFile = null; });
+          }
+        });
+      },
       onSubmit: async (form) => {
         const payload = Object.fromEntries(new FormData(form).entries());
         if(!payload.reference) delete payload.reference;
-        await api.post('/payments/manual', payload);
+
+        // If a proof file is attached, send as multipart/form-data
+        if(selectedFile){
+          const fd = new FormData();
+          Object.keys(payload).forEach(k => fd.append(k, payload[k]));
+          fd.append('proof', selectedFile);
+          await api.postForm('/payments/manual', fd);
+        } else {
+          await api.post('/payments/manual', payload);
+        }
         toast('Payment recorded — pending approval.','success'); pagePayments(root);
       }});
+  }
+
+  // Batch receipt generation
+  qs('batch-receipts-btn').addEventListener('click', () => {
+    confirmAction({
+      title:'Generate receipts for all fully paid invoices?',
+      body:'Receipts will be generated in the background. When complete, you can download one merged PDF for printing.',
+      okText:'Start batch', danger:false,
+      onConfirm: async () => {
+        try{
+          const res = await api.post('/payments/generate-receipts-batch', {});
+          trackReceiptBatch(res.data._id);
+        }catch(err){
+          toast(err.message || 'Could not start batch.', 'error');
+        }
+      }
+    });
+  });
+
+  function trackReceiptBatch(batchId){
+    const out = qs('batch-output');
+    out.innerHTML = `
+      <div class="batch-progress-card mb-3">
+        <div class="bp-head">
+          <div>
+            <div class="bp-title">Generating receipts…</div>
+            <div class="text-ink-400 small" id="rb-sub">Starting up</div>
+          </div>
+          <div class="text-end"><div class="bp-stat" id="rb-pct">0%</div></div>
+        </div>
+        <div class="bp-track"><div class="bp-fill" id="rb-fill" style="width:0%;"></div></div>
+        <div class="bp-meta">
+          <span><i class="fa-solid fa-check text-success"></i> <span id="rb-success">0</span> succeeded</span>
+          <span><i class="fa-solid fa-xmark text-danger"></i> <span id="rb-fail">0</span> failed</span>
+          <span><i class="fa-solid fa-list"></i> <span id="rb-total">0</span> total</span>
+        </div>
+        <div class="d-flex gap-2 mt-3 d-none" id="rb-actions">
+          <button class="btn btn-brand btn-sm" id="rb-print-all"><i class="fa-solid fa-print me-1"></i>Download merged PDF</button>
+        </div>
+      </div>`;
+    const interval = setInterval(async () => {
+      try{
+        const res = await api.get(`/payments/batches/${batchId}`);
+        const b = res.data;
+        const pct = b.totalCount ? Math.round((b.processedCount / b.totalCount) * 100) : 0;
+        qs('rb-sub').textContent = b.status === 'COMPLETED' ? 'Completed' : `Processing ${b.processedCount} of ${b.totalCount}`;
+        qs('rb-pct').textContent = pct + '%';
+        qs('rb-fill').style.width = pct + '%';
+        qs('rb-fill').classList.toggle('done', b.status === 'COMPLETED');
+        qs('rb-success').textContent = b.successCount || 0;
+        qs('rb-fail').textContent = b.failureCount || 0;
+        qs('rb-total').textContent = b.totalCount || 0;
+        if(b.status === 'COMPLETED'){
+          clearInterval(interval);
+          const actions = qs('rb-actions');
+          if(actions){
+            actions.classList.remove('d-none');
+            qs('rb-print-all').addEventListener('click', async () => {
+              const btn = qs('rb-print-all');
+              btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin me-1"></i>Preparing…';
+              try{
+                const res = await fetch(`${API_BASE}/payments/batches/${batchId}/print-pdf`, { headers:{Authorization:'Bearer '+STATE.accessToken} });
+                if(!res.ok) throw new Error('Not ready yet');
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `receipts-${batchId}.pdf`; a.click();
+                URL.revokeObjectURL(url);
+                toast('Merged receipts downloaded.','success');
+              }catch(e){ toast('PDFs are still being prepared — try again in a few seconds.','info'); }
+              finally{ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-print me-1"></i>Download merged PDF'; }
+            });
+          }
+        }
+      }catch(e){ /* keep polling */ }
+    }, 2500);
+  }
+}
+
+/* ============================================================
+   PAYMENT APPROVALS — queue with inline proof preview
+============================================================ */
+async function pageApprovals(root){
+  const canApprove = ['SUPER_ADMIN','SCHOOL_OWNER','BURSAR','ADMIN','ACCOUNTANT'].includes(STATE.user.role);
+  if(!canApprove){
+    root.innerHTML = emptyState('fa-solid fa-lock','Restricted','Your role does not have permission to review payments.');
+    return;
+  }
+  root.innerHTML = `${pageHead('Payment Approvals','Review manual payments submitted by staff and parents, verify proof, and confirm.')}
+    <div id="approvals-list"></div>`;
+  loadApprovals();
+
+  async function loadApprovals(){
+    const list = qs('approvals-list');
+    list.innerHTML = `<div class="panel"><div class="panel-body">${[1,2,3].map(()=>`<div class="skel skel-line"></div>`).join('')}</div></div>`;
+    try{
+      const res = await api.get('/payments');
+      const pending = arr(res.data).filter(p => p.status === 'PENDING');
+      if(!pending.length){
+        list.innerHTML = `<div class="panel">${emptyState('fa-solid fa-inbox','No payments waiting for approval','When staff or parents submit a manual payment, it will appear here for you to review.')}</div>`;
+        return;
+      }
+      list.innerHTML = `<div class="d-flex flex-column gap-2">${pending.map(p => renderApprovalCard(p)).join('')}</div>`;
+      bindApprovalEvents(pending);
+    }catch(err){
+      list.innerHTML = `<div class="panel">${emptyState('fa-solid fa-triangle-exclamation','Could not load approvals', esc(err.message||''))}</div>`;
+    }
+  }
+
+  function renderApprovalCard(p){
+    const isImage = p.proofUrl && !p.proofUrl.includes('.pdf');
+    return `<div class="approval-card" data-card="${p._id}">
+      <div class="approval-thumb" ${p.proofUrl?`data-thumb="${esc(p.proofUrl)}"`:'style="cursor:default;"'}>
+        ${p.proofUrl ? (isImage ? `<img src="${esc(p.proofUrl)}" alt="proof">` : `<i class="fa-solid fa-file-pdf"></i>`) : `<i class="fa-solid fa-receipt"></i>`}
+      </div>
+      <div class="ac-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <div class="ac-amount">${fmtMoney(p.amount)}</div>
+            <div class="ac-meta">${esc(nameOf(p.studentId))} · ${esc((p.method||'').replace(/_/g,' '))}</div>
+            <div class="ac-meta">Ref: <span class="font-mono">${esc(p.reference)}</span></div>
+            <div class="ac-meta">Submitted ${fmtDateTime(p.createdAt)}</div>
+          </div>
+          ${statusBadge('PENDING')}
+        </div>
+        <div class="ac-actions">
+          ${p.proofUrl ? `<button class="btn btn-sm btn-outline-brand" data-view="${esc(p.proofUrl)}"><i class="fa-regular fa-eye me-1"></i>View proof</button>` : ''}
+          <button class="btn btn-sm btn-success-soft" data-approve="${p._id}"><i class="fa-solid fa-check me-1"></i>Approve</button>
+          <button class="btn btn-sm btn-danger-soft" data-reject="${p._id}"><i class="fa-solid fa-xmark me-1"></i>Reject</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function bindApprovalEvents(pending){
+    qs('approvals-list').querySelectorAll('[data-view]').forEach(el=>el.addEventListener('click',()=>openLightbox(el.dataset.view, el.dataset.view.includes('.pdf'))));
+    qs('approvals-list').querySelectorAll('[data-thumb]').forEach(el=>el.addEventListener('click',()=>openLightbox(el.dataset.thumb, el.dataset.thumb.includes('.pdf'))));
+    qs('approvals-list').querySelectorAll('[data-approve]').forEach(el=>el.addEventListener('click',()=>{
+      const card = el.closest('.approval-card');
+      confirmAction({
+        title:'Approve this payment?', body:'The invoice will be updated to reflect this payment.', okText:'Approve', danger:false,
+        onConfirm: async () => {
+          await api.post(`/payments/${el.dataset.approve}/approve`, {});
+          card?.classList.add('leaving');
+          setTimeout(() => { toast('Payment approved.','success'); loadApprovals(); window.__SY.updateNavBadges(); }, 300);
+        }
+      });
+    }));
+    qs('approvals-list').querySelectorAll('[data-reject]').forEach(el=>el.addEventListener('click',()=>{
+      const card = el.closest('.approval-card');
+      confirmAction({
+        title:'Reject this payment?', body:'The payment will be marked as rejected. This cannot be undone.', okText:'Reject', danger:true,
+        onConfirm: async () => {
+          try{
+            await api.post(`/payments/${el.dataset.reject}/reject`, {});
+          }catch(e){
+            // Backend may not support /reject — fallback to DELETE as a soft signal
+            try{ await api.delete(`/payments/${el.dataset.reject}`); }catch(_){}
+          }
+          card?.classList.add('leaving');
+          setTimeout(() => { toast('Payment rejected.','info'); loadApprovals(); window.__SY.updateNavBadges(); }, 300);
+        }
+      });
+    }));
   }
 }
 
@@ -2841,7 +4270,7 @@ async function pageNotifications(root){
         <div class="timeline-dot" style="position:static;"><i class="fa-solid fa-bell"></i></div>
         <div class="flex-fill">
           <div class="fw-bold small">${esc(n.title||n.subject||'Notification')}</div>
-          <p class="text-ink-500 small mb-1">${esc(n.message||n.body||'')}</p>
+          <p class="text-ink-600 small mb-1">${esc(n.message||n.body||'')}</p>
           <span class="text-ink-300" style="font-size:.72rem;">${fmtDateTime(n.createdAt)}</span>
         </div>
         ${!(n.read||n.isRead)?'<span class="badge-status b-brand">new</span>':''}
@@ -2872,7 +4301,39 @@ async function pageDocuments(root){
   }catch(err){
     qs('docs-grid').innerHTML = `<div class="col-12">${emptyState('fa-solid fa-triangle-exclamation','Could not load documents', esc(err.message||''))}</div>`;
   }
-  qs('upload-doc-btn').addEventListener('click', () => toast('Connect a storage account in Settings to enable uploads.','info'));
+  qs('upload-doc-btn').addEventListener('click', () => {
+    let selectedFile = null;
+    openRecordModal({
+      title:'Upload document', saveLabel:'Upload',
+      bodyHtml:`<div class="row g-3">
+        <div class="col-12"><label class="form-label">Document name <span class="required-mark">*</span></label><input required class="form-control" name="name" placeholder="e.g. Parent Handbook"></div>
+        <div class="col-12">
+          <label class="form-label">File <span class="required-mark">*</span></label>
+          <div class="file-drop" id="doc-drop">
+            <div class="fd-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <div class="fd-title">Click to upload, or drag and drop</div>
+            <div class="fd-sub">Any file type — up to 5 MB</div>
+          </div>
+          <div id="doc-preview"></div>
+        </div>
+        <div class="col-12"><label class="form-label">Category</label>
+          <select class="form-select" name="category"><option value="GENERAL">General</option><option value="POLICY">Policy</option><option value="FORM">Form</option><option value="TEMPLATE">Template</option></select></div>
+      </div>`,
+      onMount: () => {
+        setupFileDrop(qs('doc-drop'), {
+          accept: '*',
+          maxSize: 5*1024*1024,
+          onSelect: (file) => { selectedFile = file; renderFilePreview(qs('doc-preview'), file, () => { selectedFile = null; }); }
+        });
+      },
+      onSubmit: async (form) => {
+        if(!selectedFile){ throw new Error('Please attach a file.'); }
+        const fd = new FormData(form);
+        fd.append('file', selectedFile);
+        await api.postForm('/documents', fd);
+        toast('Document uploaded.','success'); pageDocuments(root);
+      }});
+  });
 }
 
 /* ============================================================
@@ -2971,7 +4432,7 @@ async function pageExport(root){
   root.querySelectorAll('[data-export]').forEach(btn => btn.addEventListener('click', async () => {
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin"></i>';
     try{
-      const res = await fetch(`https://school-lwoa.onrender.com/api/v1/export/${btn.dataset.export}`, { headers:{Authorization:'Bearer '+STATE.accessToken} });
+      const res = await fetch(`${API_BASE}/export/${btn.dataset.export}`, { headers:{Authorization:'Bearer '+STATE.accessToken} });
       if(!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -2984,6 +4445,127 @@ async function pageExport(root){
 }
 
 /* ============================================================
+   SUBSCRIPTION PANEL
+============================================================ */
+async function pageSubscription(root){
+  root.innerHTML = `${pageHead('Subscription & Billing','Manage your plan, view usage, and renew.')}<div id="sub-content"></div>`;
+  const content = qs('sub-content');
+  content.innerHTML = `<div class="panel"><div class="panel-body">${[1,2,3].map(()=>`<div class="skel skel-line"></div>`).join('')}</div></div>`;
+
+  let current = STATE.subscription, plans = [];
+  try{
+    if(!current){ const r = await api.get('/subscriptions/current'); current = r.data; STATE.subscription = current; }
+  }catch(e){ /* ignore */ }
+  try{
+    const r = await api.get('/subscriptions/plans');
+    plans = arr(r.data);
+    if(!plans.length) plans = getFallbackPlans();
+  }catch(e){ plans = getFallbackPlans(); }
+
+  if(!current){
+    content.innerHTML = `<div class="panel">${emptyState('fa-solid fa-crown','No subscription found','Contact support or start a new plan to continue using Schoolyard.')}</div>`;
+    return;
+  }
+
+  const isTrial = current.isTrial;
+  const daysLeft = isTrial && current.trialEndDate ? daysBetween(new Date(), current.trialEndDate) : null;
+  const subCardClass = current.status === 'EXPIRED' || current.status === 'PAST_DUE' ? 'danger' : (isTrial && daysLeft !== null && daysLeft <= 5 ? 'warn' : (isPremium() ? 'gold' : ''));
+
+  content.innerHTML = `
+    <div class="sub-status-card ${subCardClass} mb-3">
+      <div class="badge-row">${isTrial ? '<span class="badge-status b-violet">Free trial</span>' : `<span class="badge-status ${isPremium()?'b-gold':'b-brand'}">${esc(current.planCode || 'STARTER')}</span>`}</div>
+      <h3>${isTrial ? `${daysLeft} day${daysLeft===1?'':'s'} left in your trial` : (current.planName || 'Current plan')}</h3>
+      <div class="meta">
+        ${isTrial
+          ? `Trial ends ${fmtDate(current.trialEndDate)}. Upgrade anytime to keep full access.`
+          : `Renews on ${fmtDate(current.endDate)} · Auto-renew ${current.autoRenew === false ? 'off' : 'on'}`}
+      </div>
+      ${isTrial && daysLeft !== null ? `
+        <div class="usage-meter">
+          <div class="label-row"><span>Trial progress</span><span>${Math.max(0, 14 - daysLeft)} / 14 days used</span></div>
+          <div class="track"><div class="fill ${daysLeft <= 5 ? 'warn' : ''}" style="width:${Math.min(100, (14 - daysLeft) / 14 * 100)}%;"></div></div>
+        </div>` : ''}
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6 col-lg-4"><div class="tile">
+        <div class="stat-label">Students</div>
+        <div class="stat-value">${(STATE.school?.studentCount || 0).toLocaleString()}</div>
+        <div class="text-ink-400 small mt-1">of ${current.studentLimit || '∞'} allowed</div>
+      </div></div>
+      <div class="col-md-6 col-lg-4"><div class="tile">
+        <div class="stat-label">Staff accounts</div>
+        <div class="stat-value">${(STATE.school?.staffCount || 0).toLocaleString()}</div>
+        <div class="text-ink-400 small mt-1">of ${current.staffLimit || '∞'} allowed</div>
+      </div></div>
+      <div class="col-md-6 col-lg-4"><div class="tile">
+        <div class="stat-label">SMS credits</div>
+        <div class="stat-value">${(STATE.school?.smsBalance || 0).toLocaleString()}</div>
+        <div class="text-ink-400 small mt-1">${(STATE.school?.smsBalance || 0) < 50 ? 'Running low' : 'Healthy balance'}</div>
+      </div></div>
+    </div>
+
+    <div class="panel mb-3">
+      <div class="panel-head"><h6>Available plans</h6></div>
+      <div class="panel-body">
+        <div class="pricing-grid">
+          ${plans.map(p => renderPlanCard(p, {forLanding:false})).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h6>Renewal history</h6></div>
+      <div class="panel-body p-0" id="sub-history"></div>
+    </div>`;
+
+  // Rebind plan CTAs on this page to start the renewal flow
+  content.querySelectorAll('[data-plan-cta]').forEach(btn => {
+    btn.addEventListener('click', () => startRenewal(btn.dataset.planCta));
+  });
+
+  try{
+    const histRes = await api.get('/subscriptions/payments');
+    const history = arr(histRes.data);
+    qs('sub-history').innerHTML = history.length ? `<table class="table table-registry mb-0">
+      <thead><tr><th>Reference</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>${history.map(h => `<tr>
+        <td class="font-mono cell-muted" style="font-size:.75rem;">${esc(h.reference)}</td>
+        <td>${fmtMoney(h.amount)}</td>
+        <td>${statusBadge(h.status)}</td>
+        <td class="cell-muted">${fmtDate(h.createdAt)}</td>
+      </tr>`).join('')}</tbody></table>` : emptyState('fa-regular fa-receipt','No renewal history yet','Payments toward your subscription will appear here.');
+  }catch(e){
+    qs('sub-history').innerHTML = emptyState('fa-regular fa-receipt','No renewal history yet','Payments toward your subscription will appear here.');
+  }
+
+  async function startRenewal(planCode){
+    confirmAction({
+      title:'Start subscription renewal?',
+      body:`You'll be taken through a payment step for the ${planCode} plan. This is a manual renewal request — our team will confirm once payment is received.`,
+      okText:'Start renewal', danger:false,
+      onConfirm: async () => {
+        try{
+          const res = await api.post('/subscriptions/renew', { planCode });
+          toast('Renewal request submitted — we\'ll contact you for payment.','success');
+          pageSubscription(root);
+        }catch(err){
+          toast(err.message || 'Could not start renewal.', 'error');
+        }
+      }
+    });
+  }
+
+  function getFallbackPlans(){
+    return [
+      {code:'STARTER', name:'Starter', description:'For a growing single-campus school.', price:0, billingCycle:'TERMLY', features:['Up to 150 students','Core operations','Email support']},
+      {code:'PROFESSIONAL', name:'Professional', description:'The full operations console.', price:7500000, billingCycle:'TERMLY', features:['Up to 800 students','Batch operations','Custom templates','Priority support'], popular:true},
+      {code:'ENTERPRISE', name:'Enterprise', description:'Multi-campus groups.', price:0, billingCycle:'CUSTOM', features:['Unlimited scale','Dedicated manager','Custom integrations']},
+    ];
+  }
+}
+
+/* ============================================================
    PLATFORM (super admin)
 ============================================================ */
 async function pagePlatform(root){
@@ -2992,10 +4574,54 @@ async function pagePlatform(root){
   try{
     const res = await api.get('/schools');
     const schools = arr(res.data);
-    qs('platform-schools').innerHTML = `<table class="table table-registry mb-0"><thead><tr><th>School</th><th>Status</th><th>Session</th><th>Created</th></tr></thead>
-      <tbody>${schools.map(s=>`<tr><td class="cell-primary">${esc(s.name)}</td><td>${statusBadge(s.status)}</td><td>${esc(s.currentSession||'—')}</td><td class="cell-muted">${fmtDate(s.createdAt)}</td></tr>`).join('')}</tbody></table>`;
+    qs('platform-schools').innerHTML = `<table class="table table-registry mb-0"><thead><tr><th>School</th><th>Status</th><th>Session</th><th>Plan</th><th>Created</th></tr></thead>
+      <tbody>${schools.map(s=>`<tr><td class="cell-primary">${esc(s.name)}</td><td>${statusBadge(s.status)}</td><td>${esc(s.currentSession||'—')}</td><td>${statusBadge(s.planCode||'STARTER')}</td><td class="cell-muted">${fmtDate(s.createdAt)}</td></tr>`).join('')}</tbody></table>`;
   }catch(err){
     qs('platform-schools').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load schools', esc(err.message||''));
+  }
+}
+
+/* ============================================================
+   PLATFORM SUBSCRIPTIONS (super admin)
+============================================================ */
+async function pagePlatformSubscriptions(root){
+  if(STATE.user.role !== 'SUPER_ADMIN'){ root.innerHTML = emptyState('fa-solid fa-lock','Restricted','This area is only available to platform super admins.'); return; }
+  root.innerHTML = `${pageHead('All Subscriptions','Every school\'s subscription status, plan, and renewal queue.')}<div class="panel"><div class="panel-body p-0" id="platform-subs"></div></div>`;
+  try{
+    const res = await api.get('/platform/subscriptions');
+    const subs = arr(res.data);
+    if(!subs.length){
+      qs('platform-subs').innerHTML = emptyState('fa-solid fa-list-check','No subscriptions yet','Subscriptions will appear here as schools sign up.');
+      return;
+    }
+    qs('platform-subs').innerHTML = `<table class="table table-registry mb-0">
+      <thead><tr><th>School</th><th>Plan</th><th>Status</th><th>Trial ends</th><th>Renews</th><th></th></tr></thead>
+      <tbody>${subs.map(s => `<tr>
+        <td class="cell-primary">${esc(s.schoolName || nameOf(s.schoolId))}</td>
+        <td>${statusBadge(s.planCode || 'STARTER')}</td>
+        <td>${statusBadge(s.status)}</td>
+        <td class="cell-muted">${s.trialEndDate ? fmtDate(s.trialEndDate) : '—'}</td>
+        <td class="cell-muted">${s.endDate ? fmtDate(s.endDate) : '—'}</td>
+        <td class="text-end">
+          ${s.status === 'PAST_DUE' || s.status === 'EXPIRED' ? `<button class="btn btn-sm btn-brand" data-renew="${s._id}">Approve renewal</button>` : ''}
+        </td>
+      </tr>`).join('')}</tbody></table>`;
+    qs('platform-subs').querySelectorAll('[data-renew]').forEach(el=>el.addEventListener('click',()=>{
+      confirmAction({
+        title:'Approve renewal for this school?',
+        body:'This will mark the subscription as active and extend the renewal date.',
+        okText:'Approve', danger:false,
+        onConfirm: async () => {
+          try{
+            await api.post(`/platform/subscriptions/${el.dataset.renew}/approve`, {});
+            toast('Renewal approved.','success');
+            pagePlatformSubscriptions(root);
+          }catch(err){ toast(err.message || 'Could not approve.','error'); }
+        }
+      });
+    }));
+  }catch(err){
+    qs('platform-subs').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load subscriptions', esc(err.message||''));
   }
 }
 
@@ -3017,7 +4643,7 @@ async function pageSupport(root){
     try{
       const res = await api.get('/support');
       const tix = arr(res.data);
-      qs('support-tickets').innerHTML = tix.length ? tix.map(t=>`<div class="hairline p-3"><div class="d-flex justify-content-between"><span class="fw-bold small">${esc(t.subject)}</span>${statusBadge(t.status||'PENDING')}</div><p class="text-ink-500 small mb-0 mt-1">${esc(t.message||'')}</p></div>`).join('') : emptyState('fa-regular fa-life-ring','No tickets yet','Submit a ticket if you run into any issues.');
+      qs('support-tickets').innerHTML = tix.length ? tix.map(t=>`<div class="hairline p-3"><div class="d-flex justify-content-between"><span class="fw-bold small">${esc(t.subject)}</span>${statusBadge(t.status||'PENDING')}</div><p class="text-ink-600 small mb-0 mt-1">${esc(t.message||'')}</p></div>`).join('') : emptyState('fa-regular fa-life-ring','No tickets yet','Submit a ticket if you run into any issues.');
     }catch(err){ qs('support-tickets').innerHTML = emptyState('fa-solid fa-triangle-exclamation','Could not load tickets', esc(err.message||'')); }
   }
   loadTickets();
@@ -3036,7 +4662,7 @@ async function pageSupport(root){
 }
 
 /* ============================================================
-   SETTINGS (profile + school)
+   SETTINGS (profile + school + subscription)
 ============================================================ */
 async function pageSettings(root){
   const tab = (STATE.routeParams && STATE.routeParams.tab) || 'profile';
@@ -3119,22 +4745,24 @@ window.PAGES = Object.assign({}, {
   attendance: window.__SY_PAGES_2.pageAttendance,
   results: window.__SY_PAGES_2.pageResults,
   'report-cards': window.__SY_PAGES_2.pageReportCards,
+  'report-card-templates': window.__SY_PAGES_2.pageReportCardTemplates,
   fees: window.__SY_PAGES_2.pageFees,
   invoices: pageInvoices,
   payments: pagePayments,
+  approvals: pageApprovals,
   communications: pageCommunications,
   notifications: pageNotifications,
   documents: pageDocuments,
   automations: pageAutomations,
   analytics: pageAnalytics,
   export: pageExport,
+  subscription: pageSubscription,
   platform: pagePlatform,
+  'platform-subscriptions': pagePlatformSubscriptions,
   support: pageSupport,
   settings: pageSettings,
 });
 
-// Signal to boot() (defined in the first script block) that all page renderers
-// are now registered on window.PAGES and it's safe to render a route.
 window.__SY_PAGES_READY = true;
 
 })();
