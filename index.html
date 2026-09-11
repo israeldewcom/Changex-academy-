@@ -1715,6 +1715,49 @@
             color: var(--green);
         }
         #commandPalette .cp-item i { font-size: 1rem; width: 1.4rem; }
+
+        /* Fee structure builder */
+        .fee-item-row {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr auto;
+            gap: .4rem;
+            align-items: center;
+            margin-bottom: .4rem;
+        }
+        @media(max-width:575px) {
+            .fee-item-row { grid-template-columns: 1fr 1fr; }
+            .fee-item-row > *:nth-child(1) { grid-column: span 2; }
+        }
+
+        /* Score entry rows */
+        .score-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr 1fr auto;
+            gap: .4rem;
+            align-items: center;
+            padding: .4rem;
+            border-bottom: 1px solid var(--line-soft);
+        }
+        @media(max-width:575px) {
+            .score-row { grid-template-columns: 1fr 1fr 1fr; }
+            .score-row > *:nth-child(1) { grid-column: span 3; }
+        }
+
+        /* Progress overlay for batch uploads */
+        .upload-progress-bar {
+            height: 8px;
+            border-radius: 20px;
+            background: var(--line-soft);
+            overflow: hidden;
+            margin-top: .5rem;
+        }
+        .upload-progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--green), var(--gold));
+            transition: width .3s ease;
+            width: 0%;
+        }
     </style>
 </head>
 <body>
@@ -2004,6 +2047,7 @@
         const REFRESH_KEY = 'schoolflow_refresh';
         const THEME_KEY = 'schoolflow_theme';
         const ACCOUNT_FLAG_KEY = 'schoolflow_has_account';
+        const REQUEST_TIMEOUT_MS = 45000; // 45s — enough for slow Nigerian mobile data, still fails fast enough to not hang forever
         const ROLE_LABELS = {
             SUPER_ADMIN: 'Super Admin',
             SCHOOL_OWNER: 'Proprietor',
@@ -2024,6 +2068,10 @@
             viewReports: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'BURSAR'],
             manageSettings: ['SUPER_ADMIN', 'SCHOOL_OWNER'],
             manageReportTemplates: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
+            manageFeeStructures: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'BURSAR'],
+            manageParents: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
+            manageExams: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'TEACHER'],
+            manageInvoices: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN', 'BURSAR'],
             viewAll: ['SUPER_ADMIN', 'SCHOOL_OWNER', 'ADMIN'],
             platformAccess: ['SUPER_ADMIN']
         };
@@ -2097,6 +2145,23 @@
                 return body && typeof body === 'object' && 'data' in body ? body.data : body;
             },
 
+            // Timeout-aware fetch helper. Prevents the "spinning forever" symptom
+            // when a network call never resolves (slow mobile data, dropped signal).
+            async _fetchWithTimeout(url, opts, timeoutMs = REQUEST_TIMEOUT_MS) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), timeoutMs);
+                try {
+                    return await fetch(url, { ...opts, signal: controller.signal });
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        throw new Error('Request timed out — your connection may be slow. Please try again.');
+                    }
+                    throw err;
+                } finally {
+                    clearTimeout(timer);
+                }
+            },
+
             async _fetch(endpoint, opts = {}) {
                 const url = endpoint.startsWith('http') ? endpoint : API_BASE + endpoint;
                 const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
@@ -2105,21 +2170,21 @@
                 }
                 startTopLoader();
                 try {
-                    const resp = await fetch(url, { ...opts, headers });
+                    const resp = await this._fetchWithTimeout(url, { ...opts, headers });
                     if (resp.status === 401 && this._refresh) {
                         try {
-                            const ref = await fetch(API_BASE + '/auth/refresh', {
+                            const ref = await this._fetchWithTimeout(API_BASE + '/auth/refresh', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ refreshToken: this._refresh })
-                            });
+                            }, 15000);
                             if (ref.ok) {
                                 const refBody = await ref.json();
                                 const data = refBody.data || refBody;
                                 this.setTokens(data.accessToken, data.refreshToken, data.user || this._user);
                                 const retryHeaders = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
                                 if (this._token) retryHeaders['Authorization'] = 'Bearer ' + this._token;
-                                const retry = await fetch(url, { ...opts, headers: retryHeaders });
+                                const retry = await this._fetchWithTimeout(url, { ...opts, headers: retryHeaders });
                                 return retry;
                             }
                         } catch (_) {}
@@ -2143,21 +2208,21 @@
                 if (this._token) headers['Authorization'] = 'Bearer ' + this._token;
                 startTopLoader();
                 try {
-                    const resp = await fetch(url, { method: 'POST', headers, body: formData });
+                    const resp = await this._fetchWithTimeout(url, { method: 'POST', headers, body: formData }, 90000);
                     if (resp.status === 401 && this._refresh) {
                         try {
-                            const ref = await fetch(API_BASE + '/auth/refresh', {
+                            const ref = await this._fetchWithTimeout(API_BASE + '/auth/refresh', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ refreshToken: this._refresh })
-                            });
+                            }, 15000);
                             if (ref.ok) {
                                 const refBody = await ref.json();
                                 const data = refBody.data || refBody;
                                 this.setTokens(data.accessToken, data.refreshToken, data.user || this._user);
                                 const retryHeaders = {};
                                 if (this._token) retryHeaders['Authorization'] = 'Bearer ' + this._token;
-                                const retry = await fetch(url, { method: 'POST', headers: retryHeaders, body: formData });
+                                const retry = await this._fetchWithTimeout(url, { method: 'POST', headers: retryHeaders, body: formData }, 90000);
                                 return retry;
                             }
                         } catch (_) {}
@@ -2209,6 +2274,22 @@
         function initials(name) { return (name || '').split(' ').filter(Boolean).slice(0, 2).map(s => s[0]).join('').toUpperCase(); }
         function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
 
+        // Current academic session/term — the recurring values used by
+        // FeeStructure, Exam, Result, Attendance, ReportCard. Kept as small
+        // helpers so every form sends the same shape the backend expects.
+        function currentSessionId() {
+            return _pageData.school?.currentSessionId
+                || _pageData.school?.sessionId
+                || _pageData.school?.session
+                || '2026/2027';
+        }
+        function currentTermId() {
+            return _pageData.school?.currentTermId
+                || _pageData.school?.termId
+                || _pageData.school?.term
+                || 'First Term';
+        }
+
         function avatarColor(seed) {
             const colors = ['#0B4F3F', '#D98E00', '#5E6E68', '#B3413B', '#3E6E86', '#7A5C9E'];
             let h = 0;
@@ -2229,7 +2310,8 @@
                 PRESENT: 'chip-green', ABSENT: 'chip-danger', LATE: 'chip-gold', EXCUSED: 'chip-slate', APPROVED: 'chip-green',
                 PENDING: 'chip-gold', REJECTED: 'chip-danger', ISSUED: 'chip-green',
                 CANCELLED: 'chip-slate', ACTIVE: 'chip-green', EXPIRED: 'chip-danger', SUSPENDED: 'chip-danger',
-                DRAFT: 'chip-slate', PUBLISHED: 'chip-green', CONFIRMED: 'chip-green' };
+                DRAFT: 'chip-slate', PUBLISHED: 'chip-green', CONFIRMED: 'chip-green',
+                MALE: 'chip-info', FEMALE: 'chip-purple' };
             return `<span class="chip ${map[status]||'chip-slate'}">${status}</span>`;
         }
 
@@ -2353,6 +2435,43 @@
             </div>`;
         }
 
+        // Compresses an image File into a JPEG data URL. Used for subscription
+        // proof-of-payment uploads and template uploads — turns a 3-5MB phone
+        // photo into 150-400KB of base64, which is the difference between a
+        // 45-second submit and a 45-second hang on slow mobile data.
+        function compressImageToDataURL(file, maxDimension = 1280, quality = 0.72) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error('Could not read file'));
+                reader.onload = (e) => {
+                    img.onerror = () => reject(new Error('Could not load image'));
+                    img.onload = () => {
+                        let { width, height } = img;
+                        if (width > height && width > maxDimension) {
+                            height = Math.round(height * (maxDimension / width));
+                            width = maxDimension;
+                        } else if (height > maxDimension) {
+                            width = Math.round(width * (maxDimension / height));
+                            height = maxDimension;
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        try {
+                            resolve(canvas.toDataURL('image/jpeg', quality));
+                        } catch (err) {
+                            reject(err);
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         // =============================================================
         // 5. TOASTS
         // =============================================================
@@ -2426,19 +2545,19 @@
         function buildCommandPaletteItems(query) {
             const q = query.toLowerCase();
             const items = [];
-            // Pages
             Object.keys(PAGE_META).forEach(key => {
                 const [title] = PAGE_META[key];
                 if (!q || title.toLowerCase().includes(q) || key.includes(q)) {
                     items.push({ label: title, icon: 'bi-grid', action: () => { navigateTo(key); closeCommandPalette(); } });
                 }
             });
-            // Quick actions
             const actions = [
                 { label: 'Add student', icon: 'bi-person-plus', action: () => { closeCommandPalette(); openAddStudentModal(); } },
                 { label: 'Record payment', icon: 'bi-credit-card', action: () => { closeCommandPalette(); openRecordPaymentModal(); } },
                 { label: 'Mark attendance', icon: 'bi-calendar-check', action: () => { closeCommandPalette(); navigateTo('attendance'); } },
                 { label: 'Generate report card', icon: 'bi-file-earmark-text', action: () => { closeCommandPalette(); navigateTo('results'); } },
+                { label: 'Enter scores', icon: 'bi-pencil-square', action: () => { closeCommandPalette(); navigateTo('scoreentry'); } },
+                { label: 'Build fee structure', icon: 'bi-diagram-3', action: () => { closeCommandPalette(); navigateTo('feestructure'); } },
                 { label: 'Import students (CSV)', icon: 'bi-upload', action: () => { closeCommandPalette(); openBulkImportStudents(); } },
                 { label: 'Toggle theme', icon: 'bi-moon', action: () => { closeCommandPalette(); toggleTheme(); } },
                 { label: 'Sign out', icon: 'bi-box-arrow-right', action: () => { closeCommandPalette(); logOut(); } }
@@ -2565,7 +2684,7 @@
                     boot();
                 }
             } catch (e) {
-                errorEl.textContent = 'Network error. Please check your connection.';
+                errorEl.textContent = e.message || 'Network error. Please check your connection.';
                 errorEl.classList.add('show');
             } finally {
                 resetButton(btn);
@@ -2591,7 +2710,7 @@
                 }
                 return true;
             } catch (e) {
-                showToast('Network error', 'error');
+                showToast(e.message || 'Network error', 'error');
                 return false;
             } finally {
                 resetButton(btn);
@@ -2632,7 +2751,6 @@
             try {
                 const resp = await Api.post('/auth/forgot-password', { email, school, phone });
                 if (!resp.ok) {
-                    // Graceful fallback — send a manual support message via SMS later
                     closeModal();
                     showToast('Request received. We will contact you shortly.', 'success');
                     return;
@@ -2745,14 +2863,11 @@
                 Api.setTokens(d.accessToken, d.refreshToken, d.user);
                 Api.setAccountFlag(true);
 
-                // Optionally trigger sample data seed
                 if (loadSample) {
                     showToast('Loading sample data in background...', 'info', 6000);
                     try {
                         await Api.post('/schools/seed-sample');
-                    } catch (_) {
-                        // silently ignore — school still functional
-                    }
+                    } catch (_) {}
                 }
 
                 hideAllScreens();
@@ -2802,12 +2917,14 @@
             classes: ['Classes', 'Manage classes and fees'],
             parents: ['Parents', 'Guardian contacts and balances'],
             staff: ['Staff', 'Manage school staff'],
-            fees: ['Fee structure', 'Set termly fees per class'],
+            fees: ['Fee overview', 'Collection summary by class'],
+            feestructure: ['Fee structure', 'Build termly fee structures per class'],
             payments: ['Payments', 'Record and review payments'],
             defaulters: ['Defaulters', 'Students with outstanding fees'],
             attendance: ['Attendance', 'Daily attendance tracking'],
             attendanceReview: ['Attendance Review', 'Detailed attendance history'],
             results: ['Results', 'Academic performance'],
+            scoreentry: ['Score Entry', 'Enter CA and exam scores per subject'],
             reports: ['Reports', 'Analytics and exports'],
             settings: ['Settings', 'School configuration'],
             reportstudio: ['Report Studio', 'Design custom report cards'],
@@ -2835,7 +2952,8 @@
                 { key: 'staff', icon: 'bi-person-badge-fill', label: 'Staff' }
             ] },
             { group: 'Finance', items: [
-                { key: 'fees', icon: 'bi-wallet-fill', label: 'Fee structure' },
+                { key: 'feestructure', icon: 'bi-diagram-3-fill', label: 'Fee structure' },
+                { key: 'fees', icon: 'bi-wallet-fill', label: 'Fee overview' },
                 { key: 'payments', icon: 'bi-credit-card-fill', label: 'Payments' },
                 { key: 'defaulters', icon: 'bi-exclamation-triangle-fill', label: 'Defaulters' },
                 { key: 'invoices', icon: 'bi-file-text-fill', label: 'Invoices' }
@@ -2843,8 +2961,9 @@
             { group: 'Academics', items: [
                 { key: 'attendance', icon: 'bi-calendar-check-fill', label: 'Attendance' },
                 { key: 'attendanceReview', icon: 'bi-clock-history', label: 'Attendance History' },
-                { key: 'results', icon: 'bi-bar-chart-fill', label: 'Results' },
                 { key: 'exams', icon: 'bi-calendar-event-fill', label: 'Exams' },
+                { key: 'scoreentry', icon: 'bi-pencil-square', label: 'Score Entry' },
+                { key: 'results', icon: 'bi-bar-chart-fill', label: 'Results' },
                 { key: 'reportstudio', icon: 'bi-palette-fill', label: 'Report Studio' }
             ] },
             { group: 'Automation', items: [
@@ -3058,7 +3177,8 @@
                     <button class="fab-item" style="animation-delay:.02s" onclick="toggleFab();openAddStudentModal()"><i class="bi bi-person-plus"></i> Add student</button>
                     <button class="fab-item" style="animation-delay:.06s" onclick="toggleFab();openRecordPaymentModal()"><i class="bi bi-credit-card"></i> Record payment</button>
                     <button class="fab-item" style="animation-delay:.1s" onclick="toggleFab();navigateTo('attendance')"><i class="bi bi-calendar-check"></i> Attendance</button>
-                    <button class="fab-item" style="animation-delay:.14s" onclick="toggleFab();openBulkImportStudents()"><i class="bi bi-upload"></i> Import CSV</button>
+                    <button class="fab-item" style="animation-delay:.14s" onclick="toggleFab();navigateTo('scoreentry')"><i class="bi bi-pencil-square"></i> Enter scores</button>
+                    <button class="fab-item" style="animation-delay:.18s" onclick="toggleFab();openBulkImportStudents()"><i class="bi bi-upload"></i> Import CSV</button>
                 `;
             } else {
                 setTimeout(() => { if (!fabOpen) menu.style.display = 'none'; }, 200);
@@ -3148,7 +3268,7 @@
                 <div class="col-6 col-md-3"><button class="btn-x btn-primary-x btn-block-x" onclick="openAddStudentModal()"><i class="bi bi-person-plus"></i> Add student</button></div>
                 <div class="col-6 col-md-3"><button class="btn-x btn-gold-x btn-block-x" onclick="openRecordPaymentModal()"><i class="bi bi-credit-card"></i> Record payment</button></div>
                 <div class="col-6 col-md-3"><button class="btn-x btn-outline-x btn-block-x" onclick="navigateTo('attendance')"><i class="bi bi-calendar-check"></i> Mark attendance</button></div>
-                <div class="col-6 col-md-3"><button class="btn-x btn-outline-x btn-block-x" onclick="navigateTo('results')"><i class="bi bi-bar-chart"></i> Results</button></div>
+                <div class="col-6 col-md-3"><button class="btn-x btn-outline-x btn-block-x" onclick="navigateTo('scoreentry')"><i class="bi bi-pencil-square"></i> Enter scores</button></div>
             </div>
 
             <div class="row g-3 mb-3">
@@ -3184,7 +3304,6 @@
                 }
             } catch (_) {}
 
-            // ACTION CENTER
             try {
                 const [paymentsResp, defaultersResp] = await Promise.all([
                     Api.get('/payments').catch(() => null),
@@ -3239,7 +3358,6 @@
                 }
             } catch (_) {}
 
-            // RECENT PAYMENTS
             try {
                 const resp = await Api.get('/payments');
                 if (resp.ok) {
@@ -3256,7 +3374,6 @@
                 }
             } catch (_) {}
 
-            // CHART 1: Fee collection
             try {
                 const resp = await Api.get('/analytics/daily-collection?days=14');
                 if (resp.ok) {
@@ -3283,7 +3400,6 @@
                 }
             } catch (_) {}
 
-            // CHART 2: Payment methods
             try {
                 const resp = await Api.get('/analytics/payment-methods');
                 if (resp.ok) {
@@ -3305,7 +3421,6 @@
                 }
             } catch (_) {}
 
-            // CHART 3: Class performance
             try {
                 const resp = await Api.get('/analytics/class-collection');
                 if (resp.ok) {
@@ -3331,7 +3446,6 @@
                 }
             } catch (_) {}
 
-            // CHART 4: Attendance trend
             try {
                 const resp = await Api.get('/attendance/weekly');
                 if (resp.ok) {
@@ -3452,18 +3566,37 @@
             });
         };
 
+        // =====================================================
+        // ADD STUDENT — upgraded to match backend schema exactly:
+        //  - sends MALE/FEMALE (not Male/Female)
+        //  - collects admissionNumber and address (both required)
+        //  - optionally creates a linked Parent record so guardian
+        //    data actually persists (the old form silently dropped it)
+        // =====================================================
         window.openAddStudentModal = function() {
             if (!Api.can('manageStudents')) { showToast('You do not have permission to add students.', 'error'); return; }
             openModal('Add student', `
                 <div class="row g-3">
                     <div class="col-6"><label class="field-label">First name</label><input class="input-x" id="sfFirst" placeholder="John" /></div>
                     <div class="col-6"><label class="field-label">Last name</label><input class="input-x" id="sfLast" placeholder="Okafor" /></div>
+                    <div class="col-6"><label class="field-label">Admission number</label><input class="input-x" id="sfAdmission" placeholder="e.g. ADM-2026-001" /></div>
                     <div class="col-6"><label class="field-label">Date of birth</label><input class="input-x" id="sfDob" type="date" /></div>
-                    <div class="col-6"><label class="field-label">Gender</label><select class="input-x" id="sfGender"><option>Male</option><option>Female</option></select></div>
-                    <div class="col-12"><label class="field-label">Class</label><select class="input-x" id="sfClass"><option>Loading...</option></select></div>
-                    <div class="col-6"><label class="field-label">Guardian name</label><input class="input-x" id="sfGuardian" placeholder="Mrs. Okafor" /></div>
+                    <div class="col-6"><label class="field-label">Gender</label><select class="input-x" id="sfGender"><option value="MALE">Male</option><option value="FEMALE">Female</option></select></div>
+                    <div class="col-6"><label class="field-label">Class</label><select class="input-x" id="sfClass"><option>Loading...</option></select></div>
+                    <div class="col-12"><label class="field-label">Home address</label><input class="input-x" id="sfAddress" placeholder="e.g. 12 Allen Avenue, Ikeja" /></div>
+                </div>
+                <hr class="hr-x" />
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="label-caps mb-0">Guardian</span>
+                    <label class="d-flex align-items-center gap-1 fs-small" style="cursor:pointer;">
+                        <input type="checkbox" id="sfCreateParent" checked style="width:15px;height:15px;" />
+                        <span>Create parent record</span>
+                    </label>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12"><label class="field-label">Guardian name</label><input class="input-x" id="sfGuardian" placeholder="Mrs. Okafor" /></div>
                     <div class="col-6"><label class="field-label">Guardian phone</label><input class="input-x" id="sfPhone" placeholder="0803 000 0000" /></div>
-                    <div class="col-12"><label class="field-label">Guardian email</label><input class="input-x" id="sfEmail" type="email" placeholder="parent@mail.com" /></div>
+                    <div class="col-6"><label class="field-label">Guardian email</label><input class="input-x" id="sfEmail" type="email" placeholder="parent@mail.com" /></div>
                 </div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewStudent(this)"><i class="bi bi-check-lg"></i> Save student</button></div>
             `);
@@ -3483,30 +3616,83 @@
         window.saveNewStudent = async function(btn) {
             const first = document.getElementById('sfFirst').value.trim();
             const last = document.getElementById('sfLast').value.trim();
+            const admissionNumber = document.getElementById('sfAdmission').value.trim();
+            const address = document.getElementById('sfAddress').value.trim();
+            const dob = document.getElementById('sfDob').value || '';
+            const classId = document.getElementById('sfClass').value;
             if (!first || !last) { showToast('Please enter first and last name', 'error'); return; }
+            if (!admissionNumber) { showToast('Admission number is required', 'error'); return; }
+            if (!dob) { showToast('Date of birth is required', 'error'); return; }
+            if (!classId) { showToast('Please pick a class', 'error'); return; }
+            if (!address) { showToast('Home address is required', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
-            const data = {
-                firstName: first, lastName: last, fullName: first + ' ' + last,
-                gender: document.getElementById('sfGender').value,
-                dob: document.getElementById('sfDob').value || '',
-                classId: document.getElementById('sfClass').value,
-                guardian: document.getElementById('sfGuardian').value.trim() || 'Not provided',
-                guardianPhone: document.getElementById('sfPhone').value.trim() || 'Not provided',
-                guardianEmail: document.getElementById('sfEmail').value.trim() || ''
-            };
+
+            const gender = document.getElementById('sfGender').value; // already MALE/FEMALE
+            const guardianName = document.getElementById('sfGuardian').value.trim();
+            const guardianPhone = document.getElementById('sfPhone').value.trim();
+            const guardianEmail = document.getElementById('sfEmail').value.trim();
+            const createParent = document.getElementById('sfCreateParent').checked;
+
+            // Split guardian full name into first/last for the Parent model.
+            const gParts = guardianName.split(' ').filter(Boolean);
+            const gFirst = gParts[0] || 'Guardian';
+            const gLast = gParts.slice(1).join(' ') || 'Guardian';
+
             try {
-                const resp = await Api.post('/students', data);
+                // 1) Create the student with the exact shape the schema expects.
+                const studentPayload = {
+                    firstName: first,
+                    lastName: last,
+                    fullName: first + ' ' + last,
+                    gender,
+                    dateOfBirth: dob,
+                    admissionNumber,
+                    address,
+                    classId,
+                    sessionId: currentSessionId()
+                };
+                const resp = await Api.post('/students', studentPayload);
                 if (!resp.ok) {
-                    const err = await resp.json();
+                    const err = await resp.json().catch(() => ({}));
                     showToast(err.message || 'Failed to add student', 'error');
                     return;
                 }
+                const createdStudent = await Api.json(resp);
+
+                // 2) Optionally create a Parent record and link the student.
+                let parentWarn = '';
+                if (createParent && guardianName && guardianPhone) {
+                    try {
+                        const parentResp = await Api.post('/parents', {
+                            firstName: gFirst,
+                            lastName: gLast,
+                            fullName: guardianName,
+                            phone: guardianPhone,
+                            email: guardianEmail || `${gFirst.toLowerCase()}.${gLast.toLowerCase()}@schoolflow.local`,
+                            relationship: 'Guardian'
+                        });
+                        if (parentResp.ok) {
+                            const parent = await Api.json(parentResp);
+                            // Best-effort link; if the backend auto-links via student create, this is a no-op.
+                            try {
+                                await Api.put('/students/' + (createdStudent.id || createdStudent._id), {
+                                    $push: { parentIds: parent.id || parent._id }
+                                });
+                            } catch (_) {}
+                        } else {
+                            parentWarn = ' (student saved, but parent record could not be created)';
+                        }
+                    } catch (_) {
+                        parentWarn = ' (student saved, but parent record could not be created)';
+                    }
+                }
+
                 closeModal();
-                showToast(`${data.fullName} added successfully`, 'success');
+                showToast(`${studentPayload.fullName} added successfully${parentWarn}`, parentWarn ? 'warning' : 'success');
                 fireConfetti(window.innerWidth / 2, 100);
                 renderPage('students');
             } catch (e) {
-                showToast('Network error', 'error');
+                showToast(e.message || 'Network error', 'error');
             } finally {
                 resetButton(btn);
             }
@@ -3564,10 +3750,13 @@
                     <div class="row g-3">
                         <div class="col-6"><label class="field-label">First name</label><input class="input-x" id="esFirst" value="${escapeHtml((s.fullName||'').split(' ')[0]||'')}" /></div>
                         <div class="col-6"><label class="field-label">Last name</label><input class="input-x" id="esLast" value="${escapeHtml((s.fullName||'').split(' ').slice(1).join(' ')||'')}" /></div>
-                        <div class="col-6"><label class="field-label">Gender</label><select class="input-x" id="esGender"><option ${s.gender==='Male'?'selected':''}>Male</option><option ${s.gender==='Female'?'selected':''}>Female</option></select></div>
+                        <div class="col-6"><label class="field-label">Admission number</label><input class="input-x" id="esAdmission" value="${escapeHtml(s.admissionNumber||'')}" /></div>
+                        <div class="col-6"><label class="field-label">Gender</label><select class="input-x" id="esGender"><option value="MALE" ${s.gender==='MALE'?'selected':''}>Male</option><option value="FEMALE" ${s.gender==='FEMALE'?'selected':''}>Female</option></select></div>
                         <div class="col-6"><label class="field-label">Class</label><select class="input-x" id="esClass">
                             ${(Array.isArray(classes) ? classes : []).map(c => `<option value="${c.id}" ${c.id===s.classId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
                         </select></div>
+                        <div class="col-6"><label class="field-label">Date of birth</label><input class="input-x" id="esDob" type="date" value="${s.dateOfBirth ? String(s.dateOfBirth).slice(0,10) : ''}" /></div>
+                        <div class="col-12"><label class="field-label">Address</label><input class="input-x" id="esAddress" value="${escapeHtml(s.address||'')}" /></div>
                         <div class="col-6"><label class="field-label">Guardian name</label><input class="input-x" id="esGuardian" value="${escapeHtml(s.guardian||'')}" /></div>
                         <div class="col-6"><label class="field-label">Guardian phone</label><input class="input-x" id="esPhone" value="${escapeHtml(s.guardianPhone||'')}" /></div>
                         <div class="col-12"><label class="field-label">Guardian email</label><input class="input-x" id="esEmail" value="${escapeHtml(s.guardianEmail||'')}" /></div>
@@ -3584,8 +3773,11 @@
             const data = {
                 fullName: first + ' ' + last,
                 firstName: first, lastName: last,
+                admissionNumber: document.getElementById('esAdmission').value.trim(),
                 gender: document.getElementById('esGender').value,
                 classId: document.getElementById('esClass').value,
+                dateOfBirth: document.getElementById('esDob').value || undefined,
+                address: document.getElementById('esAddress').value.trim(),
                 guardian: document.getElementById('esGuardian').value.trim(),
                 guardianPhone: document.getElementById('esPhone').value.trim(),
                 guardianEmail: document.getElementById('esEmail').value.trim()
@@ -3596,7 +3788,7 @@
                 closeModal();
                 showToast('Student updated', 'success');
                 renderPage('students');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -3626,11 +3818,11 @@
                     <i class="bi bi-cloud-upload"></i>
                     <p class="eyebrow mb-1">Drop a CSV file here, or click to browse</p>
                     <input type="file" id="csvFile" accept=".csv" style="display:none;" />
-                    <span class="fs-small">Columns: Full Name, Class, Guardian, Guardian Phone, Gender</span>
+                    <span class="fs-small">Columns: Full Name, Class, Guardian, Guardian Phone, Gender, Admission No, Address</span>
                 </div>
                 <div class="mb-3">
                     <label class="field-label">Or paste rows here (one per line, comma-separated)</label>
-                    <textarea class="input-x" id="csvPaste" rows="5" placeholder="John Okafor, Primary 1, Mrs. Okafor, 0803..., Male&#10;Mary Ibrahim, Primary 1, Mr. Ibrahim, 0805..., Female"></textarea>
+                    <textarea class="input-x" id="csvPaste" rows="5" placeholder="John Okafor, Primary 1, Mrs. Okafor, 0803..., Male, ADM-001, 12 Allen Ave&#10;Mary Ibrahim, Primary 1, Mr. Ibrahim, 0805..., Female, ADM-002, 5 Bourdillon Rd"></textarea>
                 </div>
                 <div id="csvPreview"></div>
                 <div class="d-flex gap-2 mt-4">
@@ -3695,7 +3887,7 @@
                 fireConfetti(window.innerWidth / 2, 100);
                 renderPage('students');
             } catch (e) {
-                showToast('Network error during import', 'error');
+                showToast(e.message || 'Network error during import', 'error');
             } finally {
                 resetButton(btn);
             }
@@ -3706,6 +3898,8 @@
                 const parts = line.split(',').map(p => p.trim());
                 const fullName = parts[0] || '';
                 const [firstName, ...rest] = fullName.split(' ');
+                const genderRaw = (parts[4] || 'Male').toUpperCase();
+                const gender = genderRaw.startsWith('F') ? 'FEMALE' : 'MALE';
                 return {
                     fullName,
                     firstName: firstName || fullName,
@@ -3713,7 +3907,9 @@
                     className: parts[1] || '',
                     guardian: parts[2] || '',
                     guardianPhone: parts[3] || '',
-                    gender: parts[4] || 'Male'
+                    gender,
+                    admissionNumber: parts[5] || uid('ADM'),
+                    address: parts[6] || '—'
                 };
             }).filter(r => r.fullName);
         }
@@ -3754,11 +3950,14 @@
                 closeModal();
                 showToast(`Promoted ${data.promoted || 0} students`, 'success');
                 renderPage('students');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
         // --- CLASSES ---
+        // Add / edit now include `level` and `academicYear` — both required
+        // by the Class model. Previously the form only sent name+fee and
+        // was silently failing.
         PAGE_RENDERERS.classes = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 style="font-weight:700;">Classes</h5><span class="eyebrow" id="classCount">Loading...</span></div><button class="btn-x btn-primary-x btn-sm-x" onclick="openAddClassModal()"><i class="bi bi-plus-lg"></i> Add class</button></div>
@@ -3782,7 +3981,7 @@
                     return;
                 }
                 grid.innerHTML = list.map(c => `
-                    <div class="col-12 col-sm-6 col-lg-4"><div class="stat tone-green h-100"><div class="stat-top mb-2"><div><h6 class="mb-0">${escapeHtml(c.name)}</h6><span class="eyebrow">${c.studentCount||0} student${c.studentCount===1?'':'s'}</span></div><button class="btn-x btn-ghost-x btn-icon-only btn-sm-x" onclick="openEditClassModal('${c.id}')" aria-label="Edit"><i class="bi bi-three-dots"></i></button></div><div class="d-flex justify-content-between mt-3"><div><div class="label-caps">Termly fee</div><div class="figure-md num">${money(c.fee)}</div></div></div></div></div>
+                    <div class="col-12 col-sm-6 col-lg-4"><div class="stat tone-green h-100"><div class="stat-top mb-2"><div><h6 class="mb-0">${escapeHtml(c.name)}</h6><span class="eyebrow">Level ${c.level || '—'} · ${escapeHtml(c.academicYear || '—')}</span></div><button class="btn-x btn-ghost-x btn-icon-only btn-sm-x" onclick="openEditClassModal('${c.id}')" aria-label="Edit"><i class="bi bi-three-dots"></i></button></div><div class="d-flex justify-content-between mt-3"><div><div class="label-caps">Termly fee</div><div class="figure-md num">${money(c.fee)}</div></div><div style="text-align:right;"><div class="label-caps">Students</div><div class="figure-md num">${c.studentCount||0}</div></div></div></div></div>
                 `).join('');
             } catch (e) {
                 document.getElementById('classGrid').innerHTML = `<div class="col-12 text-center py-4 text-danger">Failed to load classes: ${escapeHtml(e.message)}</div>`;
@@ -3793,7 +3992,11 @@
             if (!Api.can('manageStudents')) { showToast('You do not have permission to add classes.', 'error'); return; }
             openModal('Add class', `
                 <div class="mb-3"><label class="field-label">Class name</label><input class="input-x" id="cfName" placeholder="e.g. Primary 6" /></div>
-                <div class="mb-3"><label class="field-label">Termly fee (₦)</label><input class="input-x" id="cfFee" type="number" placeholder="65000" /></div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="field-label">Level (number)</label><input class="input-x" id="cfLevel" type="number" placeholder="e.g. 6" /></div>
+                    <div class="col-6"><label class="field-label">Academic year</label><input class="input-x" id="cfYear" placeholder="e.g. 2026/2027" value="${escapeHtml(currentSessionId())}" /></div>
+                </div>
+                <div class="mb-3 mt-3"><label class="field-label">Termly fee (₦)</label><input class="input-x" id="cfFee" type="number" placeholder="65000" /></div>
                 <div class="mb-1"><label class="field-label">Class teacher (optional)</label><input class="input-x" id="cfTeacher" placeholder="Mrs. Adeyemi" /></div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewClass(this)"><i class="bi bi-check-lg"></i> Save class</button></div>
             `);
@@ -3802,22 +4005,37 @@
         window.saveNewClass = async function(btn) {
             const name = document.getElementById('cfName').value.trim();
             const fee = Number(document.getElementById('cfFee').value) || 0;
+            const level = Number(document.getElementById('cfLevel').value);
+            const academicYear = document.getElementById('cfYear').value.trim();
             if (!name) { showToast('Please enter a class name', 'error'); return; }
+            if (!level || level < 1) { showToast('Please enter a class level (number)', 'error'); return; }
+            if (!academicYear) { showToast('Please enter the academic year', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
             try {
-                const resp = await Api.post('/classes', { name, fee, teacher: document.getElementById('cfTeacher').value.trim() });
-                if (!resp.ok) { showToast('Failed to add class', 'error'); return; }
+                const resp = await Api.post('/classes', {
+                    name, fee, level, academicYear,
+                    homeroomTeacher: document.getElementById('cfTeacher').value.trim() || undefined
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to add class', 'error');
+                    return;
+                }
                 closeModal();
                 showToast(`${name} added`, 'success');
                 renderPage('classes');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
         window.openEditClassModal = function(id) {
             openModal('Edit class', `
                 <div class="mb-3"><label class="field-label">Class name</label><input class="input-x" id="cfName" value="" /></div>
-                <div class="mb-3"><label class="field-label">Termly fee (₦)</label><input class="input-x" id="cfFee" type="number" value="" /></div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="field-label">Level</label><input class="input-x" id="cfLevel" type="number" value="" /></div>
+                    <div class="col-6"><label class="field-label">Academic year</label><input class="input-x" id="cfYear" value="" /></div>
+                </div>
+                <div class="mb-3 mt-3"><label class="field-label">Termly fee (₦)</label><input class="input-x" id="cfFee" type="number" value="" /></div>
                 <div class="mb-1"><label class="field-label">Class teacher</label><input class="input-x" id="cfTeacher" value="" /></div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-danger-x" onclick="confirmDeleteClass('${id}')"><i class="bi bi-trash3"></i></button><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x flex-grow-1" onclick="saveEditClass('${id}', this)"><i class="bi bi-check-lg"></i> Save</button></div>
             `);
@@ -3828,7 +4046,9 @@
                         const c = await Api.json(resp);
                         document.getElementById('cfName').value = c.name || '';
                         document.getElementById('cfFee').value = c.fee || 0;
-                        document.getElementById('cfTeacher').value = c.teacher || '';
+                        document.getElementById('cfLevel').value = c.level || '';
+                        document.getElementById('cfYear').value = c.academicYear || '';
+                        document.getElementById('cfTeacher').value = c.homeroomTeacher?.name || c.homeroomTeacher || '';
                     }
                 } catch (_) {}
             })();
@@ -3840,13 +4060,15 @@
                 const resp = await Api.put('/classes/' + id, {
                     name: document.getElementById('cfName').value.trim(),
                     fee: Number(document.getElementById('cfFee').value) || 0,
-                    teacher: document.getElementById('cfTeacher').value.trim()
+                    level: Number(document.getElementById('cfLevel').value) || undefined,
+                    academicYear: document.getElementById('cfYear').value.trim() || undefined,
+                    homeroomTeacher: document.getElementById('cfTeacher').value.trim() || undefined
                 });
                 if (!resp.ok) { showToast('Failed to update class', 'error'); return; }
                 closeModal();
                 showToast('Class updated', 'success');
                 renderPage('classes');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -3867,6 +4089,247 @@
                 renderPage('classes');
             } catch (e) { showToast('Network error', 'error'); }
             finally { resetButton(btn); }
+        };
+
+        // =============================================================
+        // FEE STRUCTURE — the previously missing piece. FeeStructure is
+        // what Invoice generation actually reads (keyed by class + session
+        // + term). Without at least one active FeeStructure per class, no
+        // invoice can ever be generated.
+        // =============================================================
+        PAGE_RENDERERS.feestructure = function() {
+            return `
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div><h5 style="font-weight:700;">Fee structures</h5><span class="eyebrow" id="fsCount">Loading...</span></div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn-x btn-outline-x btn-sm-x" onclick="openAddFeeCategoryModal()"><i class="bi bi-tag"></i> Add category</button>
+                    <button class="btn-x btn-primary-x btn-sm-x" onclick="openBuildFeeStructureModal()"><i class="bi bi-diagram-3"></i> Build structure</button>
+                </div>
+            </div>
+            <div class="panel mb-3" style="background:var(--info-light);border-left:3px solid var(--info);">
+                <div class="d-flex gap-2 align-items-start">
+                    <i class="bi bi-info-circle-fill" style="color:var(--info);font-size:1.1rem;"></i>
+                    <div style="font-size:.85rem;">
+                        <strong>Why this page exists:</strong> Invoices are generated from a fee structure — a per-class, per-term list of fee items. The "Termly fee" on a class is only a summary number; the invoice generator reads this structure instead. Build one structure per class per term before generating invoices.
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3" id="fsGrid">
+                ${Array(3).fill(0).map(() => `<div class="col-12 col-md-6 col-lg-4"><div class="panel"><div class="skeleton" style="height:20px;width:60%;margin-bottom:.5rem;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div>`).join('')}
+            </div>
+            `;
+        };
+
+        POST_RENDER_HOOKS.feestructure = async function() {
+            if (!Api.can('manageFeeStructures')) {
+                document.getElementById('fsGrid').innerHTML = `<div class="col-12 text-center py-4 text-danger">You do not have permission to manage fee structures.</div>`;
+                return;
+            }
+            try {
+                const resp = await Api.get('/fees/structures');
+                if (!resp.ok) throw new Error('Fee structures endpoint unavailable');
+                const list = await Api.json(resp);
+                const arr = Array.isArray(list) ? list : [];
+                document.getElementById('fsCount').textContent = arr.length + ' structures';
+                const grid = document.getElementById('fsGrid');
+                if (arr.length === 0) {
+                    grid.innerHTML = `<div class="col-12">${emptyState('diagram-3','No fee structures yet','Build one so you can generate invoices and track balances per fee item.',`<button class="btn-x btn-primary-x" onclick="openBuildFeeStructureModal()"><i class="bi bi-plus-lg"></i> Build structure</button>`)}</div>`;
+                    return;
+                }
+                grid.innerHTML = arr.map(fs => {
+                    const total = (fs.feeItems || []).reduce((s, it) => s + (Number(it.amount) || 0), 0);
+                    return `
+                        <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-green h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div><h6 class="mb-0">${escapeHtml(fs.className || '—')}</h6><span class="eyebrow">${escapeHtml(fs.sessionId || '')} · ${escapeHtml(fs.termId || '')}</span></div>
+                                <span class="chip ${fs.isActive ? 'chip-green' : 'chip-slate'}">${fs.isActive ? 'Active' : 'Inactive'}</span>
+                            </div>
+                            <div class="label-caps">Total</div>
+                            <div class="figure-md num">${money(total)}</div>
+                            <div class="eyebrow mt-1">${(fs.feeItems || []).length} item${(fs.feeItems || []).length === 1 ? '' : 's'}</div>
+                            <div class="d-flex gap-2 mt-3">
+                                <button class="btn-x btn-outline-x btn-sm-x" onclick="viewFeeStructure('${fs.id}')"><i class="bi bi-eye"></i> View</button>
+                                <button class="btn-x btn-outline-x btn-sm-x" onclick="openBuildFeeStructureModal('${fs.id}')"><i class="bi bi-pencil"></i> Edit</button>
+                                <button class="btn-x btn-danger-x btn-sm-x ms-auto" onclick="deleteFeeStructure('${fs.id}')" aria-label="Delete"><i class="bi bi-trash3"></i></button>
+                            </div>
+                        </div></div>
+                    `;
+                }).join('');
+            } catch (e) {
+                // Fallback: at least show the build-structure CTA so the page is
+                // actionable even if the endpoint isn't live yet on this backend.
+                document.getElementById('fsGrid').innerHTML = `<div class="col-12">${emptyState('diagram-3','Fee structures unavailable','Could not load existing structures, but you can still build one.',`<button class="btn-x btn-primary-x" onclick="openBuildFeeStructureModal()"><i class="bi bi-plus-lg"></i> Build structure</button>`)}</div>`;
+            }
+        };
+
+        window.openAddFeeCategoryModal = function() {
+            if (!Api.can('manageFeeStructures')) { showToast('You do not have permission to manage fee categories.', 'error'); return; }
+            openModal('Add fee category', `
+                <p class="eyebrow mb-3">Categories group fee items (e.g. Tuition, Transport, Uniform).</p>
+                <div class="mb-3"><label class="field-label">Category name</label><input class="input-x" id="fcName" placeholder="e.g. Tuition" /></div>
+                <div class="mb-1"><label class="field-label">Description (optional)</label><input class="input-x" id="fcDesc" placeholder="e.g. Termly academic tuition" /></div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveFeeCategory(this)"><i class="bi bi-check-lg"></i> Save category</button></div>
+            `);
+        };
+
+        window.saveFeeCategory = async function(btn) {
+            const name = document.getElementById('fcName').value.trim();
+            if (!name) { showToast('Enter a category name', 'error'); return; }
+            setButtonLoading(btn, 'Saving...');
+            try {
+                const resp = await Api.post('/fees/categories', {
+                    name,
+                    description: document.getElementById('fcDesc').value.trim()
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to create category', 'error');
+                    return;
+                }
+                closeModal();
+                showToast(`Category "${name}" created`, 'success');
+                renderPage('feestructure');
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
+            finally { resetButton(btn); }
+        };
+
+        // Builds a fee structure as a modal with dynamic fee-item rows.
+        // Fee item rows: [categoryName] [item name] [amount] [remove]
+        // On save, POSTs { classId, sessionId, termId, feeItems:[{name, amount, categoryId}] }.
+        window.openBuildFeeStructureModal = async function(editId) {
+            if (!Api.can('manageFeeStructures')) { showToast('You do not have permission to manage fee structures.', 'error'); return; }
+            openModal(editId ? 'Edit fee structure' : 'Build fee structure', `
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-sm-6"><label class="field-label">Class</label><select class="input-x" id="fsClass"><option>Loading...</option></select></div>
+                    <div class="col-6 col-sm-3"><label class="field-label">Session</label><input class="input-x" id="fsSession" value="${escapeHtml(currentSessionId())}" /></div>
+                    <div class="col-6 col-sm-3"><label class="field-label">Term</label><select class="input-x" id="fsTerm">${['First Term','Second Term','Third Term'].map(t => `<option ${t === currentTermId() ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="label-caps mb-0">Fee items</span>
+                    <button class="btn-x btn-outline-x btn-sm-x" type="button" onclick="addFeeItemRow()"><i class="bi bi-plus-lg"></i> Add item</button>
+                </div>
+                <div id="feeItemRows"></div>
+                <div class="d-flex justify-content-between align-items-center mt-3 p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);">
+                    <span class="label-caps mb-0">Total</span>
+                    <strong class="num" id="feeTotalDisplay">₦0</strong>
+                </div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveFeeStructure('${editId || ''}', this)"><i class="bi bi-check-lg"></i> Save structure</button></div>
+            `);
+            try {
+                const classesResp = await Api.get('/classes');
+                if (classesResp.ok) {
+                    const classes = await Api.json(classesResp);
+                    const sel = document.getElementById('fsClass');
+                    sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c =>
+                        `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                }
+            } catch (_) {}
+            if (editId) {
+                try {
+                    const resp = await Api.get('/fees/structures/' + editId);
+                    if (resp.ok) {
+                        const fs = await Api.json(resp);
+                        document.getElementById('fsClass').value = fs.classId || '';
+                        document.getElementById('fsSession').value = fs.sessionId || currentSessionId();
+                        document.getElementById('fsTerm').value = fs.termId || currentTermId();
+                        (fs.feeItems || []).forEach(it => addFeeItemRow(it.name, it.amount, it.categoryId));
+                    }
+                } catch (_) {}
+            }
+            if (document.querySelectorAll('#feeItemRows .fee-item-row').length === 0) {
+                addFeeItemRow('Tuition', 0);
+                addFeeItemRow('Development Levy', 0);
+            }
+        };
+
+        window.addFeeItemRow = function(name = '', amount = 0, categoryId = '') {
+            const wrap = document.getElementById('feeItemRows');
+            if (!wrap) return;
+            const row = document.createElement('div');
+            row.className = 'fee-item-row';
+            row.innerHTML = `
+                <input class="input-x fi-name" placeholder="Item name (e.g. Tuition)" value="${escapeHtml(name)}" />
+                <input class="input-x fi-category" placeholder="Category" value="${escapeHtml(categoryId)}" />
+                <input class="input-x fi-amount" type="number" placeholder="Amount" value="${amount || ''}" oninput="recalcFeeTotal()" />
+                <button class="btn-x btn-ghost-x btn-icon-only" type="button" onclick="this.parentElement.remove();recalcFeeTotal();" aria-label="Remove"><i class="bi bi-x-lg"></i></button>
+            `;
+            wrap.appendChild(row);
+            recalcFeeTotal();
+        };
+
+        window.recalcFeeTotal = function() {
+            const rows = document.querySelectorAll('#feeItemRows .fee-item-row');
+            let total = 0;
+            rows.forEach(r => {
+                const a = Number(r.querySelector('.fi-amount').value) || 0;
+                total += a;
+            });
+            const el = document.getElementById('feeTotalDisplay');
+            if (el) el.textContent = money(total);
+        };
+
+        window.saveFeeStructure = async function(editId, btn) {
+            const classId = document.getElementById('fsClass').value;
+            const sessionId = document.getElementById('fsSession').value.trim() || currentSessionId();
+            const termId = document.getElementById('fsTerm').value;
+            const rows = document.querySelectorAll('#feeItemRows .fee-item-row');
+            const feeItems = [];
+            rows.forEach(r => {
+                const name = r.querySelector('.fi-name').value.trim();
+                const amount = Number(r.querySelector('.fi-amount').value) || 0;
+                const categoryId = r.querySelector('.fi-category').value.trim();
+                if (name && amount >= 0) feeItems.push({ name, amount, categoryId });
+            });
+            if (!classId) { showToast('Pick a class', 'error'); return; }
+            if (feeItems.length === 0) { showToast('Add at least one fee item', 'error'); return; }
+            setButtonLoading(btn, 'Saving...');
+            const payload = { classId, sessionId, termId, feeItems };
+            try {
+                const resp = editId
+                    ? await Api.put('/fees/structures/' + editId, payload)
+                    : await Api.post('/fees/structures', payload);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to save structure', 'error');
+                    return;
+                }
+                closeModal();
+                showToast('Fee structure saved', 'success');
+                renderPage('feestructure');
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
+            finally { resetButton(btn); }
+        };
+
+        window.viewFeeStructure = async function(id) {
+            openModal('Fee structure', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
+            try {
+                const resp = await Api.get('/fees/structures/' + id);
+                if (!resp.ok) { showToast('Not found', 'error'); closeModal(); return; }
+                const fs = await Api.json(resp);
+                const items = fs.feeItems || [];
+                const total = items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="mb-3"><strong>${escapeHtml(fs.className || '—')}</strong> · ${escapeHtml(fs.sessionId || '')} · ${escapeHtml(fs.termId || '')}</div>
+                    <div class="table-wrap"><table class="tbl"><thead><tr><th>Item</th><th>Category</th><th>Amount</th></tr></thead><tbody>
+                        ${items.map(it => `<tr><td data-label="Item">${escapeHtml(it.name || '')}</td><td data-label="Category">${escapeHtml(it.categoryId || '—')}</td><td data-label="Amount" class="num">${money(it.amount)}</td></tr>`).join('')}
+                    </tbody></table></div>
+                    <div class="d-flex justify-content-between align-items-center mt-3 p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);">
+                        <span class="label-caps mb-0">Total</span>
+                        <strong class="num">${money(total)}</strong>
+                    </div>
+                    <button class="btn-x btn-outline-x btn-block-x mt-3" onclick="closeModal()">Close</button>
+                `;
+            } catch (e) { showToast('Error loading', 'error'); closeModal(); }
+        };
+
+        window.deleteFeeStructure = async function(id) {
+            if (!confirm('Delete this fee structure?')) return;
+            try {
+                const resp = await Api.del('/fees/structures/' + id);
+                if (!resp.ok) { showToast('Failed to delete', 'error'); return; }
+                showToast('Fee structure removed', 'info');
+                renderPage('feestructure');
+            } catch (e) { showToast('Network error', 'error'); }
         };
 
         // --- PAYMENTS ---
@@ -3934,14 +4397,18 @@
 
         window.setPaymentsTab = function(key) { paymentsTab = key; renderPage('payments'); };
 
-        window.openRecordPaymentModal = function(preselectId) {
+        // Record Payment — now requires picking an Invoice (backend contract),
+        // and prefills the amount from the invoice's remaining balance.
+        window.openRecordPaymentModal = function(preselectStudentId) {
             if (!Api.can('submitPayments')) { showToast('You do not have permission to submit payments.', 'error'); return; }
             openModal('Submit payment', `
-                <p class="eyebrow mb-3"><i class="bi bi-info-circle me-1"></i>This will be sent for approval before it reflects on the student's balance.</p>
+                <p class="eyebrow mb-3"><i class="bi bi-info-circle me-1"></i>This will be sent for approval before it reflects on the invoice.</p>
                 <div class="mb-3"><label class="field-label">Student</label><select class="input-x" id="pfStudent"><option>Loading...</option></select></div>
+                <div class="mb-3"><label class="field-label">Invoice</label><select class="input-x" id="pfInvoice"><option>Pick a student first</option></select></div>
                 <div class="mb-3"><label class="field-label">Amount (₦)</label><input class="input-x" id="pfAmount" type="number" placeholder="40000" /></div>
                 <div class="mb-3"><label class="field-label">Method</label><select class="input-x" id="pfMethod"><option>Cash</option><option>Bank Transfer</option><option>POS</option><option>Other</option></select></div>
                 <div class="mb-1"><label class="field-label">Reference (optional)</label><input class="input-x" id="pfRef" placeholder="Auto-generated if left blank" /></div>
+                <div id="pfInvoiceHint" class="eyebrow mt-2"></div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-gold-x btn-block-x" onclick="saveNewPayment(this)"><i class="bi bi-send"></i> Submit for approval</button></div>
             `);
             (async () => {
@@ -3951,30 +4418,74 @@
                         const students = await Api.json(resp);
                         const sel = document.getElementById('pfStudent');
                         sel.innerHTML = (Array.isArray(students) ? students : []).map(s =>
-                            `<option value="${s.id}" ${s.id===preselectId?'selected':''}>${escapeHtml(s.fullName)} — ${escapeHtml(s.className||'')}</option>`
+                            `<option value="${s.id}" ${s.id===preselectStudentId?'selected':''}>${escapeHtml(s.fullName)} — ${escapeHtml(s.className||'')}</option>`
                         ).join('');
+                        sel.onchange = () => loadInvoicesForStudent(sel.value);
+                        if (preselectStudentId) loadInvoicesForStudent(preselectStudentId);
+                        else if (sel.value) loadInvoicesForStudent(sel.value);
                     }
                 } catch (_) {}
             })();
         };
 
+        async function loadInvoicesForStudent(studentId) {
+            const invSel = document.getElementById('pfInvoice');
+            const hint = document.getElementById('pfInvoiceHint');
+            if (!studentId) return;
+            invSel.innerHTML = '<option>Loading invoices...</option>';
+            hint.textContent = '';
+            try {
+                const resp = await Api.get('/invoices?studentId=' + studentId);
+                if (!resp.ok) throw new Error('Could not load invoices');
+                const invoices = await Api.json(resp);
+                const arr = (Array.isArray(invoices) ? invoices : []).filter(i => i.status !== 'PAID' && i.status !== 'CANCELLED');
+                if (arr.length === 0) {
+                    invSel.innerHTML = '<option value="">No open invoices</option>';
+                    hint.innerHTML = '<span style="color:var(--danger);">This student has no open invoice. Generate one first from the <strong>Invoices</strong> page.</span>';
+                    return;
+                }
+                invSel.innerHTML = arr.map(i =>
+                    `<option value="${i.id}" data-remaining="${Math.max(0, (i.amount||0) - (i.amountPaid||0))}">${i.invoiceNumber || i.id.slice(0,8)} — ${money(i.amount)} (${i.status})</option>`
+                ).join('');
+                invSel.onchange = () => {
+                    const opt = invSel.options[invSel.selectedIndex];
+                    const rem = opt?.dataset.remaining;
+                    if (rem) document.getElementById('pfAmount').value = rem;
+                };
+                // Prefill amount with remaining on first open invoice
+                const firstOpt = invSel.options[0];
+                if (firstOpt?.dataset.remaining) document.getElementById('pfAmount').value = firstOpt.dataset.remaining;
+                hint.innerHTML = `<span style="color:var(--green);"><i class="bi bi-check-circle"></i> ${arr.length} open invoice${arr.length===1?'':'s'} found</span>`;
+            } catch (e) {
+                invSel.innerHTML = '<option value="">Could not load invoices</option>';
+                hint.innerHTML = `<span style="color:var(--danger);">${escapeHtml(e.message)}</span>`;
+            }
+        }
+
         window.saveNewPayment = async function(btn) {
             const studentId = document.getElementById('pfStudent').value;
+            const invoiceId = document.getElementById('pfInvoice').value;
             const amount = Number(document.getElementById('pfAmount').value);
+            if (!studentId) { showToast('Pick a student', 'error'); return; }
+            if (!invoiceId) { showToast('Pick an invoice — payments must be applied to a specific invoice', 'error'); return; }
             if (!amount || amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
             setButtonLoading(btn, 'Submitting...');
             try {
                 const resp = await Api.post('/payments/manual', {
-                    studentId, amount,
+                    invoiceId, studentId, amount,
                     method: document.getElementById('pfMethod').value,
                     reference: document.getElementById('pfRef').value.trim() || uid('REF')
                 });
-                if (!resp.ok) { showToast('Failed to submit payment', 'error'); return; }
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to submit payment', 'error');
+                    return;
+                }
                 closeModal();
                 showToast('Payment submitted for approval', 'success');
                 paymentsTab = 'pending';
                 renderPage('payments');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -4107,6 +4618,9 @@
         };
 
         // --- ATTENDANCE ---
+        // Batch save loop: backend accepts one student per POST. We loop
+        // client-side with per-record status so a single failure doesn't
+        // kill the whole submission, and we surface exact counts afterwards.
         PAGE_RENDERERS.attendance = function() {
             return `
             <div class="row g-3 mb-3">
@@ -4130,6 +4644,10 @@
                     <button class="btn-x btn-outline-x btn-sm-x" onclick="markAllAttendance('ABSENT')"><i class="bi bi-x-circle"></i> All absent</button>
                 </div>
                 <div id="attRoster"><div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div></div>
+                <div id="attProgressWrap" style="display:none;" class="mt-3">
+                    <div class="d-flex justify-content-between mb-1"><span class="eyebrow" id="attProgressLabel">Saving...</span><span class="eyebrow" id="attProgressPct">0%</span></div>
+                    <div class="upload-progress-bar"><div class="upload-progress-fill" id="attProgressFill"></div></div>
+                </div>
                 <button class="btn-x btn-primary-x btn-block-x mt-3" onclick="saveAttendance(this)"><i class="bi bi-check2"></i> Save attendance</button>
             </div>
             `;
@@ -4140,7 +4658,6 @@
                 document.getElementById('attRoster').innerHTML = `<div class="text-center py-4 text-danger">You do not have permission to manage attendance.</div>`;
                 return;
             }
-            // Default timestamp
             const ts = document.getElementById('attendanceTimestamp');
             if (ts) {
                 const d = new Date();
@@ -4204,7 +4721,7 @@
                         return;
                     }
                     roster.innerHTML = arr.map(s =>
-                        `<div class="d-flex justify-content-between align-items-center p-2 mb-1" style="background:var(--line-soft);border-radius:var(--radius-sm);flex-wrap:wrap;gap:.3rem;">
+                        `<div class="d-flex justify-content-between align-items-center p-2 mb-1" style="background:var(--line-soft);border-radius:var(--radius-sm);flex-wrap:wrap;gap:.3rem;" data-student-block="${s.id}" data-class-id="${s.classId || classId || ''}">
                             <span style="font-size:.85rem;">${escapeHtml(s.fullName)}</span>
                             <div class="d-flex gap-2">
                                 <select class="input-x" style="width:auto;padding:.25rem .5rem;font-size:.75rem;" data-student="${s.id}">
@@ -4222,26 +4739,67 @@
             document.querySelectorAll('#attRoster select').forEach(sel => sel.value = status);
         };
 
+        // Loops over each student and POSTs an individual attendance record.
+        // Progress bar updates per-student so the user sees real feedback.
         window.saveAttendance = async function(btn) {
             if (!Api.can('manageAttendance')) { showToast('You do not have permission to save attendance.', 'error'); return; }
             const selects = document.querySelectorAll('#attRoster select');
-            const records = [];
-            selects.forEach(sel => {
-                const studentId = sel.dataset.student;
-                const remarkInput = document.querySelector(`[data-remark="${studentId}"]`);
-                records.push({ studentId, status: sel.value, remark: remarkInput ? remarkInput.value.trim() : '' });
-            });
+            if (selects.length === 0) { showToast('No students in the roster', 'warning'); return; }
             const tsInput = document.getElementById('attendanceTimestamp');
             const timestamp = tsInput?.value ? new Date(tsInput.value).toISOString() : new Date().toISOString();
+            const date = timestamp.slice(0, 10);
+            const sessionId = currentSessionId();
+            const termId = currentTermId();
+
+            const wrap = document.getElementById('attProgressWrap');
+            const fill = document.getElementById('attProgressFill');
+            const pctEl = document.getElementById('attProgressPct');
+            const label = document.getElementById('attProgressLabel');
+            wrap.style.display = 'block';
             setButtonLoading(btn, 'Saving...');
-            try {
-                const resp = await Api.post('/attendance', { records, timestamp, date: timestamp.slice(0, 10) });
-                if (!resp.ok) { showToast('Failed to save attendance', 'error'); return; }
-                showToast('Attendance saved for today', 'success');
+
+            let ok = 0, fail = 0;
+            const total = selects.length;
+
+            for (let i = 0; i < total; i++) {
+                const sel = selects[i];
+                const studentId = sel.dataset.student;
+                const block = document.querySelector(`[data-student-block="${studentId}"]`);
+                const classId = block?.dataset.classId || document.getElementById('attClassFilter')?.value || '';
+                const remarkInput = document.querySelector(`[data-remark="${studentId}"]`);
+                const status = sel.value;
+                const remark = remarkInput ? remarkInput.value.trim() : '';
+
+                if (!classId) {
+                    fail++;
+                } else {
+                    try {
+                        const resp = await Api.post('/attendance', {
+                            studentId, classId, sessionId, termId, date, status, remark,
+                            timestamp
+                        });
+                        if (resp.ok) ok++;
+                        else fail++;
+                    } catch (_) {
+                        fail++;
+                    }
+                }
+                const pct = Math.round(((i + 1) / total) * 100);
+                fill.style.width = pct + '%';
+                pctEl.textContent = pct + '%';
+                label.textContent = `Saved ${i + 1} of ${total}`;
+            }
+
+            resetButton(btn);
+            if (fail === 0) {
+                showToast(`Attendance saved for ${ok} student${ok === 1 ? '' : 's'}`, 'success');
                 fireConfetti(window.innerWidth / 2, 100);
-                renderPage('attendance');
-            } catch (e) { showToast('Network error', 'error'); }
-            finally { resetButton(btn); }
+                setTimeout(() => renderPage('attendance'), 600);
+            } else if (ok === 0) {
+                showToast(`All ${fail} attendance records failed — check your class selection and try again`, 'error', 5000);
+            } else {
+                showToast(`Saved ${ok} of ${total} (${fail} failed)`, 'warning', 5000);
+            }
         };
 
         // --- ATTENDANCE REVIEW ---
@@ -4338,12 +4896,284 @@
             } catch (e) { showToast('Could not load attendance report', 'error'); }
         };
 
+        // =============================================================
+        // SCORE ENTRY — the previously missing screen that was blocking
+        // report card generation. Writes Result records (caScore,
+        // examScore, subjectId, classId, studentId, sessionId, termId).
+        // =============================================================
+        PAGE_RENDERERS.scoreentry = function() {
+            return `
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div><h5 style="font-weight:700;">Score Entry</h5><span class="eyebrow">Enter CA and exam scores by class &amp; subject</span></div>
+                <button class="btn-x btn-outline-x btn-sm-x" onclick="openBulkScoreFromCSV()"><i class="bi bi-upload"></i> Import CSV</button>
+            </div>
+            <div class="panel mb-3">
+                <div class="row g-3">
+                    <div class="col-12 col-md-3"><label class="field-label">Class</label><select class="input-x" id="seClass" onchange="loadScoreRoster()"><option>Loading...</option></select></div>
+                    <div class="col-12 col-md-3"><label class="field-label">Subject</label><select class="input-x" id="seSubject" onchange="loadScoreRoster()"><option>Loading...</option></select></div>
+                    <div class="col-6 col-md-2"><label class="field-label">Session</label><input class="input-x" id="seSession" value="${escapeHtml(currentSessionId())}" /></div>
+                    <div class="col-6 col-md-2"><label class="field-label">Term</label><select class="input-x" id="seTerm">${['First Term','Second Term','Third Term'].map(t => `<option ${t === currentTermId() ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+                    <div class="col-12 col-md-2"><label class="field-label">Max CA / Exam</label><input class="input-x" id="seMax" value="30 / 70" readonly /></div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn-x btn-outline-x btn-sm-x" onclick="loadScoreRoster()"><i class="bi bi-arrow-repeat"></i> Reload roster</button>
+                    <button class="btn-x btn-outline-x btn-sm-x" onclick="openAddSubjectModal()"><i class="bi bi-plus-lg"></i> Add subject</button>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-head"><h6>Students</h6><span class="eyebrow" id="seCount">—</span></div>
+                <div id="seRoster"><div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Pick a class and subject</div></div>
+                <div id="seProgressWrap" style="display:none;" class="mt-3">
+                    <div class="d-flex justify-content-between mb-1"><span class="eyebrow" id="seProgressLabel">Saving...</span><span class="eyebrow" id="seProgressPct">0%</span></div>
+                    <div class="upload-progress-bar"><div class="upload-progress-fill" id="seProgressFill"></div></div>
+                </div>
+                <button class="btn-x btn-primary-x btn-block-x mt-3" onclick="saveScoreRoster(this)"><i class="bi bi-check2"></i> Save scores</button>
+            </div>
+            `;
+        };
+
+        POST_RENDER_HOOKS.scoreentry = async function() {
+            if (!Api.can('manageResults')) {
+                document.getElementById('seRoster').innerHTML = `<div class="text-center py-4 text-danger">You do not have permission to enter scores.</div>`;
+                return;
+            }
+            try {
+                const cResp = await Api.get('/classes');
+                if (cResp.ok) {
+                    const classes = await Api.json(cResp);
+                    const sel = document.getElementById('seClass');
+                    sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                }
+            } catch (_) {}
+            try {
+                const sResp = await Api.get('/subjects');
+                if (sResp.ok) {
+                    const subjects = await Api.json(sResp);
+                    const sel = document.getElementById('seSubject');
+                    const arr = Array.isArray(subjects) ? subjects : [];
+                    if (arr.length === 0) {
+                        sel.innerHTML = '<option value="">No subjects — add one first</option>';
+                    } else {
+                        sel.innerHTML = arr.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+                    }
+                } else {
+                    document.getElementById('seSubject').innerHTML = '<option value="">Could not load subjects</option>';
+                }
+            } catch (_) {
+                document.getElementById('seSubject').innerHTML = '<option value="">Could not load subjects</option>';
+            }
+        };
+
+        window.openAddSubjectModal = function() {
+            if (!Api.can('manageResults')) { showToast('You do not have permission to add subjects.', 'error'); return; }
+            openModal('Add subject', `
+                <div class="mb-3"><label class="field-label">Subject name</label><input class="input-x" id="subjName" placeholder="e.g. Mathematics" /></div>
+                <div class="mb-1"><label class="field-label">Code (optional)</label><input class="input-x" id="subjCode" placeholder="e.g. MTH101" /></div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewSubject(this)"><i class="bi bi-check-lg"></i> Save subject</button></div>
+            `);
+        };
+
+        window.saveNewSubject = async function(btn) {
+            const name = document.getElementById('subjName').value.trim();
+            if (!name) { showToast('Enter a subject name', 'error'); return; }
+            setButtonLoading(btn, 'Saving...');
+            try {
+                const resp = await Api.post('/subjects', { name, code: document.getElementById('subjCode').value.trim() });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to create subject', 'error');
+                    return;
+                }
+                closeModal();
+                showToast(`Subject "${name}" added`, 'success');
+                renderPage('scoreentry');
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
+            finally { resetButton(btn); }
+        };
+
+        window.loadScoreRoster = async function() {
+            const classId = document.getElementById('seClass').value;
+            const subjectId = document.getElementById('seSubject').value;
+            const sessionId = document.getElementById('seSession').value.trim();
+            const termId = document.getElementById('seTerm').value;
+            if (!classId || !subjectId) {
+                document.getElementById('seRoster').innerHTML = `<div class="text-center py-4 eyebrow">Pick a class and subject first.</div>`;
+                return;
+            }
+            document.getElementById('seRoster').innerHTML = `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`;
+            try {
+                const [sResp, rResp] = await Promise.all([
+                    Api.get('/students?classId=' + classId),
+                    Api.get(`/results?classId=${classId}&subjectId=${subjectId}&sessionId=${encodeURIComponent(sessionId)}&termId=${encodeURIComponent(termId)}`).catch(() => null)
+                ]);
+                const students = sResp.ok ? await Api.json(sResp) : [];
+                const existingResults = (rResp && rResp.ok) ? await Api.json(rResp) : [];
+                const resultMap = {};
+                (Array.isArray(existingResults) ? existingResults : []).forEach(r => {
+                    resultMap[r.studentId] = r;
+                });
+                const arr = Array.isArray(students) ? students : [];
+                document.getElementById('seCount').textContent = arr.length + ' students';
+                if (arr.length === 0) {
+                    document.getElementById('seRoster').innerHTML = emptyState('people','No students in this class','Assign students to this class first.');
+                    return;
+                }
+                document.getElementById('seRoster').innerHTML = `
+                    <div class="score-row" style="background:var(--line-soft);border-radius:var(--radius-sm);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);font-weight:700;">
+                        <span>Student</span><span>CA (max 30)</span><span>Exam (max 70)</span><span>Total</span><span></span>
+                    </div>
+                    ${arr.map(s => {
+                        const r = resultMap[s.id] || {};
+                        const ca = r.caScore ?? '';
+                        const ex = r.examScore ?? '';
+                        const total = r.totalScore ?? '';
+                        return `<div class="score-row" data-student="${s.id}">
+                            <span style="font-size:.85rem;font-weight:600;">${escapeHtml(s.fullName)}</span>
+                            <input class="input-x se-ca" type="number" min="0" max="30" value="${ca}" placeholder="0-30" oninput="recalcScoreRow(this)" />
+                            <input class="input-x se-exam" type="number" min="0" max="70" value="${ex}" placeholder="0-70" oninput="recalcScoreRow(this)" />
+                            <span class="se-total num" style="font-weight:700;">${total !== '' ? total : '—'}</span>
+                            <span></span>
+                        </div>`;
+                    }).join('')}
+                `;
+            } catch (e) {
+                document.getElementById('seRoster').innerHTML = `<div class="text-center py-4 text-danger">${escapeHtml(e.message)}</div>`;
+            }
+        };
+
+        window.recalcScoreRow = function(input) {
+            const row = input.closest('.score-row');
+            if (!row) return;
+            const ca = Number(row.querySelector('.se-ca').value) || 0;
+            const ex = Number(row.querySelector('.se-exam').value) || 0;
+            row.querySelector('.se-total').textContent = (ca + ex) || '—';
+        };
+
+        // Loop client-side, one POST per student (backend accepts one result at a time).
+        window.saveScoreRoster = async function(btn) {
+            if (!Api.can('manageResults')) { showToast('You do not have permission to save results.', 'error'); return; }
+            const classId = document.getElementById('seClass').value;
+            const subjectId = document.getElementById('seSubject').value;
+            const sessionId = document.getElementById('seSession').value.trim() || currentSessionId();
+            const termId = document.getElementById('seTerm').value;
+            if (!classId || !subjectId) { showToast('Pick a class and subject first', 'error'); return; }
+
+            const rows = document.querySelectorAll('#seRoster .score-row[data-student]');
+            if (rows.length === 0) { showToast('Nothing to save', 'warning'); return; }
+
+            const wrap = document.getElementById('seProgressWrap');
+            const fill = document.getElementById('seProgressFill');
+            const pctEl = document.getElementById('seProgressPct');
+            const label = document.getElementById('seProgressLabel');
+            wrap.style.display = 'block';
+            setButtonLoading(btn, 'Saving...');
+
+            let ok = 0, fail = 0, skipped = 0;
+            const total = rows.length;
+
+            for (let i = 0; i < total; i++) {
+                const row = rows[i];
+                const studentId = row.dataset.student;
+                const ca = Number(row.querySelector('.se-ca').value);
+                const ex = Number(row.querySelector('.se-exam').value);
+                if (!row.querySelector('.se-ca').value && !row.querySelector('.se-exam').value) {
+                    skipped++;
+                } else {
+                    if (isNaN(ca) || isNaN(ex) || ca < 0 || ca > 30 || ex < 0 || ex > 70) {
+                        fail++;
+                    } else {
+                        try {
+                            const resp = await Api.post('/results', {
+                                studentId, classId, subjectId, sessionId, termId,
+                                caScore: ca, examScore: ex
+                            });
+                            if (resp.ok) ok++;
+                            else fail++;
+                        } catch (_) { fail++; }
+                    }
+                }
+                const pct = Math.round(((i + 1) / total) * 100);
+                fill.style.width = pct + '%';
+                pctEl.textContent = pct + '%';
+                label.textContent = `Saved ${ok} · Failed ${fail} · Skipped ${skipped}`;
+            }
+
+            resetButton(btn);
+            if (fail === 0 && ok > 0) {
+                showToast(`Scores saved for ${ok} student${ok === 1 ? '' : 's'}`, 'success');
+                fireConfetti(window.innerWidth / 2, 100);
+            } else if (ok === 0 && fail > 0) {
+                showToast(`All ${fail} submissions failed — check your scores are within CA 0-30 and Exam 0-70`, 'error', 5000);
+            } else if (ok > 0) {
+                showToast(`Saved ${ok}, failed ${fail}${skipped ? `, skipped ${skipped}` : ''}`, 'warning', 5000);
+            } else {
+                showToast('No scores entered', 'info');
+            }
+        };
+
+        window.openBulkScoreFromCSV = function() {
+            openModal('Import scores from CSV', `
+                <p class="eyebrow mb-3">First pick class/subject/session/term above, then paste rows here. One row per student: <code>Student name, CA, Exam</code>.</p>
+                <div class="mb-3">
+                    <label class="field-label">Rows</label>
+                    <textarea class="input-x" id="scoreCsv" rows="6" placeholder="John Okafor, 22, 58&#10;Mary Ibrahim, 28, 62"></textarea>
+                </div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="submitScoreCSV(this)"><i class="bi bi-check-lg"></i> Import scores</button></div>
+            `);
+        };
+
+        window.submitScoreCSV = async function(btn) {
+            const classId = document.getElementById('seClass').value;
+            const subjectId = document.getElementById('seSubject').value;
+            const sessionId = document.getElementById('seSession').value.trim() || currentSessionId();
+            const termId = document.getElementById('seTerm').value;
+            if (!classId || !subjectId) { showToast('Pick a class and subject first', 'error'); return; }
+            const text = document.getElementById('scoreCsv').value.trim();
+            if (!text) { showToast('Paste some rows first', 'error'); return; }
+            const lines = text.split('\n').filter(l => l.trim());
+            const studentsResp = await Api.get('/students?classId=' + classId);
+            if (!studentsResp.ok) { showToast('Could not load student roster', 'error'); return; }
+            const students = await Api.json(studentsResp);
+            const byName = {};
+            (Array.isArray(students) ? students : []).forEach(s => {
+                byName[s.fullName.toLowerCase()] = s.id;
+            });
+            setButtonLoading(btn, 'Importing...');
+            let ok = 0, fail = 0, notFound = 0;
+            for (const line of lines) {
+                const [name, ca, ex] = line.split(',').map(p => p.trim());
+                const sid = byName[(name || '').toLowerCase()];
+                if (!sid) { notFound++; continue; }
+                const caN = Number(ca), exN = Number(ex);
+                if (isNaN(caN) || isNaN(exN) || caN < 0 || caN > 30 || exN < 0 || exN > 70) { fail++; continue; }
+                try {
+                    const r = await Api.post('/results', {
+                        studentId: sid, classId, subjectId, sessionId, termId,
+                        caScore: caN, examScore: exN
+                    });
+                    if (r.ok) ok++; else fail++;
+                } catch (_) { fail++; }
+            }
+            resetButton(btn);
+            closeModal();
+            showToast(`Imported ${ok} scores${fail ? `, ${fail} invalid` : ''}${notFound ? `, ${notFound} student${notFound===1?'':'s'} not found` : ''}`, ok > 0 ? 'success' : 'warning', 5000);
+            if (ok > 0) loadScoreRoster();
+        };
+
         // --- INVOICES ---
         PAGE_RENDERERS.invoices = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div><h5 style="font-weight:700;">Invoices</h5><span class="eyebrow">Generate and manage invoices</span></div>
                 <button class="btn-x btn-primary-x btn-sm-x" onclick="openGenerateInvoiceModal()"><i class="bi bi-plus-lg"></i> Generate invoice</button>
+            </div>
+            <div class="panel mb-3" style="background:var(--gold-light);border-left:3px solid var(--gold);">
+                <div class="d-flex gap-2 align-items-start">
+                    <i class="bi bi-info-circle-fill" style="color:var(--gold);font-size:1.1rem;"></i>
+                    <div style="font-size:.85rem;">
+                        Invoices are generated from a <strong>fee structure</strong>, not the "Termly fee" on the class. If you haven't built one yet for this class/term, visit <a onclick="closeModal();navigateTo('feestructure')" style="cursor:pointer;text-decoration:underline;color:var(--green);font-weight:600;">Fee structure</a> first.
+                    </div>
+                </div>
             </div>
             <div class="d-flex flex-wrap gap-2 mb-3">
                 <select class="input-x" id="invStatusFilter" style="max-width:160px;" onchange="filterInvoices()"><option value="">All status</option><option value="ISSUED">Issued</option><option value="PAID">Paid</option><option value="OVERDUE">Overdue</option><option value="CANCELLED">Cancelled</option></select>
@@ -4439,11 +5269,11 @@
         };
 
         window.openGenerateInvoiceModal = function() {
-            if (!Api.can('manageStudents')) { showToast('You do not have permission to generate invoices.', 'error'); return; }
+            if (!Api.can('manageInvoices')) { showToast('You do not have permission to generate invoices.', 'error'); return; }
             openModal('Generate invoice', `
                 <div class="mb-3"><label class="field-label">Student</label><select class="input-x" id="invStudent"><option>Loading...</option></select></div>
                 <div class="mb-3"><label class="field-label">Due date</label><input class="input-x" id="invDue" type="date" /></div>
-                <div class="mb-3"><label class="field-label">Amount</label><input class="input-x" id="invAmount" type="number" placeholder="Auto-calculated" /></div>
+                <div class="mb-1"><label class="field-label">Amount (optional — auto-computed from fee structure)</label><input class="input-x" id="invAmount" type="number" placeholder="Leave blank to use fee structure total" /></div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="generateInvoice(this)"><i class="bi bi-check-lg"></i> Generate</button></div>
             `);
             (async () => {
@@ -4461,26 +5291,36 @@
         window.generateInvoice = async function(btn) {
             setButtonLoading(btn, 'Generating...');
             try {
-                const resp = await Api.post('/invoices/generate', {
+                const body = {
                     studentId: document.getElementById('invStudent').value,
                     dueDate: document.getElementById('invDue').value,
-                    amount: Number(document.getElementById('invAmount').value) || undefined,
+                    sessionId: currentSessionId(),
+                    termId: currentTermId(),
                     idempotencyKey: uid('IDEM')
-                });
-                if (!resp.ok) { showToast('Failed to generate invoice', 'error'); return; }
+                };
+                const amountVal = Number(document.getElementById('invAmount').value);
+                if (amountVal > 0) body.amount = amountVal;
+                const resp = await Api.post('/invoices/generate', body);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    // The most common failure mode: no fee structure exists yet.
+                    if ((err.message || '').toLowerCase().includes('fee structure')) {
+                        showToast('No fee structure for this class/term. Build one first.', 'error', 5000);
+                        closeModal();
+                        navigateTo('feestructure');
+                        return;
+                    }
+                    showToast(err.message || 'Failed to generate invoice', 'error');
+                    return;
+                }
                 closeModal();
                 showToast('Invoice generated successfully', 'success');
                 renderPage('invoices');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
         // --- SUBSCRIPTION ---
-        // window._subPlans holds the plan list fetched from /subscriptions/plans
-        // (name, price, billingCycle) — used by both the "no subscription yet"
-        // picker and the existing renew flow instead of hardcoded values.
-        // window._subHasSubscription tracks whether this school has any
-        // Subscription document at all; it decides which panel renders.
         PAGE_RENDERERS.subscription = function() {
             return `
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -4512,7 +5352,6 @@
         };
 
         POST_RENDER_HOOKS.subscription = async function() {
-            // Fetch plans first — both the "choose a plan" and "renew" panels need them.
             try {
                 const plansResp = await Api.get('/subscriptions/plans');
                 if (plansResp.ok) {
@@ -4520,8 +5359,6 @@
                 }
             } catch (_) {}
             if (!window._subPlans || !window._subPlans.length) {
-                // Fallback so the page still renders something usable if the
-                // plans endpoint is unreachable.
                 window._subPlans = [
                     { name: 'Starter', price: 20000, billingCycle: 'TERMLY' },
                     { name: 'Pro', price: 30000, billingCycle: 'TERMLY' },
@@ -4535,8 +5372,6 @@
                     window._subHasSubscription = sub.status !== 'none';
 
                     if (!window._subHasSubscription) {
-                        // New school, no Subscription document yet — show the
-                        // plan picker instead of the renew/billing panels.
                         document.getElementById('subSummaryPanel').style.display = 'none';
                         document.getElementById('smsCreditsPanel').style.display = 'none';
                         document.getElementById('subStatus').textContent = 'Not subscribed';
@@ -4563,11 +5398,6 @@
 
                     renderRenewArea(sub.payments || []);
                 } else {
-                    // Request reached the server but it responded with an
-                    // error (403/500/etc, e.g. old backend still throwing,
-                    // or a real server error). Show something instead of
-                    // leaving the "Loading subscription..." placeholder
-                    // forever, and surface the real error for debugging.
                     let errMsg = `HTTP ${resp.status}`;
                     try {
                         const errBody = await resp.json();
@@ -4576,8 +5406,6 @@
                     showSubscriptionLoadError(errMsg);
                 }
             } catch (e) {
-                // Network failure, timeout, CORS error, or cold-start
-                // failure — the fetch never got a response at all.
                 showSubscriptionLoadError(e?.message || 'Network error');
             }
             try {
@@ -4589,9 +5417,6 @@
             } catch (_) {}
         };
 
-        // Replaces the perpetual "Loading subscription..." placeholder with
-        // a real error message plus a retry button, so a failed request is
-        // visible instead of silently hanging forever.
         function showSubscriptionLoadError(message) {
             document.getElementById('subStatus').textContent = 'Error';
             document.getElementById('subStatus').className = 'chip chip-danger';
@@ -4608,7 +5433,6 @@
             }
         }
 
-        // "No subscription yet" panel — plan picker + Subscribe button.
         function renderSubscribeArea() {
             const area = document.getElementById('subMainArea');
             if (!area) return;
@@ -4625,8 +5449,6 @@
             `;
         }
 
-        // "Has a subscription" panel — plan switcher/renew + billing history,
-        // same layout as before.
         function renderRenewArea(payments) {
             const area = document.getElementById('subMainArea');
             if (!area) return;
@@ -4693,7 +5515,7 @@
                 showToast(`SMS credits added! (${data.credits} credits)`, 'success');
                 renderPage('subscription');
             } catch (e) {
-                showToast('Network error — top-up not completed', 'error');
+                showToast(e.message || 'Network error — top-up not completed', 'error');
             }
         };
 
@@ -4703,10 +5525,6 @@
             await processSMSTopUp(amount);
         };
 
-        // Same modal serves both flows: when the school has no subscription
-        // yet (window._subHasSubscription === false) it reads as "Subscribe"
-        // and posts to /subscriptions/subscribe; otherwise it reads as
-        // "Renew" and posts to /subscriptions/renew, unchanged from before.
         window.openRenewalModal = function() {
             const isNew = !window._subHasSubscription;
             const planKey = (window._selectedRenewalPlan || _pageData.school?.plan || window._subPlans?.[0]?.name || 'starter').toLowerCase();
@@ -4715,7 +5533,6 @@
             const price = planObj ? planObj.price : (planKey === 'pro' ? 30000 : 20000);
             const title = isNew ? 'Subscribe' : 'Renew subscription';
             const subtitle = isNew ? `Subscribe — ${escapeHtml(planLabel)}` : `Renew plan — ${escapeHtml(planLabel)}`;
-            const submitLabel = isNew ? 'Submit for review' : 'Submit for review';
             openModal(title, `
                 <div class="text-center mb-3"><div style="font-weight:700;font-size:1.1rem;">${escapeHtml(_pageData.school?.name||'SchoolFlow')}</div><div class="eyebrow">${subtitle}</div></div>
                 <div class="p-3" style="background:var(--line-soft);border-radius:var(--radius-md);text-align:center;margin-bottom:1rem;">
@@ -4727,10 +5544,16 @@
                 <div class="mb-3"><label class="field-label">Upload payment proof</label><input type="file" accept="image/*" id="renewalProof" class="input-x" style="padding:.4rem;" /></div>
                 <div class="mb-3"><label class="field-label">Transaction reference</label><input class="input-x" id="renewalRef" placeholder="e.g. TRX-123456" /></div>
                 <div class="mb-1"><label class="field-label">Payment date</label><input class="input-x" id="renewalDate" type="date" /></div>
-                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="submitRenewal(this)"><i class="bi bi-send"></i> ${submitLabel}</button></div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="submitRenewal(this)"><i class="bi bi-send"></i> Submit for review</button></div>
             `);
         };
 
+        // NOW COMPRESSES THE PROOF IMAGE BEFORE SENDING.
+        // The backend accepts `proof` as a base64 string inside JSON, but a
+        // 4MB phone photo becomes ~5.3MB of base64 which hangs on slow
+        // networks and can be rejected by the JSON body size limit. We shrink
+        // it to under ~400KB before encoding, plus the fetch helper enforces a
+        // 45-second timeout so the button never spins forever again.
         window.submitRenewal = async function(btn) {
             const refInput = document.getElementById('renewalRef').value.trim();
             if (!refInput) { showToast('Please enter a transaction reference', 'error'); return; }
@@ -4738,11 +5561,14 @@
             const fileInput = document.getElementById('renewalProof');
             let proof = '';
             if (fileInput?.files?.[0]) {
-                proof = await new Promise((res) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => res(e.target.result);
-                    reader.readAsDataURL(fileInput.files[0]);
-                });
+                setButtonLoading(btn, 'Compressing image...');
+                try {
+                    proof = await compressImageToDataURL(fileInput.files[0], 1280, 0.72);
+                } catch (e) {
+                    resetButton(btn);
+                    showToast('Could not process image: ' + e.message, 'error');
+                    return;
+                }
             }
             const planName = window._selectedRenewalPlan || _pageData.school?.plan || window._subPlans?.[0]?.name || 'starter';
             const endpoint = window._subHasSubscription ? '/subscriptions/renew' : '/subscriptions/subscribe';
@@ -4757,8 +5583,11 @@
                 closeModal();
                 showToast(window._subHasSubscription ? 'Renewal submitted for review' : 'Subscription submitted for review', 'success');
                 renderPage('subscription');
-            } catch (e) { showToast('Network error: ' + e.message, 'error'); }
-            finally { resetButton(btn); }
+            } catch (e) {
+                showToast('Network error: ' + e.message, 'error');
+            } finally {
+                resetButton(btn);
+            }
         };
 
         // --- SETTINGS ---
@@ -5164,7 +5993,7 @@
                 closeModal();
                 showToast('Document uploaded successfully', 'success');
                 renderPage('documents');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -5198,6 +6027,7 @@
                 <div class="panel-head">
                     <h6>Subject performance</h6>
                     <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn-x btn-outline-x btn-sm-x" onclick="navigateTo('scoreentry')"><i class="bi bi-pencil-square"></i> Enter scores</button>
                         <button class="btn-x btn-outline-x btn-sm-x" onclick="generateSchoolWideReportCards(this)"><i class="bi bi-collection"></i> Compile ALL report cards</button>
                         <button class="btn-x btn-primary-x btn-sm-x" onclick="openBulkReportModal()"><i class="bi bi-file-earmark-text"></i> Generate for class</button>
                     </div>
@@ -5218,7 +6048,7 @@
                     document.getElementById('resAvg').textContent = '—';
                     document.getElementById('resHigh').textContent = '—';
                     document.getElementById('resLow').textContent = '—';
-                    document.getElementById('resultsBody').innerHTML = `<tr><td colspan="5" class="text-center py-4">${emptyState('bar-chart','No results','Enter scores for students to see performance analytics.')}</td></tr>`;
+                    document.getElementById('resultsBody').innerHTML = `<tr><td colspan="5" class="text-center py-4">${emptyState('bar-chart','No results','Enter scores for students to see performance analytics.',`<button class="btn-x btn-primary-x" onclick="navigateTo('scoreentry')"><i class="bi bi-pencil-square"></i> Enter scores</button>`)}</td></tr>`;
                     return;
                 }
                 const avgs = arr.map(r => r.average || 0);
@@ -5287,29 +6117,31 @@
             try {
                 const resp = await Api.post('/report-cards/generate-class', {
                     classId,
-                    sessionId: _pageData.school?.session || '2026/2027',
-                    termId: _pageData.school?.term || 'First Term'
+                    sessionId: currentSessionId(),
+                    termId: currentTermId()
                 });
-                if (!resp.ok) { showToast('Generation failed', 'error'); return; }
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Generation failed — check that scores are entered for this class.', 'error', 5000);
+                    return;
+                }
                 const data = await Api.json(resp);
                 closeModal();
                 showToast(`Generated ${data.length || 0} report cards`, 'success');
                 fireConfetti(window.innerWidth / 2, 100);
                 renderPage('results');
-            } catch (e) { showToast('Error generating report cards', 'error'); }
+            } catch (e) { showToast(e.message || 'Error generating report cards', 'error'); }
             finally { resetButton(btn); }
         };
 
-        // ✅ WHOLE SCHOOL COMPILE
         window.generateSchoolWideReportCards = async function(btn) {
             setButtonLoading(btn, 'Compiling all report cards...');
             try {
                 const resp = await Api.post('/report-cards/generate-school', {
-                    sessionId: _pageData.school?.session || '2026/2027',
-                    termId: _pageData.school?.term || 'First Term'
+                    sessionId: currentSessionId(),
+                    termId: currentTermId()
                 });
                 if (!resp.ok) {
-                    // Fallback: iterate over classes client-side
                     const cResp = await Api.get('/classes');
                     if (cResp.ok) {
                         const classes = await Api.json(cResp);
@@ -5318,8 +6150,8 @@
                             try {
                                 const r = await Api.post('/report-cards/generate-class', {
                                     classId: cls.id,
-                                    sessionId: _pageData.school?.session || '2026/2027',
-                                    termId: _pageData.school?.term || 'First Term'
+                                    sessionId: currentSessionId(),
+                                    termId: currentTermId()
                                 });
                                 if (r.ok) count++;
                             } catch (_) {}
@@ -5336,7 +6168,7 @@
                 showToast(`Compiled ${data.count || 0} report cards school-wide`, 'success');
                 fireConfetti(window.innerWidth / 2, 100);
                 renderPage('results');
-            } catch (e) { showToast('Error compiling report cards', 'error'); }
+            } catch (e) { showToast(e.message || 'Error compiling report cards', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -5464,8 +6296,9 @@
         // --- PARENTS ---
         PAGE_RENDERERS.parents = function() {
             return `
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div><h5 style="font-weight:700;">Parents &amp; guardians</h5><span class="eyebrow" id="parentCount">Loading...</span></div>
+                <button class="btn-x btn-primary-x btn-sm-x" onclick="openAddParentModal()"><i class="bi bi-plus-lg"></i> Add parent</button>
             </div>
             <div class="row g-3" id="parentGrid">
                 ${Array(3).fill(0).map(() => `<div class="col-12 col-md-6 col-lg-4"><div class="panel"><div class="skeleton" style="height:20px;width:60%;margin-bottom:.5rem;"></div><div class="skeleton" style="height:12px;width:50%;"></div></div></div>`).join('')}
@@ -5482,13 +6315,13 @@
                 document.getElementById('parentCount').textContent = arr.length + ' contacts';
                 const grid = document.getElementById('parentGrid');
                 if (arr.length === 0) {
-                    grid.innerHTML = `<div class="col-12">${emptyState('person-lines-fill','No parents yet','Parents appear automatically once you add students.')}</div>`;
+                    grid.innerHTML = `<div class="col-12">${emptyState('person-lines-fill','No parents yet','Parents appear automatically once you add students.',`<button class="btn-x btn-primary-x" onclick="openAddParentModal()"><i class="bi bi-plus-lg"></i> Add parent</button>`)}</div>`;
                     return;
                 }
                 grid.innerHTML = arr.map(p => `
                     <div class="col-12 col-md-6 col-lg-4"><div class="stat ${p.outstanding>0?'tone-danger':'tone-green'} h-100">
                         <div class="d-flex justify-content-between align-items-start">
-                            <div><h6 class="mb-0">${escapeHtml(p.name)}</h6><div class="eyebrow">${escapeHtml(p.phone)}</div></div>
+                            <div><h6 class="mb-0">${escapeHtml(p.name || (p.firstName + ' ' + p.lastName))}</h6><div class="eyebrow">${escapeHtml(p.phone)}</div></div>
                             <span class="chip chip-slate">${p.childrenCount||0} child${p.childrenCount===1?'':'ren'}</span>
                         </div>
                         <div class="eyebrow mt-2">${p.children?p.children.map(c=>escapeHtml(c)).join(', '):'—'}</div>
@@ -5504,17 +6337,62 @@
             }
         };
 
+        // Add Parent — matches the Parent model schema (firstName, lastName, email, phone)
+        window.openAddParentModal = function() {
+            if (!Api.can('manageParents')) { showToast('You do not have permission to add parents.', 'error'); return; }
+            openModal('Add parent', `
+                <div class="row g-3">
+                    <div class="col-6"><label class="field-label">First name</label><input class="input-x" id="pfFirst" placeholder="Mrs." /></div>
+                    <div class="col-6"><label class="field-label">Last name</label><input class="input-x" id="pfLast" placeholder="Okafor" /></div>
+                    <div class="col-6"><label class="field-label">Phone</label><input class="input-x" id="pfPhone" placeholder="0803 000 0000" /></div>
+                    <div class="col-6"><label class="field-label">Email</label><input class="input-x" id="pfEmail" type="email" placeholder="parent@mail.com" /></div>
+                    <div class="col-12"><label class="field-label">Relationship</label><select class="input-x" id="pfRelation"><option value="Guardian">Guardian</option><option value="Mother">Mother</option><option value="Father">Father</option><option value="Other">Other</option></select></div>
+                </div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewParent(this)"><i class="bi bi-check-lg"></i> Save parent</button></div>
+            `);
+        };
+
+        window.saveNewParent = async function(btn) {
+            const first = document.getElementById('pfFirst').value.trim();
+            const last = document.getElementById('pfLast').value.trim();
+            const phone = document.getElementById('pfPhone').value.trim();
+            const email = document.getElementById('pfEmail').value.trim();
+            if (!first || !last) { showToast('Enter first and last name', 'error'); return; }
+            if (!phone) { showToast('Phone is required', 'error'); return; }
+            if (!email) { showToast('Email is required', 'error'); return; }
+            setButtonLoading(btn, 'Saving...');
+            try {
+                const resp = await Api.post('/parents', {
+                    firstName: first,
+                    lastName: last,
+                    fullName: first + ' ' + last,
+                    phone,
+                    email,
+                    relationship: document.getElementById('pfRelation').value
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to add parent', 'error');
+                    return;
+                }
+                closeModal();
+                showToast(`${first} ${last} added`, 'success');
+                renderPage('parents');
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
+            finally { resetButton(btn); }
+        };
+
         window.viewParent = async function(id) {
             openModal('Parent', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
             try {
                 const resp = await Api.get('/parents/' + id);
                 if (!resp.ok) { showToast('Parent not found', 'error'); closeModal(); return; }
                 const p = await Api.json(resp);
-                document.getElementById('modalTitle').textContent = p.name || 'Parent';
+                document.getElementById('modalTitle').textContent = p.name || (p.firstName ? `${p.firstName} ${p.lastName}` : 'Parent');
                 document.getElementById('modalBody').innerHTML = `
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="avatar-ring lg" style="background:${avatarColor(p.id || p.name)};">${initials(p.name)}</div>
-                        <div><div style="font-weight:700;font-size:1.05rem;">${escapeHtml(p.name)}</div><div class="eyebrow">${escapeHtml(p.phone||'')}</div></div>
+                        <div class="avatar-ring lg" style="background:${avatarColor(p.id || p.name)};">${initials(p.name || (p.firstName + ' ' + p.lastName))}</div>
+                        <div><div style="font-weight:700;font-size:1.05rem;">${escapeHtml(p.name || (p.firstName + ' ' + p.lastName))}</div><div class="eyebrow">${escapeHtml(p.phone||'')}</div></div>
                     </div>
                     <div class="mb-3">
                         <div class="label-caps mb-1">Children</div>
@@ -5545,11 +6423,13 @@
                 if (!resp.ok) { showToast('Failed to send SMS', 'error'); return; }
                 closeModal();
                 showToast('SMS sent successfully', 'success');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
         // --- STAFF ---
+        // Add / edit now match Staff model schema: firstName, lastName, email
+        // (all required) and role enum uppercase (TEACHER, ACCOUNTANT, ADMIN, OTHER).
         PAGE_RENDERERS.staff = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -5577,14 +6457,16 @@
                     grid.innerHTML = `<div class="col-12">${emptyState('person-badge','No staff yet','Add teachers and admin staff.')}</div>`;
                     return;
                 }
-                grid.innerHTML = arr.map(s => `
+                grid.innerHTML = arr.map(s => {
+                    const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || s.name || '—';
+                    return `
                     <div class="col-12 col-md-6 col-lg-4"><div class="stat tone-slate h-100">
                         <div class="d-flex align-items-start gap-2">
-                            <div class="avatar-ring sm" style="background:${avatarColor(s.id)};">${initials(s.name)}</div>
+                            <div class="avatar-ring sm" style="background:${avatarColor(s.id)};">${initials(fullName)}</div>
                             <div class="flex-grow-1">
-                                <h6 class="mb-0">${escapeHtml(s.name)}</h6>
+                                <h6 class="mb-0">${escapeHtml(fullName)}</h6>
                                 <div class="eyebrow">${escapeHtml(s.role)}</div>
-                                <div class="eyebrow">${escapeHtml(s.phone)}</div>
+                                <div class="eyebrow">${escapeHtml(s.email || s.phone || '')}</div>
                                 ${s.subjects&&s.subjects.length?`<span class="chip chip-green mt-1">${escapeHtml(s.subjects.join(' · '))}</span>`:''}
                                 <div class="d-flex gap-1 mt-2">
                                     <button class="btn-x btn-outline-x btn-sm-x" onclick="openEditStaffModal('${s.id}')" aria-label="Edit"><i class="bi bi-pencil"></i></button>
@@ -5592,8 +6474,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div></div>
-                `).join('');
+                    </div></div>`;
+                }).join('');
             } catch (e) {
                 document.getElementById('staffGrid').innerHTML = `<div class="col-12 text-center py-4 text-danger">Failed to load staff: ${escapeHtml(e.message)}</div>`;
             }
@@ -5602,29 +6484,53 @@
         window.openAddStaffModal = function() {
             if (!Api.can('manageStaff')) { showToast('You do not have permission to add staff.', 'error'); return; }
             openModal('Add staff member', `
-                <div class="mb-3"><label class="field-label">Full name</label><input class="input-x" id="stfName" placeholder="Mrs. Adaeze Nwosu" /></div>
-                <div class="mb-3"><label class="field-label">Role</label><select class="input-x" id="stfRole"><option>Teacher</option><option>Principal</option><option>Bursar</option><option>Admin</option></select></div>
-                <div class="mb-3"><label class="field-label">Phone</label><input class="input-x" id="stfPhone" placeholder="0803 000 0000" /></div>
-                <div class="mb-1"><label class="field-label">Subjects (comma separated)</label><input class="input-x" id="stfSubjects" placeholder="Mathematics, Basic Science" /></div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="field-label">First name</label><input class="input-x" id="stfFirst" placeholder="Adaeze" /></div>
+                    <div class="col-6"><label class="field-label">Last name</label><input class="input-x" id="stfLast" placeholder="Nwosu" /></div>
+                    <div class="col-6"><label class="field-label">Email</label><input class="input-x" id="stfEmail" type="email" placeholder="adaeze@school.edu" /></div>
+                    <div class="col-6"><label class="field-label">Phone</label><input class="input-x" id="stfPhone" placeholder="0803 000 0000" /></div>
+                    <div class="col-6"><label class="field-label">Role</label><select class="input-x" id="stfRole">
+                        <option value="TEACHER">Teacher</option>
+                        <option value="ACCOUNTANT">Accountant</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="OTHER">Other</option>
+                    </select></div>
+                    <div class="col-6"><label class="field-label">Department (optional)</label><input class="input-x" id="stfDept" placeholder="e.g. Sciences" /></div>
+                    <div class="col-12"><label class="field-label">Subjects (comma separated)</label><input class="input-x" id="stfSubjects" placeholder="Mathematics, Basic Science" /></div>
+                </div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewStaff(this)"><i class="bi bi-check-lg"></i> Save</button></div>
             `);
         };
 
         window.saveNewStaff = async function(btn) {
-            const name = document.getElementById('stfName').value.trim();
-            if (!name) { showToast('Enter a name', 'error'); return; }
+            const first = document.getElementById('stfFirst').value.trim();
+            const last = document.getElementById('stfLast').value.trim();
+            const email = document.getElementById('stfEmail').value.trim();
+            const phone = document.getElementById('stfPhone').value.trim();
+            if (!first || !last) { showToast('Enter first and last name', 'error'); return; }
+            if (!email) { showToast('Email is required', 'error'); return; }
+            if (!phone) { showToast('Phone is required', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
             try {
                 const resp = await Api.post('/staff', {
-                    name, role: document.getElementById('stfRole').value,
-                    phone: document.getElementById('stfPhone').value.trim(),
+                    firstName: first,
+                    lastName: last,
+                    fullName: `${first} ${last}`,
+                    email,
+                    phone,
+                    role: document.getElementById('stfRole').value,
+                    department: document.getElementById('stfDept').value.trim(),
                     subjects: document.getElementById('stfSubjects').value.split(',').map(s => s.trim()).filter(Boolean)
                 });
-                if (!resp.ok) { showToast('Failed to add staff', 'error'); return; }
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to add staff', 'error');
+                    return;
+                }
                 closeModal();
-                showToast(`${name} added to staff`, 'success');
+                showToast(`${first} ${last} added to staff`, 'success');
                 renderPage('staff');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -5635,10 +6541,15 @@
                 if (!resp.ok) throw new Error('Staff not found');
                 const s = await Api.json(resp);
                 document.getElementById('modalBody').innerHTML = `
-                    <div class="mb-3"><label class="field-label">Full name</label><input class="input-x" id="esName" value="${escapeHtml(s.name||'')}" /></div>
-                    <div class="mb-3"><label class="field-label">Role</label><select class="input-x" id="esRole">${['Teacher','Principal','Bursar','Admin'].map(r => `<option ${r===s.role?'selected':''}>${r}</option>`).join('')}</select></div>
-                    <div class="mb-3"><label class="field-label">Phone</label><input class="input-x" id="esPhone" value="${escapeHtml(s.phone||'')}" /></div>
-                    <div class="mb-1"><label class="field-label">Subjects</label><input class="input-x" id="esSubjects" value="${escapeHtml((s.subjects||[]).join(', '))}" /></div>
+                    <div class="row g-3">
+                        <div class="col-6"><label class="field-label">First name</label><input class="input-x" id="esFirst" value="${escapeHtml(s.firstName || '')}" /></div>
+                        <div class="col-6"><label class="field-label">Last name</label><input class="input-x" id="esLast" value="${escapeHtml(s.lastName || '')}" /></div>
+                        <div class="col-6"><label class="field-label">Email</label><input class="input-x" id="esEmail" value="${escapeHtml(s.email || '')}" /></div>
+                        <div class="col-6"><label class="field-label">Phone</label><input class="input-x" id="esPhone" value="${escapeHtml(s.phone || '')}" /></div>
+                        <div class="col-6"><label class="field-label">Role</label><select class="input-x" id="esRole">${['TEACHER','ACCOUNTANT','ADMIN','OTHER'].map(r => `<option ${r===s.role?'selected':''}>${r}</option>`).join('')}</select></div>
+                        <div class="col-6"><label class="field-label">Department</label><input class="input-x" id="esDept" value="${escapeHtml(s.department || '')}" /></div>
+                        <div class="col-12"><label class="field-label">Subjects</label><input class="input-x" id="esSubjects" value="${escapeHtml((s.subjects||[]).join(', '))}" /></div>
+                    </div>
                     <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveEditStaff('${id}', this)"><i class="bi bi-check-lg"></i> Save changes</button></div>
                 `;
             } catch (e) { showToast('Staff not found', 'error'); closeModal(); }
@@ -5648,16 +6559,19 @@
             setButtonLoading(btn, 'Saving...');
             try {
                 const resp = await Api.put('/staff/' + id, {
-                    name: document.getElementById('esName').value.trim(),
-                    role: document.getElementById('esRole').value,
+                    firstName: document.getElementById('esFirst').value.trim(),
+                    lastName: document.getElementById('esLast').value.trim(),
+                    email: document.getElementById('esEmail').value.trim(),
                     phone: document.getElementById('esPhone').value.trim(),
+                    role: document.getElementById('esRole').value,
+                    department: document.getElementById('esDept').value.trim(),
                     subjects: document.getElementById('esSubjects').value.split(',').map(s => s.trim()).filter(Boolean)
                 });
                 if (!resp.ok) { showToast('Failed to update staff', 'error'); return; }
                 closeModal();
                 showToast('Staff updated', 'success');
                 renderPage('staff');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -5687,7 +6601,7 @@
                     if (resp.ok) {
                         const staff = await Api.json(resp);
                         const sel = document.getElementById('clStaff');
-                        sel.innerHTML = (Array.isArray(staff) ? staff : []).map(s => `<option value="${s.id}">${escapeHtml(s.name)} — ${escapeHtml(s.role)}</option>`).join('');
+                        sel.innerHTML = (Array.isArray(staff) ? staff : []).map(s => `<option value="${s.id}">${escapeHtml(s.fullName || s.name || '—')} — ${escapeHtml(s.role)}</option>`).join('');
                     }
                 } catch (_) {}
             })();
@@ -5706,11 +6620,11 @@
                 if (!resp.ok) { showToast('Failed to create login', 'error'); return; }
                 closeModal();
                 showToast('Staff login created successfully', 'success');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
-        // --- FEES ---
+        // --- FEES (overview only — building structures now lives on its own page) ---
         PAGE_RENDERERS.fees = function() {
             return `
             <div class="row g-3 mb-3">
@@ -5723,7 +6637,7 @@
                 <div class="bar-track"><div class="bar-fill" id="feeBar" style="width:0%;"></div></div>
             </div>
             <div class="panel">
-                <div class="panel-head"><h6>Fee structure by class</h6><button class="btn-x btn-outline-x btn-sm-x" onclick="navigateTo('classes')">Edit in Classes</button></div>
+                <div class="panel-head"><h6>Fee summary by class</h6><button class="btn-x btn-primary-x btn-sm-x" onclick="navigateTo('feestructure')"><i class="bi bi-diagram-3"></i> Manage structures</button></div>
                 <div class="table-wrap"><table class="tbl"><thead><tr><th>Class</th><th>Termly fee</th><th>Students</th><th>Expected</th><th>Collected</th></tr></thead><tbody id="feeBody"><tr><td colspan="5" class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</td></tr></tbody></table></div>
             </div>
             `;
@@ -5814,7 +6728,6 @@
                 const preview = document.getElementById('tplPreview');
                 preview.innerHTML = `<img src="${ev.target.result}" style="max-width:100%;max-height:400px;display:block;border-radius:var(--radius-sm);" id="tplImage" />
                     <div id="tplPins" style="position:absolute;inset:0;pointer-events:none;"></div>`;
-                // Enable click-to-pin
                 const img = document.getElementById('tplImage');
                 img.style.cursor = 'crosshair';
                 img.onclick = (evt) => {
@@ -5852,7 +6765,7 @@
                 window._tplPins = [];
                 showToast(`Template "${name}" saved with ${pins.length} field pins`, 'success');
                 renderPage('reportstudio');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -5885,7 +6798,7 @@
                 closeModal();
                 showToast(`Template "${name}" created`, 'success');
                 renderPage('reportstudio');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -5894,11 +6807,11 @@
             try {
                 const resp = await Api.post('/report-cards/generate', {
                     studentId,
-                    sessionId: _pageData.school?.session || '2026/2027',
-                    termId: _pageData.school?.term || 'First Term'
+                    sessionId: currentSessionId(),
+                    termId: currentTermId()
                 });
                 if (!resp.ok) {
-                    const err = await resp.json();
+                    const err = await resp.json().catch(() => ({}));
                     showToast(err.message || 'Failed to generate report card', 'error');
                     return;
                 }
@@ -5927,7 +6840,7 @@
                         <div class="d-flex gap-2 mt-3"><button class="btn-x btn-outline-x flex-grow-1" onclick="closeModal()">Close</button><button class="btn-x btn-primary-x flex-grow-1" onclick="window.print()"><i class="bi bi-printer"></i> Print</button></div>
                     `, { wide: true });
                 }
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
         };
 
         // --- AUDIT LOGS ---
@@ -6089,18 +7002,24 @@
             openModal('Add Exam', `
                 <div class="mb-3"><label class="field-label">Exam name</label><input class="input-x" id="examName" placeholder="e.g. First Term Mathematics" /></div>
                 <div class="mb-3"><label class="field-label">Class</label><select class="input-x" id="examClass"><option>Loading...</option></select></div>
-                <div class="mb-3"><label class="field-label">Subject</label><input class="input-x" id="examSubject" placeholder="e.g. Mathematics" /></div>
+                <div class="mb-3"><label class="field-label">Subject</label><select class="input-x" id="examSubject"><option>Loading...</option></select></div>
                 <div class="mb-3"><label class="field-label">Max score</label><input class="input-x" id="examMax" type="number" value="100" /></div>
                 <div class="mb-1"><label class="field-label">Date</label><input class="input-x" id="examDate" type="date" /></div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveExam(this)"><i class="bi bi-check-lg"></i> Save</button></div>
             `);
             (async () => {
                 try {
-                    const resp = await Api.get('/classes');
-                    if (resp.ok) {
-                        const classes = await Api.json(resp);
-                        const sel = document.getElementById('examClass');
-                        sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                    const [cResp, sResp] = await Promise.all([Api.get('/classes'), Api.get('/subjects')]);
+                    if (cResp.ok) {
+                        const classes = await Api.json(cResp);
+                        document.getElementById('examClass').innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                    }
+                    if (sResp.ok) {
+                        const subjects = await Api.json(sResp);
+                        const arr = Array.isArray(subjects) ? subjects : [];
+                        document.getElementById('examSubject').innerHTML = arr.length
+                            ? arr.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('')
+                            : '<option value="">No subjects — add one in Score Entry</option>';
                     }
                 } catch (_) {}
             })();
@@ -6112,16 +7031,24 @@
             setButtonLoading(btn, 'Saving...');
             try {
                 const resp = await Api.post('/exams', {
-                    name, classId: document.getElementById('examClass').value,
-                    subjectName: document.getElementById('examSubject').value.trim() || 'General',
+                    name,
+                    classId: document.getElementById('examClass').value,
+                    subjectId: document.getElementById('examSubject').value || undefined,
+                    subjectName: (document.getElementById('examSubject').selectedOptions[0]?.text) || 'General',
                     maxScore: Number(document.getElementById('examMax').value) || 100,
-                    date: document.getElementById('examDate').value
+                    date: document.getElementById('examDate').value,
+                    sessionId: currentSessionId(),
+                    termId: currentTermId()
                 });
-                if (!resp.ok) { showToast('Failed to create exam', 'error'); return; }
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showToast(err.message || 'Failed to create exam', 'error');
+                    return;
+                }
                 closeModal();
                 showToast('Exam created', 'success');
                 renderPage('exams');
-            } catch (e) { showToast('Network error', 'error'); }
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -6368,7 +7295,6 @@
             }
             document.getElementById('platActionCenter').innerHTML = alerts.join('');
 
-            // Revenue chart
             try {
                 const resp = await Api.get('/platform/analytics/revenue');
                 if (resp.ok) {
@@ -6391,7 +7317,6 @@
                 }
             } catch (_) {}
 
-            // Plan chart
             const planCounts = { Starter: 0, Pro: 0, 'Multi-campus': 0, Trial: 0 };
             schools.forEach(s => {
                 const plan = s.status === 'trial' ? 'Trial' : (s.plan || 'Starter');
@@ -6687,17 +7612,36 @@
         window.extendSchoolSubscription = extendSchoolSubscription;
         window.filterPlatformSchools = filterPlatformSchools;
         window.filterPlatformTrialSchools = filterPlatformTrialSchools;
+        window.openAddFeeCategoryModal = openAddFeeCategoryModal;
+        window.saveFeeCategory = saveFeeCategory;
+        window.openBuildFeeStructureModal = openBuildFeeStructureModal;
+        window.addFeeItemRow = addFeeItemRow;
+        window.recalcFeeTotal = recalcFeeTotal;
+        window.saveFeeStructure = saveFeeStructure;
+        window.viewFeeStructure = viewFeeStructure;
+        window.deleteFeeStructure = deleteFeeStructure;
+        window.openAddParentModal = openAddParentModal;
+        window.saveNewParent = saveNewParent;
+        window.openAddSubjectModal = openAddSubjectModal;
+        window.saveNewSubject = saveNewSubject;
+        window.loadScoreRoster = loadScoreRoster;
+        window.recalcScoreRow = recalcScoreRow;
+        window.saveScoreRoster = saveScoreRoster;
+        window.openBulkScoreFromCSV = openBulkScoreFromCSV;
+        window.submitScoreCSV = submitScoreCSV;
+        window.compressImageToDataURL = compressImageToDataURL;
 
-        console.log('🏫 SchoolFlow · Production-Ready Frontend (v2.0 — Full Upgrade)');
-        console.log('✅ All modules · Response envelope fix · POST payments · Health URL fix');
-        console.log('✅ Command palette (⌘K) · Page top-loader · Button spinners · Skeleton loaders');
-        console.log('✅ Confetti · Number count-up · Card hover lift · Bottom-sheet modals on mobile');
-        console.log('✅ New dashboard: action center, quick actions, 4 charts, live feeds, top debtors');
-        console.log('✅ Platform admin: MRR/ARR, churn, revenue trend, plan distribution, drill-down');
-        console.log('✅ Students: CSV import, edit, promote, photo-ready. Parents: view modal + SMS');
-        console.log('✅ Staff: edit/delete + create login. Attendance: date+time + print reports');
-        console.log('✅ Report Studio: template upload + pin-to-position overlay');
-        console.log('✅ Whole-school report card compile · Forgot password fallback · Routing screen');
+        console.log('🏫 SchoolFlow · Production-Ready Frontend (v3.0 — Fully Hardened)');
+        console.log('✅ Api timeout (45s) prevents infinite spinner on slow networks');
+        console.log('✅ Client-side image compression before base64 upload (subscription proof)');
+        console.log('✅ Add Student: admissionNumber, address, uppercase gender, Parent creation+link');
+        console.log('✅ Add Class: level + academicYear (matches Class schema)');
+        console.log('✅ Add Staff: firstName/lastName/email + uppercase role enum');
+        console.log('✅ Record Payment: invoiceId required + auto-prefilled remaining balance');
+        console.log('✅ Attendance: client-side batch loop with per-record progress bar');
+        console.log('✅ Fee Structure page: build structures so invoices can generate');
+        console.log('✅ Score Entry page: enter CA/Exam per student per subject so report cards compile');
+        console.log('✅ Invoices: warns and redirects to Fee Structure when generation fails');
         console.log('🔐 Role:', Api.getRole());
     </script>
 </body>
