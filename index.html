@@ -1758,12 +1758,42 @@
             transition: width .3s ease;
             width: 0%;
         }
+
+        /* Offline banner */
+        #offlineBanner {
+            display: none;
+            position: fixed;
+            bottom: calc(72px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: #fff;
+            padding: .4rem 1rem;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            z-index: 9000;
+            box-shadow: 0 4px 12px rgba(179, 65, 59, .3);
+        }
+        @media(min-width:992px) { #offlineBanner { bottom: 1rem; } }
+        #offlineBanner.show { display: block; animation: toastIn .3s ease; }
+
+        /* Academic calendar card */
+        .academic-calendar {
+            background: linear-gradient(135deg, var(--green-light) 0%, var(--surface) 100%);
+            border: 1px solid var(--green);
+            border-radius: var(--radius-md);
+            padding: .9rem 1rem;
+        }
     </style>
 </head>
 <body>
 
     <!-- Top progress loader -->
     <div id="topLoader"></div>
+
+    <!-- Offline indicator -->
+    <div id="offlineBanner"><i class="bi bi-wifi-off me-1"></i> You're offline — changes may not save</div>
 
     <!-- ============================================================
     LANDING PAGE
@@ -2035,7 +2065,7 @@
     </div>
 
     <!-- ============================================================
-    JAVASCRIPT — FULL PRODUCTION ENGINE
+    JAVASCRIPT — FULL PRODUCTION ENGINE (v3.2)
     ============================================================ -->
     <script>
         // =============================================================
@@ -2047,7 +2077,8 @@
         const REFRESH_KEY = 'schoolflow_refresh';
         const THEME_KEY = 'schoolflow_theme';
         const ACCOUNT_FLAG_KEY = 'schoolflow_has_account';
-        const REQUEST_TIMEOUT_MS = 45000; // 45s — enough for slow Nigerian mobile data, still fails fast enough to not hang forever
+        const FEATURES_KEY = 'schoolflow_features';
+        const REQUEST_TIMEOUT_MS = 45000;
         const ROLE_LABELS = {
             SUPER_ADMIN: 'Super Admin',
             SCHOOL_OWNER: 'Proprietor',
@@ -2145,8 +2176,6 @@
                 return body && typeof body === 'object' && 'data' in body ? body.data : body;
             },
 
-            // Timeout-aware fetch helper. Prevents the "spinning forever" symptom
-            // when a network call never resolves (slow mobile data, dropped signal).
             async _fetchWithTimeout(url, opts, timeoutMs = REQUEST_TIMEOUT_MS) {
                 const controller = new AbortController();
                 const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -2238,10 +2267,7 @@
         Api.init();
 
         // =============================================================
-        // 2b. ERROR EXTRACTION — surfaces the real Zod field error so users
-        //     see "sessionId: must be a 24-character hex string" instead of
-        //     the generic "Validation failed". This one helper kills hours of
-        //     blind debugging on the frontend.
+        // 2b. ERROR EXTRACTION
         // =============================================================
         function extractErrorMessage(body) {
             if (!body) return 'Something went wrong';
@@ -2294,15 +2320,10 @@
         // =============================================================
         function uid(prefix) { return (prefix || 'ID') + '-' + Math.random().toString(36).slice(2, 8).toUpperCase(); }
 
-        // MONEY FIX: backend stores Kobo (integers), so we divide by 100.
-        // The one exception is /payments/manual which accepts Naira and multiplies
-        // server-side — handle that separately at the call site.
         function money(n) {
             n = Number(n) || 0;
             return '₦' + Math.round(n / 100).toLocaleString('en-NG');
         }
-        // Use for fields the user explicitly typed in Naira, that we don't want
-        // to divide (e.g. FeeStructure totals come back in kobo — use money()).
         function moneyNaira(n) {
             n = Number(n) || 0;
             return '₦' + Math.round(n).toLocaleString('en-NG');
@@ -2313,15 +2334,10 @@
         function fmtTime(d) { return new Date(d).toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' }); }
         function initials(name) { return (name || '').split(' ').filter(Boolean).slice(0, 2).map(s => s[0]).join('').toUpperCase(); }
         function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
-        // For values embedded inside inline onclick="..." attributes — must escape
-        // both quotes and backslashes to prevent XSS via user-supplied names.
         function escJs(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n'); }
 
         // =============================================================
-        // 4b. ACADEMIC CONTEXT — sessions/terms/subjects now cached from
-        //     the real backend so we send ObjectIds, not human strings.
-        //     Before this, `currentSessionId()` returned "2026/2027" which
-        //     failed every Zod validator (must be 24-char hex).
+        // 4b. ACADEMIC CONTEXT
         // =============================================================
         let _academicCache = { sessions: [], terms: [], subjects: [], loaded: false };
 
@@ -2360,8 +2376,6 @@
             return active ? (active.id || active._id) : null;
         }
 
-        // Guard used before any form submission that requires session/term.
-        // Returns { sessionId, termId } on success, or null + toast on failure.
         function ensureAcademicContext() {
             const sid = currentSessionId();
             const tid = currentTermId();
@@ -2370,6 +2384,53 @@
                 return null;
             }
             return { sessionId: sid, termId: tid };
+        }
+
+        // Self-heal: creates Session/Term docs if the school predates the
+        // onboarding-time creation. Runs once per boot.
+        async function healAcademicContext() {
+            if (_academicCache.sessions.length > 0 && _academicCache.terms.length > 0) return;
+            const school = _pageData.school;
+            if (!school) return;
+            const sessionName = school.currentSession || school.session || '2026/2027';
+            const termName = school.currentTerm || school.term || 'First Term';
+            try {
+                let sessionId = currentSessionId();
+                if (!sessionId) {
+                    const sResp = await Api.post('/academics/sessions', {
+                        name: sessionName,
+                        startDate: new Date().toISOString(),
+                        endDate: new Date(Date.now() + 365 * 86400000).toISOString(),
+                        isActive: true
+                    });
+                    if (sResp.ok) {
+                        const session = await Api.json(sResp);
+                        sessionId = session.id || session._id;
+                    }
+                }
+                if (!sessionId) return;
+                let termId = currentTermId();
+                if (!termId) {
+                    const tResp = await Api.post('/academics/terms', {
+                        sessionId,
+                        name: termName,
+                        startDate: new Date().toISOString(),
+                        endDate: new Date(Date.now() + 90 * 86400000).toISOString(),
+                        isActive: true
+                    });
+                    if (tResp.ok) {
+                        const term = await Api.json(tResp);
+                        termId = term.id || term._id;
+                    }
+                }
+                if (sessionId && termId && school.id) {
+                    await Api.put('/schools/' + school.id, {
+                        currentSessionId: sessionId,
+                        currentTermId: termId
+                    });
+                }
+                await loadAcademicContext();
+            } catch (_) {}
         }
 
         function avatarColor(seed) {
@@ -2526,11 +2587,6 @@
             </div>`;
         }
 
-        // Tighter compression: 900px / 0.6 instead of 1280 / 0.72. A bank
-        // screenshot is still perfectly legible, and the base64 payload drops
-        // roughly in half — the difference between a 45s hang and a 5s submit
-        // on 3G. This is the single biggest win for the "stuck Submitting..."
-        // symptom on the renewal modal.
         function compressImageToDataURL(file, maxDimension = 900, quality = 0.6) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -2759,7 +2815,6 @@
             try {
                 const resp = await Api.post('/auth/login', { username, password });
                 if (!resp.ok) {
-                    // Distinguish between wrong creds, deactivated, server error.
                     if (resp.status === 401) {
                         errorEl.textContent = 'Invalid username or password.';
                     } else if (resp.status === 403) {
@@ -2860,7 +2915,6 @@
             try {
                 const resp = await Api.post('/auth/forgot-password', { email, school, phone });
                 if (!resp.ok) {
-                    // Endpoint doesn't exist yet — show a friendly fallback.
                     closeModal();
                     showToast('Please contact your school owner or the platform team to reset your password.', 'info', 6000);
                     return;
@@ -2938,15 +2992,10 @@
             const classes = [];
             document.querySelectorAll('#wizClassRows .class-fee-row').forEach(r => {
                 const nm = r.querySelector('.wiz-cls-name').value.trim();
-                // Onboarding "fee" is entered in Naira by the user; onboarding
-                // endpoint stores it as a whole number. Send as-is.
                 const fee = Number(r.querySelector('.wiz-cls-fee').value) || 0;
                 if (nm) classes.push({ name: nm, fee });
             });
             const ownerName = document.getElementById('wOwnerName').value.trim() || 'Proprietor';
-            // FIX: no more `_<timestamp>` suffix. The user typed a username;
-            // we send exactly what they typed. If it's taken, the backend returns
-            // 409 and we surface a friendly error.
             const username = document.getElementById('wOwnerUsername').value.trim();
             const password = document.getElementById('wOwnerPassword').value;
             const loadSample = document.getElementById('wLoadSample').checked;
@@ -2962,9 +3011,6 @@
             setButtonLoading(nextBtn, 'Setting up your school...');
 
             try {
-                // FIX: was hardcoded fetch() which bypassed Api timeout/top-loader
-                // and the auth/refresh flow. Now uses the standard Api.post helper
-                // with the same 45s timeout as everything else.
                 const response = await Api.post('/schools/onboard', payload);
                 if (!response.ok) {
                     const msg = await parseErrorResponse(response);
@@ -3026,7 +3072,31 @@
         }
 
         // =============================================================
-        // 13. NAVIGATION
+        // 13. FEATURE DETECTION
+        // =============================================================
+        async function detectFeatures() {
+            // Check optional backend modules in parallel — anything that
+            // returns 404 gets hidden from the nav.
+            const checks = await Promise.all([
+                Api.get('/report-cards/templates').then(r => ['reportstudio', r.status !== 404]).catch(() => ['reportstudio', false]),
+                Api.get('/queues/status').then(r => ['queues', r.status !== 404]).catch(() => ['queues', false]),
+                Api.get('/automations').then(r => ['automations', r.status !== 404]).catch(() => ['automations', false]),
+                Api.get('/exams').then(r => ['exams', r.status !== 404]).catch(() => ['exams', false]),
+                Api.get('/documents').then(r => ['documents', r.status !== 404]).catch(() => ['documents', false]),
+                Api.get('/support/audit-logs').then(r => ['audit', r.status !== 404]).catch(() => ['audit', false]),
+                Api.get('/invoices').then(r => ['invoices', r.status !== 404]).catch(() => ['invoices', false]),
+            ]);
+            window._features = Object.fromEntries(checks);
+            try { localStorage.setItem(FEATURES_KEY, JSON.stringify(window._features)); } catch (_) {}
+        }
+
+        function featureEnabled(key) {
+            if (!window._features) return true;
+            return window._features[key] !== false;
+        }
+
+        // =============================================================
+        // 14. NAVIGATION
         // =============================================================
         const PAGE_META = {
             dashboard: ['Dashboard', 'Overview of your school'],
@@ -3113,6 +3183,8 @@
             const role = Api.getRole();
             container.innerHTML = NAV_ITEMS.map(group => {
                 const items = group.items.filter(item => {
+                    // Feature flags — hide pages whose backends aren't mounted.
+                    if (!featureEnabled(item.key) && item.key !== 'invoices' && item.key !== 'exams') return false;
                     if (item.key === 'parentportal' && role !== 'PARENT' && role !== 'SUPER_ADMIN' && role !== 'SCHOOL_OWNER') return false;
                     if (item.key === 'audit' && role !== 'SUPER_ADMIN') return false;
                     if (item.key === 'platformRenewals' && role !== 'SUPER_ADMIN') return false;
@@ -3211,7 +3283,7 @@
         }
 
         // =============================================================
-        // 14. BOOT
+        // 15. BOOT
         // =============================================================
         let booted = false;
 
@@ -3235,21 +3307,40 @@
             // Load academic context FIRST — every form depends on it.
             await loadAcademicContext();
 
+            // Load school, classes, and detect optional features in parallel.
+            const schoolPromise = Api.get('/schools/current').catch(() => null);
+            const classesPromise = Api.get('/classes').catch(() => null);
+
             try {
-                const resp = await Api.get('/schools/current');
-                if (resp.ok) {
+                const resp = await schoolPromise;
+                if (resp && resp.ok) {
                     const data = await Api.json(resp);
                     _pageData.school = data;
                     document.getElementById('brandSchoolName').textContent = data.name || 'School management';
                 }
             } catch (_) {}
             try {
-                const resp = await Api.get('/classes');
-                if (resp.ok) {
+                const resp = await classesPromise;
+                if (resp && resp.ok) {
                     const classes = await Api.json(resp);
                     _pageData.classes = Array.isArray(classes) ? classes : [];
                 }
             } catch (_) {}
+
+            // Self-heal academic context if session/term docs are missing.
+            await healAcademicContext();
+            // Reload school in case we just added currentSessionId/currentTermId.
+            try {
+                const resp = await Api.get('/schools/current');
+                if (resp.ok) {
+                    const data = await Api.json(resp);
+                    _pageData.school = data;
+                }
+            } catch (_) {}
+
+            // Detect optional modules so the nav only shows what's wired.
+            await detectFeatures();
+            renderNav();
 
             updateUserChrome();
             navigateTo('dashboard');
@@ -3283,7 +3374,7 @@
         }
 
         // =============================================================
-        // 15. FAB
+        // 16. FAB
         // =============================================================
         let fabOpen = false;
 
@@ -3307,7 +3398,7 @@
         }
 
         // =============================================================
-        // 16. NOTIFICATIONS
+        // 17. NOTIFICATIONS
         // =============================================================
         async function openNotifications() {
             openModal('Notifications', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
@@ -3333,7 +3424,7 @@
         }
 
         // =============================================================
-        // 17. TRIAL STATUS
+        // 18. TRIAL STATUS
         // =============================================================
         async function checkTrialStatus() {
             try {
@@ -3354,7 +3445,7 @@
         }
 
         // =============================================================
-        // 18. PAGE RENDERERS
+        // 19. PAGE RENDERERS
         // =============================================================
         const PAGE_RENDERERS = {};
         const POST_RENDER_HOOKS = {};
@@ -3366,7 +3457,7 @@
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
                 <div><h4 style="font-weight:700;">${greeting()}</h4><p class="eyebrow mb-0" id="dashSchoolName">${escapeHtml(_pageData.school?.name || 'SchoolFlow')}</p></div>
                 <div class="d-flex gap-2 align-items-center">
-                    <span class="chip chip-green"><i class="bi bi-calendar3"></i> ${escapeHtml(_pageData.school?.term || 'First Term')}</span>
+                    <span class="chip chip-green"><i class="bi bi-calendar3"></i> ${escapeHtml(_pageData.school?.currentTerm || _pageData.school?.term || 'First Term')}</span>
                     <button class="btn-x btn-outline-x btn-sm-x" onclick="navigateTo('reports')"><i class="bi bi-file-earmark-bar-graph"></i> Reports</button>
                 </div>
             </div>
@@ -3495,9 +3586,7 @@
                 }
             } catch (_) {}
 
-            // Charts — most endpoints don't exist yet, so wrap in try/catch and
-            // fall back to a synthetic trend built from /payments so the UI
-            // still feels alive on backends without analytics.
+            // Charts
             try {
                 const resp = await Api.get('/analytics/daily-collection?days=14');
                 if (resp.ok) {
@@ -3685,14 +3774,6 @@
             });
         };
 
-        // =====================================================
-        // ADD STUDENT — matches backend schema exactly.
-        // - sends MALE/FEMALE (uppercase)
-        // - includes admissionNumber, address (both required)
-        // - sessionId uses the real ObjectId from academics cache
-        // - optionally creates a linked Parent record and includes
-        //   parentIds in the student create payload (no $push tricks)
-        // =====================================================
         window.openAddStudentModal = function() {
             if (!Api.can('manageStudents')) { showToast('You do not have permission to add students.', 'error'); return; }
             openModal('Add student', `
@@ -3747,21 +3828,17 @@
             if (!address) { showToast('Home address is required', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
 
-            const gender = document.getElementById('sfGender').value; // already MALE/FEMALE
+            const gender = document.getElementById('sfGender').value;
             const guardianName = document.getElementById('sfGuardian').value.trim();
             const guardianPhone = document.getElementById('sfPhone').value.trim();
             const guardianEmail = document.getElementById('sfEmail').value.trim();
             const createParent = document.getElementById('sfCreateParent').checked;
 
-            // Split guardian full name into first/last for the Parent model.
             const gParts = guardianName.split(' ').filter(Boolean);
             const gFirst = gParts[0] || 'Guardian';
             const gLast = gParts.slice(1).join(' ') || 'Guardian';
 
             try {
-                // 1) Create parent first so we have its ObjectId to include in
-                //    the student payload (instead of trying to $push afterwards,
-                //    which the backend would treat as a literal field).
                 let parentId = null;
                 let parentWarn = '';
                 if (createParent && guardianName && guardianPhone) {
@@ -3785,7 +3862,6 @@
                     }
                 }
 
-                // 2) Create the student with the exact shape the schema expects.
                 const payload = {
                     firstName: first,
                     lastName: last,
@@ -3934,9 +4010,6 @@
         };
 
         // --- BULK IMPORT ---
-        // Backend /students/bulk route does not currently exist. We detect this
-        // and fall back to sequential per-student POSTs with a progress bar, so
-        // the feature is still usable in production.
         window.openBulkImportStudents = function() {
             if (!Api.can('manageStudents')) { showToast('You do not have permission to import students.', 'error'); return; }
             openModal('Import students from CSV', `
@@ -4003,7 +4076,6 @@
 
             if (rows.length === 0) { showToast('No valid rows found', 'error'); return; }
 
-            // Resolve class names to real classIds — needed for the create call.
             let classesById = {};
             let classesByName = {};
             try {
@@ -4019,7 +4091,6 @@
 
             setButtonLoading(btn, `Importing ${rows.length}...`);
 
-            // Try the bulk endpoint first — if it 404s, fall back to sequential.
             let usedBulk = false;
             try {
                 const resp = await Api.post('/students/bulk', { students: rows });
@@ -4035,7 +4106,6 @@
             } catch (_) {}
 
             if (!usedBulk) {
-                // Sequential fallback with per-row progress.
                 let ok = 0, fail = 0;
                 for (let i = 0; i < rows.length; i++) {
                     const r = rows[i];
@@ -4084,7 +4154,6 @@
         }
 
         // --- PROMOTE STUDENTS ---
-        // /students/promote doesn't exist. Fall back to per-student PUT.
         window.openPromoteStudents = function() {
             openModal('Promote students', `
                 <p style="font-size:.9rem;">Move all students in a class to the next class. Perfect for end-of-year progression.</p>
@@ -4115,7 +4184,6 @@
             if (!fromId || !toId) { showToast('Pick both classes', 'error'); resetButton(btn); return; }
 
             try {
-                // Try the bulk endpoint first.
                 const resp = await Api.post('/students/promote', { fromClassId: fromId, toClassId: toId, autoAdvance: false });
                 if (resp.ok) {
                     const data = await Api.json(resp);
@@ -4127,7 +4195,6 @@
                 }
             } catch (_) {}
 
-            // Fallback: sequential PUTs.
             try {
                 const sResp = await Api.get('/students?classId=' + fromId);
                 if (!sResp.ok) { showToast('Could not load students', 'error'); resetButton(btn); return; }
@@ -4184,7 +4251,7 @@
                 <div class="mb-3"><label class="field-label">Class name</label><input class="input-x" id="cfName" placeholder="e.g. Primary 6" /></div>
                 <div class="row g-3">
                     <div class="col-6"><label class="field-label">Level (number)</label><input class="input-x" id="cfLevel" type="number" placeholder="e.g. 6" /></div>
-                    <div class="col-6"><label class="field-label">Academic year</label><input class="input-x" id="cfYear" placeholder="e.g. 2026/2027" value="${escapeHtml(_pageData.school?.session || '2026/2027')}" /></div>
+                    <div class="col-6"><label class="field-label">Academic year</label><input class="input-x" id="cfYear" placeholder="e.g. 2026/2027" value="${escapeHtml(_pageData.school?.currentSession || _pageData.school?.session || '2026/2027')}" /></div>
                 </div>
                 <div class="mb-3 mt-3"><label class="field-label">Termly fee (₦)</label><input class="input-x" id="cfFee" type="number" placeholder="65000" /></div>
                 <div class="mb-1"><label class="field-label">Class teacher (optional)</label><input class="input-x" id="cfTeacher" placeholder="Mrs. Adeyemi" /></div>
@@ -4202,7 +4269,6 @@
             if (!academicYear) { showToast('Please enter the academic year', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
             try {
-                // Class.fee is expected in kobo (consistent with all money fields).
                 const resp = await Api.post('/classes', {
                     name, fee: feeNaira * 100, level, academicYear,
                     homeroomTeacher: document.getElementById('cfTeacher').value.trim() || undefined
@@ -4236,7 +4302,6 @@
                     if (resp.ok) {
                         const c = await Api.json(resp);
                         document.getElementById('cfName').value = c.name || '';
-                        // fee is stored in kobo — display in Naira.
                         document.getElementById('cfFee').value = Math.round((c.fee || 0) / 100);
                         document.getElementById('cfLevel').value = c.level || '';
                         document.getElementById('cfYear').value = c.academicYear || '';
@@ -4285,9 +4350,7 @@
         };
 
         // =============================================================
-        // FEE STRUCTURE — reads/writes via /fees/structures.
-        // categoryId is now a proper dropdown of real FeeCategory ObjectIds
-        // (it used to be a free-text input that Mongoose refused to cast).
+        // FEE STRUCTURE
         // =============================================================
         PAGE_RENDERERS.feestructure = function() {
             return `
@@ -4383,7 +4446,6 @@
             finally { resetButton(btn); }
         };
 
-        // Fetch categories once per session for the dropdown.
         async function fetchFeeCategories() {
             try {
                 const resp = await Api.get('/fees/categories');
@@ -4398,8 +4460,6 @@
             const ctx = ensureAcademicContext();
             if (!ctx) return;
 
-            // Load classes and categories in parallel before rendering the form
-            // so the category dropdown is populated with real ObjectIds.
             const [classes, categories] = await Promise.all([
                 (async () => {
                     try {
@@ -4424,14 +4484,14 @@
                         <select class="input-x" id="fsSession">
                             ${_academicCache.sessions.length
                                 ? _academicCache.sessions.map(s => `<option value="${escJs(s.id)}" ${s.id === ctx.sessionId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('')
-                                : `<option value="${escJs(ctx.sessionId)}">${escapeHtml(_pageData.school?.session || 'Current')}</option>`}
+                                : `<option value="${escJs(ctx.sessionId)}">${escapeHtml(_pageData.school?.currentSession || 'Current')}</option>`}
                         </select>
                     </div>
                     <div class="col-6 col-sm-3"><label class="field-label">Term</label>
                         <select class="input-x" id="fsTerm">
                             ${_academicCache.terms.length
                                 ? _academicCache.terms.map(t => `<option value="${escJs(t.id)}" ${t.id === ctx.termId ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')
-                                : `<option value="${escJs(ctx.termId)}">${escapeHtml(_pageData.school?.term || 'Current')}</option>`}
+                                : `<option value="${escJs(ctx.termId)}">${escapeHtml(_pageData.school?.currentTerm || 'Current')}</option>`}
                         </select>
                     </div>
                 </div>
@@ -4447,6 +4507,14 @@
                 </div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveFeeStructure('${escJs(editId || '')}', this)"><i class="bi bi-check-lg"></i> Save structure</button></div>
             `);
+
+            // Disable save until a category exists.
+            if (categories.length === 0) {
+                setTimeout(() => {
+                    const btn = document.querySelector('#modalBody button.btn-primary-x');
+                    if (btn) btn.disabled = true;
+                }, 0);
+            }
 
             if (editId) {
                 try {
@@ -4466,8 +4534,6 @@
             }
         };
 
-        // Fee item row now uses a <select> for categoryId. Values are real
-        // FeeCategory ObjectIds so Mongoose casts them cleanly.
         window.addFeeItemRow = function(name = '', amount = 0, categoryId = '') {
             const wrap = document.getElementById('feeItemRows');
             if (!wrap) return;
@@ -4507,15 +4573,23 @@
             const termId = document.getElementById('fsTerm').value || ctx.termId;
             const rows = document.querySelectorAll('#feeItemRows .fee-item-row');
             const feeItems = [];
+
+            // Guard: every item must have a category.
+            let missingCategory = false;
             rows.forEach(r => {
                 const description = r.querySelector('.fi-name').value.trim();
                 const amountNaira = Number(r.querySelector('.fi-amount').value) || 0;
                 const categoryId = r.querySelector('.fi-category').value;
                 if (description && amountNaira >= 0) {
-                    // Amounts are stored in kobo (consistent with all money fields).
-                    feeItems.push({ description, name: description, amount: amountNaira * 100, categoryId: categoryId || undefined });
+                    if (!categoryId) { missingCategory = true; return; }
+                    feeItems.push({ description, name: description, amount: amountNaira * 100, categoryId });
                 }
             });
+
+            if (missingCategory) {
+                showToast('Every fee item needs a category. Create one first.', 'warning', 5000);
+                return;
+            }
             if (!classId) { showToast('Pick a class', 'error'); return; }
             if (feeItems.length === 0) { showToast('Add at least one fee item', 'error'); return; }
             const totalAmount = feeItems.reduce((s, it) => s + it.amount, 0);
@@ -4575,7 +4649,7 @@
         PAGE_RENDERERS.payments = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <div><h5 style="font-weight:700;">Payments</h5><span class="eyebrow" id="payTermLabel">${escapeHtml(_pageData.school?.term || 'Current term')}</span></div>
+                <div><h5 style="font-weight:700;">Payments</h5><span class="eyebrow" id="payTermLabel">${escapeHtml(_pageData.school?.currentTerm || _pageData.school?.term || 'Current term')}</span></div>
                 <button class="btn-x btn-gold-x btn-sm-x" onclick="openRecordPaymentModal()"><i class="bi bi-plus-lg"></i> Submit payment</button>
             </div>
             <div class="d-flex gap-2 mb-3" style="border-bottom:1px solid var(--line);">
@@ -4634,9 +4708,6 @@
 
         window.setPaymentsTab = function(key) { paymentsTab = key; renderPage('payments'); };
 
-        // Record Payment — invoiceId is required by the backend. We prefill the
-        // amount from the invoice's remaining balance so bookkeepers can just
-        // click submit. Amount sent is in Naira (backend multiplies by 100).
         window.openRecordPaymentModal = function(preselectStudentId) {
             if (!Api.can('submitPayments')) { showToast('You do not have permission to submit payments.', 'error'); return; }
             openModal('Submit payment', `
@@ -4691,7 +4762,6 @@
                 invSel.onchange = () => {
                     const opt = invSel.options[invSel.selectedIndex];
                     const rem = opt?.dataset.remaining;
-                    // remaining is in kobo — convert to Naira for the input field.
                     if (rem) document.getElementById('pfAmount').value = Math.round(Number(rem) / 100);
                 };
                 const firstOpt = invSel.options[0];
@@ -4715,7 +4785,6 @@
             if (!amountNaira || amountNaira <= 0) { showToast('Enter a valid amount', 'error'); return; }
             setButtonLoading(btn, 'Submitting...');
             try {
-                // /payments/manual expects amount in Naira (server * 100).
                 const resp = await Api.post('/payments/manual', {
                     invoiceId, studentId, amount: amountNaira,
                     method: document.getElementById('pfMethod').value,
@@ -4752,9 +4821,6 @@
             finally { resetButton(btn); }
         };
 
-        // /payments/:id/reject doesn't exist on backend yet. This calls it,
-        // and if it 404s, falls back to a local success toast so the user
-        // isn't left staring at an error for a feature the UI promised.
         window.rejectPaymentPrompt = function(id) {
             if (!Api.can('approvePayments')) { showToast('Only proprietors can reject payments.', 'error'); return; }
             openModal('Reject payment', `
@@ -4770,8 +4836,6 @@
             try {
                 const resp = await Api.post('/payments/' + id + '/reject', { reason });
                 if (!resp.ok) {
-                    // Backend doesn't have this route yet — surface the friendly message
-                    // but still close the modal so the user isn't stuck.
                     if (resp.status === 404) {
                         closeModal();
                         showToast('Rejection endpoint not yet available. Please contact support.', 'warning', 6000);
@@ -4881,8 +4945,6 @@
         };
 
         // --- ATTENDANCE ---
-        // Client-side batch loop with per-record progress. Also handles the
-        // zero-student guard that used to let the modal silently do nothing.
         PAGE_RENDERERS.attendance = function() {
             return `
             <div class="row g-3 mb-3">
@@ -5001,8 +5063,6 @@
             document.querySelectorAll('#attRoster select').forEach(sel => sel.value = status);
         };
 
-        // Batch save: loops per-student. The zero-student guard (added) and
-        // missing-context guard (added) prevent the "nothing happens" bug.
         window.saveAttendance = async function(btn) {
             if (!Api.can('manageAttendance')) { showToast('You do not have permission to save attendance.', 'error'); return; }
 
@@ -5101,8 +5161,6 @@
             try {
                 const resp = await Api.get(url);
                 if (!resp.ok) {
-                    // Fall back to /attendance/history/:studentId if the caller
-                    // requested a specific student and the review route is 404.
                     if (resp.status === 404 && studentId) {
                         const alt = await Api.get('/attendance/history/' + studentId + (from ? `?from=${from}&to=${to}` : ''));
                         if (alt.ok) {
@@ -5180,7 +5238,7 @@
                 const arr = Array.isArray(attendance) ? attendance : [];
                 const rows = arr.map(r => `<tr><td>${fmtDate(r.date)}</td><td>${(r.timestamp||r.createdAt)?fmtTime(r.timestamp||r.createdAt):'—'}</td><td>${r.status}</td><td>${escapeHtml(r.remark||'')}</td></tr>`).join('');
                 const win = window.open('', '_blank');
-                win.document.write(`<html><head><title>Attendance Report — ${escapeHtml(s.fullName)}</title><style>body{font-family:system-ui;padding:20px;}table{width:100%;border-collapse:collapse;font-size:12px;}th,td{padding:6px;border:1px solid #ddd;text-align:left;}th{background:#0B4F3F;color:#fff;}h2{margin-bottom:5px;}</style></head><body><h2>${escapeHtml(s.fullName)}</h2><p>${escapeHtml(s.className || '')} · ${escapeHtml(_pageData.school?.term || '')}</p><table><thead><tr><th>Date</th><th>Time</th><th>Status</th><th>Remark</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No attendance records</td></tr>'}</tbody></table></body></html>`);
+                win.document.write(`<html><head><title>Attendance Report — ${escapeHtml(s.fullName)}</title><style>body{font-family:system-ui;padding:20px;}table{width:100%;border-collapse:collapse;font-size:12px;}th,td{padding:6px;border:1px solid #ddd;text-align:left;}th{background:#0B4F3F;color:#fff;}h2{margin-bottom:5px;}</style></head><body><h2>${escapeHtml(s.fullName)}</h2><p>${escapeHtml(s.className || '')} · ${escapeHtml(_pageData.school?.currentTerm || _pageData.school?.term || '')}</p><table><thead><tr><th>Date</th><th>Time</th><th>Status</th><th>Remark</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No attendance records</td></tr>'}</tbody></table></body></html>`);
                 win.document.close();
                 win.focus();
                 setTimeout(() => win.print(), 300);
@@ -5188,8 +5246,7 @@
         };
 
         // =============================================================
-        // SCORE ENTRY — writes Result records with total/grade/remark
-        // now computed client-side (the Result model requires them).
+        // SCORE ENTRY — includes PUT for existing results
         // =============================================================
         PAGE_RENDERERS.scoreentry = function() {
             return `
@@ -5235,7 +5292,6 @@
                     sel.innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${escJs(c.id)}">${escapeHtml(c.name)}</option>`).join('');
                 }
             } catch (_) {}
-            // Subject dropdown now uses the correct /academics/subjects path.
             try {
                 const sResp = await Api.get('/academics/subjects');
                 if (sResp.ok) {
@@ -5254,17 +5310,16 @@
             } catch (_) {
                 document.getElementById('seSubject').innerHTML = '<option value="">Could not load subjects</option>';
             }
-            // Populate session/term selects with real ObjectIds.
             const sesSel = document.getElementById('seSession');
             const termSel = document.getElementById('seTerm');
             const activeSid = currentSessionId();
             const activeTid = currentTermId();
             sesSel.innerHTML = _academicCache.sessions.length
                 ? _academicCache.sessions.map(s => `<option value="${escJs(s.id)}" ${s.id === activeSid ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('')
-                : `<option value="${escJs(activeSid||'')}">${escapeHtml(_pageData.school?.session || 'Current')}</option>`;
+                : `<option value="${escJs(activeSid||'')}">${escapeHtml(_pageData.school?.currentSession || 'Current')}</option>`;
             termSel.innerHTML = _academicCache.terms.length
                 ? _academicCache.terms.map(t => `<option value="${escJs(t.id)}" ${t.id === activeTid ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')
-                : `<option value="${escJs(activeTid||'')}">${escapeHtml(_pageData.school?.term || 'Current')}</option>`;
+                : `<option value="${escJs(activeTid||'')}">${escapeHtml(_pageData.school?.currentTerm || 'Current')}</option>`;
         };
 
         window.openAddSubjectModal = function() {
@@ -5282,7 +5337,6 @@
             if (!name) { showToast('Enter a subject name', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
             try {
-                // Correct path: /academics/subjects
                 const resp = await Api.post('/academics/subjects', { name, code });
                 if (!resp.ok) {
                     const msg = await parseErrorResponse(resp);
@@ -5333,12 +5387,13 @@
                         const ca = r.caScore ?? '';
                         const ex = r.examScore ?? '';
                         const total = r.total ?? ((ca !== '' || ex !== '') ? (Number(ca)||0)+(Number(ex)||0) : '');
-                        return `<div class="score-row" data-student="${escJs(s.id)}">
+                        const resultId = r.id || r._id || '';
+                        return `<div class="score-row" data-student="${escJs(s.id)}" data-result-id="${escJs(resultId)}">
                             <span style="font-size:.85rem;font-weight:600;">${escapeHtml(s.fullName)}</span>
                             <input class="input-x se-ca" type="number" min="0" max="30" value="${ca}" placeholder="0-30" oninput="recalcScoreRow(this)" />
                             <input class="input-x se-exam" type="number" min="0" max="70" value="${ex}" placeholder="0-70" oninput="recalcScoreRow(this)" />
                             <span class="se-total num" style="font-weight:700;">${total !== '' ? total : '—'}</span>
-                            <span></span>
+                            <span>${resultId ? '<i class="bi bi-check-circle-fill" style="color:var(--green)" title="Already saved"></i>' : ''}</span>
                         </div>`;
                     }).join('')}
                 `;
@@ -5355,8 +5410,6 @@
             row.querySelector('.se-total').textContent = (ca + ex) || '—';
         };
 
-        // Batch save with total/grade/remark computed client-side so the
-        // backend Result model doesn't reject the payload.
         window.saveScoreRoster = async function(btn) {
             if (!Api.can('manageResults')) { showToast('You do not have permission to save results.', 'error'); return; }
             const ctx = ensureAcademicContext();
@@ -5384,6 +5437,7 @@
             for (let i = 0; i < total; i++) {
                 const row = rows[i];
                 const studentId = row.dataset.student;
+                const existingResultId = row.dataset.resultId;
                 const caRaw = row.querySelector('.se-ca').value;
                 const exRaw = row.querySelector('.se-exam').value;
                 const ca = Number(caRaw);
@@ -5397,14 +5451,28 @@
                     const totalScore = ca + ex;
                     const grade = gradeFor(totalScore);
                     const remark = remarkFor(totalScore);
+                    const payload = {
+                        studentId, classId, subjectId, sessionId, termId,
+                        caScore: ca, examScore: ex,
+                        total: totalScore, grade, remark
+                    };
                     try {
-                        const resp = await Api.post('/results', {
-                            studentId, classId, subjectId, sessionId, termId,
-                            caScore: ca, examScore: ex,
-                            total: totalScore, grade, remark
-                        });
-                        if (resp.ok) ok++;
-                        else {
+                        // PUT for existing, POST for new — score correction now works.
+                        const resp = existingResultId
+                            ? await Api.put('/results/' + existingResultId, payload)
+                            : await Api.post('/results', payload);
+                        if (resp.ok) {
+                            ok++;
+                            // Cache the returned id so a second save in the same
+                            // session uses PUT instead of hitting the upsert.
+                            if (!existingResultId) {
+                                try {
+                                    const created = await Api.json(resp);
+                                    const newId = created.id || created._id;
+                                    if (newId) row.dataset.resultId = newId;
+                                } catch (_) {}
+                            }
+                        } else {
                             fail++;
                             if (errors.length < 2) errors.push(await parseErrorResponse(resp));
                         }
@@ -5462,6 +5530,14 @@
             (Array.isArray(students) ? students : []).forEach(s => {
                 byName[s.fullName.toLowerCase()] = s.id;
             });
+            // Fetch existing results so CSV import can also update.
+            const existingResp = await Api.get(`/results?classId=${classId}&subjectId=${subjectId}&sessionId=${encodeURIComponent(sessionId)}&termId=${encodeURIComponent(termId)}`).catch(() => null);
+            const existingResults = existingResp && existingResp.ok ? await Api.json(existingResp) : [];
+            const resultByStudent = {};
+            (Array.isArray(existingResults) ? existingResults : []).forEach(r => {
+                const sid = r.studentId?.id || r.studentId;
+                if (sid) resultByStudent[sid] = r.id || r._id;
+            });
             setButtonLoading(btn, 'Importing...');
             let ok = 0, fail = 0, notFound = 0;
             for (const line of lines) {
@@ -5471,12 +5547,16 @@
                 const caN = Number(ca), exN = Number(ex);
                 if (isNaN(caN) || isNaN(exN) || caN < 0 || caN > 30 || exN < 0 || exN > 70) { fail++; continue; }
                 const totalScore = caN + exN;
+                const payload = {
+                    studentId: sid, classId, subjectId, sessionId, termId,
+                    caScore: caN, examScore: exN,
+                    total: totalScore, grade: gradeFor(totalScore), remark: remarkFor(totalScore)
+                };
                 try {
-                    const r = await Api.post('/results', {
-                        studentId: sid, classId, subjectId, sessionId, termId,
-                        caScore: caN, examScore: exN,
-                        total: totalScore, grade: gradeFor(totalScore), remark: remarkFor(totalScore)
-                    });
+                    const existingId = resultByStudent[sid];
+                    const r = existingId
+                        ? await Api.put('/results/' + existingId, payload)
+                        : await Api.post('/results', payload);
                     if (r.ok) ok++; else fail++;
                 } catch (_) { fail++; }
             }
@@ -5497,7 +5577,7 @@
                 <div class="d-flex gap-2 align-items-start">
                     <i class="bi bi-info-circle-fill" style="color:var(--gold);font-size:1.1rem;"></i>
                     <div style="font-size:.85rem;">
-                        Invoices are generated from a <strong>fee structure</strong>, not the "Termly fee" on the class. If you haven't built one yet for this class/term, visit <a onclick="closeModal();navigateTo('feestructure')" style="cursor:pointer;text-decoration:underline;color:var(--green);font-weight:600;">Fee structure</a> first.
+                        Invoices are generated from a <strong>fee structure</strong>, not the "Termly fee" on the class. If you haven't built one yet for this class/term, visit <a onclick="navigateTo('feestructure')" style="cursor:pointer;text-decoration:underline;color:var(--green);font-weight:600;">Fee structure</a> first.
                     </div>
                 </div>
             </div>
@@ -5595,14 +5675,11 @@
             })();
         };
 
-        // Generate Invoice — pre-checks for a matching fee structure so the
-        // user is redirected to build one before they waste a click.
         window.openGenerateInvoiceModal = async function() {
             if (!Api.can('manageInvoices')) { showToast('You do not have permission to generate invoices.', 'error'); return; }
             const ctx = ensureAcademicContext();
             if (!ctx) return;
 
-            // Pre-check: is there any fee structure for this term?
             let structures = [];
             try {
                 const resp = await Api.get('/fees/structures');
@@ -5659,8 +5736,7 @@
                     dueDate: document.getElementById('invDue').value || undefined
                 };
                 const amountVal = Number(document.getElementById('invAmount').value);
-                if (amountVal > 0) body.amount = amountVal * 100; // send kobo
-                // Idempotency key prevents duplicate invoices from double-clicks.
+                if (amountVal > 0) body.amount = amountVal * 100;
                 const resp = await Api.post('/invoices/generate', body, {
                     headers: { 'Idempotency-Key': uid('IDEM') }
                 });
@@ -5721,7 +5797,6 @@
                 }
             } catch (_) {}
             if (!window._subPlans || !window._subPlans.length) {
-                // Fallback plans in kobo.
                 window._subPlans = [
                     { name: 'Starter', price: 2000000, billingCycle: 'TERMLY' },
                     { name: 'Pro', price: 3000000, billingCycle: 'TERMLY' },
@@ -5907,8 +5982,6 @@
             `);
         };
 
-        // Compresses image with tighter limits, then submits with an enforced
-        // try/catch/finally so the button always resets — no more stuck spinner.
         window.submitRenewal = async function(btn) {
             const refInput = document.getElementById('renewalRef').value.trim();
             if (!refInput) { showToast('Please enter a transaction reference', 'error'); return; }
@@ -5945,8 +6018,11 @@
             }
         };
 
-        // --- SETTINGS ---
+        // --- SETTINGS (with academic calendar panel) ---
         PAGE_RENDERERS.settings = function() {
+            const school = _pageData.school || {};
+            const currentSessionName = (_academicCache.sessions.find(s => (s.id || s._id) === currentSessionId())?.name) || school.currentSession || school.session || '—';
+            const currentTermName = (_academicCache.terms.find(t => (t.id || t._id) === currentTermId())?.name) || school.currentTerm || school.term || '—';
             return `
             <div class="row g-3">
                 <div class="col-lg-6">
@@ -5961,10 +6037,22 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="panel mb-3"><h6 class="mb-3">Academic session</h6>
-                        <div class="mb-3"><label class="field-label">Session</label><input class="input-x" id="setSession" value="${escapeHtml(_pageData.school?.session||'')}" /></div>
-                        <div class="mb-1"><label class="field-label">Current term</label><select class="input-x" id="setTerm">${['First Term','Second Term','Third Term'].map(t=>`<option ${t===_pageData.school?.term?'selected':''}>${t}</option>`).join('')}</select></div>
-                        ${Api.can('closeTerm')?`<button class="btn-x btn-danger-x mt-3" onclick="confirmCloseTerm()"><i class="bi bi-arrow-repeat"></i> Close &amp; renew term</button>`:''}
+                        <div class="mb-3"><label class="field-label">Session label</label><input class="input-x" id="setSession" value="${escapeHtml(_pageData.school?.currentSession||_pageData.school?.session||'')}" /></div>
+                        <div class="mb-1"><label class="field-label">Current term label</label><select class="input-x" id="setTerm">${['First Term','Second Term','Third Term'].map(t=>`<option ${t===(_pageData.school?.currentTerm||_pageData.school?.term)?'selected':''}>${t}</option>`).join('')}</select></div>
                         <button class="btn-x btn-primary-x mt-3" onclick="saveSettings(this)">Save session</button>
+                        ${Api.can('closeTerm')?`<button class="btn-x btn-danger-x mt-3 ms-2" onclick="confirmCloseTerm()"><i class="bi bi-arrow-repeat"></i> Close &amp; renew term</button>`:''}
+                    </div>
+                    <div class="panel mb-3">
+                        <h6 class="mb-2">Academic calendar (live)</h6>
+                        <div class="academic-calendar">
+                            <div class="d-flex justify-content-between mb-1"><span class="eyebrow">Current session</span><strong>${escapeHtml(currentSessionName)}</strong></div>
+                            <div class="d-flex justify-content-between mb-1"><span class="eyebrow">Current term</span><strong>${escapeHtml(currentTermName)}</strong></div>
+                            <div class="eyebrow mt-2" style="font-size:.7rem;">Session id: <code>${escapeHtml(currentSessionId()||'—')}</code></div>
+                            <div class="eyebrow" style="font-size:.7rem;">Term id: <code>${escapeHtml(currentTermId()||'—')}</code></div>
+                        </div>
+                        <button class="btn-x btn-outline-x btn-sm-x mt-2" onclick="openAddAcademicSessionModal()">
+                            <i class="bi bi-plus-lg"></i> Add new session
+                        </button>
                     </div>
                     <div class="panel"><h6 class="mb-2">Data &amp; backup</h6><p class="eyebrow mb-3">Your data is stored securely in the cloud.</p>
                         <div class="d-flex flex-column gap-2"><button class="btn-x btn-outline-x" onclick="exportCSV()"><i class="bi bi-download"></i> Export CSV</button></div>
@@ -5983,11 +6071,10 @@
                 address: document.getElementById('setAddress').value.trim(),
                 phone: document.getElementById('setPhone').value.trim(),
                 email: document.getElementById('setEmail').value.trim(),
-                session: document.getElementById('setSession').value.trim(),
-                term: document.getElementById('setTerm').value
+                currentSession: document.getElementById('setSession').value.trim(),
+                currentTerm: document.getElementById('setTerm').value
             };
             try {
-                // Prefer PUT /schools/:id if we know our id; fall back to /current.
                 const schoolId = _pageData.school?.id;
                 const endpoint = schoolId ? '/schools/' + schoolId : '/schools/current';
                 const resp = await Api.put(endpoint, data);
@@ -5997,8 +6084,79 @@
                     return;
                 }
                 showToast('Settings saved', 'success');
+                // Refresh school data so the new labels appear immediately.
+                try {
+                    const r = await Api.get('/schools/current');
+                    if (r.ok) _pageData.school = await Api.json(r);
+                } catch (_) {}
                 renderPage('settings');
             } catch (e) { showToast('Network error', 'error'); }
+            finally { resetButton(btn); }
+        };
+
+        window.openAddAcademicSessionModal = function() {
+            if (!Api.can('manageSettings')) { showToast('You do not have permission to manage sessions.', 'error'); return; }
+            openModal('Add academic session', `
+                <p class="eyebrow mb-3">Create a new session and start its first term. SchoolFlow will make the new session active.</p>
+                <div class="mb-3"><label class="field-label">Session name</label><input class="input-x" id="asName" placeholder="e.g. 2027/2028" /></div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="field-label">Start date</label><input class="input-x" id="asStart" type="date" /></div>
+                    <div class="col-6"><label class="field-label">End date</label><input class="input-x" id="asEnd" type="date" /></div>
+                </div>
+                <div class="mb-3 mt-3"><label class="field-label">First term name</label><input class="input-x" id="asTerm" value="First Term" /></div>
+                <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveAcademicSession(this)"><i class="bi bi-check-lg"></i> Create session</button></div>
+            `);
+        };
+
+        window.saveAcademicSession = async function(btn) {
+            const name = document.getElementById('asName').value.trim();
+            const startDate = document.getElementById('asStart').value;
+            const endDate = document.getElementById('asEnd').value;
+            const termName = document.getElementById('asTerm').value.trim() || 'First Term';
+            if (!name) { showToast('Enter a session name', 'error'); return; }
+            if (!startDate || !endDate) { showToast('Enter start and end dates', 'error'); return; }
+            setButtonLoading(btn, 'Creating...');
+            try {
+                const sResp = await Api.post('/academics/sessions', {
+                    name, startDate, endDate, isActive: true
+                });
+                if (!sResp.ok) {
+                    const msg = await parseErrorResponse(sResp);
+                    showToast(msg, 'error', 6000);
+                    return;
+                }
+                const session = await Api.json(sResp);
+                const sessionId = session.id || session._id;
+                const tResp = await Api.post('/academics/terms', {
+                    sessionId, name: termName, startDate, endDate, isActive: true
+                });
+                if (!tResp.ok) {
+                    const msg = await parseErrorResponse(tResp);
+                    showToast(msg, 'error', 6000);
+                    return;
+                }
+                const term = await Api.json(tResp);
+                const termId = term.id || term._id;
+                // Update the school so it points at the new session/term.
+                const schoolId = _pageData.school?.id;
+                if (schoolId) {
+                    await Api.put('/schools/' + schoolId, {
+                        currentSession: name,
+                        currentTerm: termName,
+                        currentSessionId: sessionId,
+                        currentTermId: termId
+                    });
+                }
+                await loadAcademicContext();
+                try {
+                    const r = await Api.get('/schools/current');
+                    if (r.ok) _pageData.school = await Api.json(r);
+                } catch (_) {}
+                closeModal();
+                showToast(`Session "${name}" created`, 'success');
+                fireConfetti(window.innerWidth / 2, 100);
+                renderPage('settings');
+            } catch (e) { showToast(e.message || 'Network error', 'error'); }
             finally { resetButton(btn); }
         };
 
@@ -6433,8 +6591,6 @@
         };
 
         POST_RENDER_HOOKS.results = async function() {
-            // Pre-check: does a report card template exist? If not, warn
-            // the user so they build one in Report Studio before trying.
             try {
                 const tResp = await Api.get('/report-cards/templates').catch(() => null);
                 if (tResp && tResp.status === 404) {
@@ -6820,9 +6976,8 @@
             } catch (e) { showToast('Error loading parent', 'error'); closeModal(); }
         };
 
-        // SMS now uses /communications/messages — the actual messaging
-        // endpoint. Falls back to a helpful toast if the backend rejects
-        // (e.g. because recipients must be User ids, not Parent ids).
+        // Uses the new /communications/sms-to-parent endpoint (with fallback
+        // to the generic messages endpoint for older backends).
         window.sendParentSMS = function(id) {
             openModal('Send SMS', `
                 <div class="mb-3"><label class="field-label">Message</label><textarea class="input-x" id="parentSMSMsg" rows="4" placeholder="Dear parent, ...">Dear parent, this is a reminder about your child's outstanding school fees. Kindly visit the school office to make payment. Thank you.</textarea></div>
@@ -6835,12 +6990,17 @@
             if (!message) { showToast('Please enter a message', 'error'); return; }
             setButtonLoading(btn, 'Sending...');
             try {
-                const resp = await Api.post('/communications/messages', {
-                    recipients: [id],
-                    subject: 'Fee Reminder',
-                    body: message,
-                    type: 'SMS'
-                });
+                // Primary route: dedicated parent SMS endpoint.
+                let resp = await Api.post('/communications/sms-to-parent', { parentId: id, message });
+                if (!resp.ok && (resp.status === 404 || resp.status === 400)) {
+                    // Fallback: generic messages endpoint.
+                    resp = await Api.post('/communications/messages', {
+                        recipients: [id],
+                        subject: 'Fee Reminder',
+                        body: message,
+                        type: 'SMS'
+                    });
+                }
                 if (!resp.ok) {
                     const msg = await parseErrorResponse(resp);
                     showToast(msg || 'Could not send SMS', 'error', 6000);
@@ -6852,7 +7012,7 @@
             finally { resetButton(btn); }
         };
 
-        // --- STAFF ---
+        // --- STAFF (subjects input removed) ---
         PAGE_RENDERERS.staff = function() {
             return `
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -6890,7 +7050,7 @@
                                 <h6 class="mb-0">${escapeHtml(fullName)}</h6>
                                 <div class="eyebrow">${escapeHtml(s.role)}</div>
                                 <div class="eyebrow">${escapeHtml(s.email || s.phone || '')}</div>
-                                ${s.subjects&&s.subjects.length?`<span class="chip chip-green mt-1">${escapeHtml(s.subjects.join(' · '))}</span>`:''}
+                                ${s.department?`<span class="chip chip-slate mt-1">${escapeHtml(s.department)}</span>`:''}
                                 <div class="d-flex gap-1 mt-2">
                                     <button class="btn-x btn-outline-x btn-sm-x" onclick="openEditStaffModal('${escJs(s.id)}')" aria-label="Edit"><i class="bi bi-pencil"></i></button>
                                     <button class="btn-x btn-danger-x btn-sm-x" onclick="deleteStaff('${escJs(s.id)}')" aria-label="Delete"><i class="bi bi-trash3"></i></button>
@@ -6919,7 +7079,6 @@
                         <option value="OTHER">Other</option>
                     </select></div>
                     <div class="col-6"><label class="field-label">Department (optional)</label><input class="input-x" id="stfDept" placeholder="e.g. Sciences" /></div>
-                    <div class="col-12"><label class="field-label">Subjects (comma separated, optional)</label><input class="input-x" id="stfSubjects" placeholder="Mathematics, Basic Science" /></div>
                 </div>
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveNewStaff(this)"><i class="bi bi-check-lg"></i> Save</button></div>
             `);
@@ -6935,10 +7094,7 @@
             if (!phone) { showToast('Phone is required', 'error'); return; }
             setButtonLoading(btn, 'Saving...');
             try {
-                // Send only fields the validator accepts (firstName, lastName,
-                // email, phone, role, department). fullName and subjects are
-                // persisted via a follow-up PUT if the backend supports them,
-                // but the primary payload is schema-clean.
+                // Only send fields the validator accepts — subjects removed.
                 const payload = {
                     firstName: first,
                     lastName: last,
@@ -6952,14 +7108,6 @@
                     const msg = await parseErrorResponse(resp);
                     showToast(msg, 'error', 6000);
                     return;
-                }
-                const created = await Api.json(resp);
-                // Optional: persist subjects via PUT if provided.
-                const subjects = document.getElementById('stfSubjects').value.split(',').map(s => s.trim()).filter(Boolean);
-                if (subjects.length && (created.id || created._id)) {
-                    try {
-                        await Api.put('/staff/' + (created.id || created._id), { subjects });
-                    } catch (_) {}
                 }
                 closeModal();
                 showToast(`${first} ${last} added to staff`, 'success');
@@ -6982,7 +7130,6 @@
                         <div class="col-6"><label class="field-label">Phone</label><input class="input-x" id="esPhone" value="${escapeHtml(s.phone || '')}" /></div>
                         <div class="col-6"><label class="field-label">Role</label><select class="input-x" id="esRole">${['TEACHER','ACCOUNTANT','ADMIN','OTHER'].map(r => `<option ${r===s.role?'selected':''}>${r}</option>`).join('')}</select></div>
                         <div class="col-6"><label class="field-label">Department</label><input class="input-x" id="esDept" value="${escapeHtml(s.department || '')}" /></div>
-                        <div class="col-12"><label class="field-label">Subjects</label><input class="input-x" id="esSubjects" value="${escapeHtml((s.subjects||[]).join(', '))}" /></div>
                     </div>
                     <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveEditStaff('${escJs(id)}', this)"><i class="bi bi-check-lg"></i> Save changes</button></div>
                 `;
@@ -6992,14 +7139,14 @@
         window.saveEditStaff = async function(id, btn) {
             setButtonLoading(btn, 'Saving...');
             try {
+                // Subjects removed — validator strips them anyway.
                 const resp = await Api.put('/staff/' + id, {
                     firstName: document.getElementById('esFirst').value.trim(),
                     lastName: document.getElementById('esLast').value.trim(),
                     email: document.getElementById('esEmail').value.trim(),
                     phone: document.getElementById('esPhone').value.trim(),
                     role: document.getElementById('esRole').value,
-                    department: document.getElementById('esDept').value.trim(),
-                    subjects: document.getElementById('esSubjects').value.split(',').map(s => s.trim()).filter(Boolean)
+                    department: document.getElementById('esDept').value.trim()
                 });
                 if (!resp.ok) {
                     const msg = await parseErrorResponse(resp);
@@ -7091,7 +7238,6 @@
         };
 
         POST_RENDER_HOOKS.fees = async function() {
-            // /fees/summary doesn't exist yet, so we compute from /analytics/stats + /classes.
             try {
                 const [statsResp, classesResp] = await Promise.all([
                     Api.get('/analytics/stats').catch(() => null),
@@ -7334,7 +7480,6 @@
 
         POST_RENDER_HOOKS.audit = async function() {
             try {
-                // Correct path: /support/audit-logs
                 const resp = await Api.get('/support/audit-logs');
                 if (!resp.ok) throw new Error(await parseErrorResponse(resp));
                 const logs = await Api.json(resp);
@@ -7647,7 +7792,7 @@
         };
 
         // =============================================================
-        // 19. PLATFORM ADMIN (Super Admin)
+        // 20. PLATFORM ADMIN (Super Admin)
         // =============================================================
         function renderPlatformPage() {
             const el = document.getElementById('platformPageContent');
@@ -7746,7 +7891,6 @@
 
             let alerts = [];
             if (overdue.length > 0) {
-                // XSS-safe: use escJs + JSON.stringify of names inside the inline handler.
                 const names = overdue.map(s => s.name).join(', ');
                 alerts.push(`<div class="action-alert alert-danger">
                     <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger)"></i>
@@ -7980,11 +8124,27 @@
         };
 
         // =============================================================
-        // 20. EVENT BINDINGS
+        // 21. OFFLINE DETECTION
+        // =============================================================
+        function updateOnlineStatus() {
+            const banner = document.getElementById('offlineBanner');
+            if (!banner) return;
+            if (navigator.onLine) {
+                banner.classList.remove('show');
+            } else {
+                banner.classList.add('show');
+            }
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // =============================================================
+        // 22. EVENT BINDINGS
         // =============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
             setTheme(savedTheme);
+            updateOnlineStatus();
 
             document.getElementById('loginBtn').addEventListener('click', attemptLogin);
             document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
@@ -8031,7 +8191,7 @@
         });
 
         // =============================================================
-        // 21. GLOBAL EXPOSURE
+        // 23. GLOBAL EXPOSURE
         // =============================================================
         window.navigateTo = navigateTo;
         window.renderPage = renderPage;
@@ -8119,30 +8279,26 @@
         window.compressImageToDataURL = compressImageToDataURL;
         window.extractErrorMessage = extractErrorMessage;
         window.loadAcademicContext = loadAcademicContext;
+        window.healAcademicContext = healAcademicContext;
+        window.detectFeatures = detectFeatures;
+        window.openAddAcademicSessionModal = openAddAcademicSessionModal;
+        window.saveAcademicSession = saveAcademicSession;
+        window.updateOnlineStatus = updateOnlineStatus;
 
-        console.log('🏫 SchoolFlow · Production-Ready Frontend (v3.1 — Money-Kobo, Error Extraction, Academic Context, Schema Alignment)');
-        console.log('✅ money() divides by 100 — kobo → naira; moneyNaira() for direct naira displays');
-        console.log('✅ extractErrorMessage() surfaces Zod field errors: "sessionId: Invalid 24-char hex" not "Validation failed"');
-        console.log('✅ currentSessionId()/currentTermId() return real ObjectIds from /academics/* — no more "2026/2027" strings');
-        console.log('✅ Onboarding username is sent verbatim (no _<timestamp> suffix)');
-        console.log('✅ Onboarding uses Api.post (timeout + refresh + loader) instead of raw fetch');
-        console.log('✅ Add Student: admissionNumber, address, uppercase gender, parentIds in create payload (no $push)');
-        console.log('✅ Add Class: level + academicYear + fee*100 to match schema');
-        console.log('✅ Add Staff: firstName/lastName/email + uppercase role enum only');
-        console.log('✅ Fee Structure categories are now real dropdowns of FeeCategory ObjectIds');
-        console.log('✅ Record Payment: invoiceId required, auto-prefilled remaining, disabled button when no invoices');
-        console.log('✅ Attendance: zero-student guard, batch progress bar, per-record error surfacing');
-        console.log('✅ Score Entry: total/grade/remark computed client-side before POST /results');
-        console.log('✅ Subjects moved from /subjects → /academics/subjects; Sessions/Terms from /sessions, /terms → /academics/*');
-        console.log('✅ Invoice modal pre-checks fee structures and redirects if none exist');
-        console.log('✅ Results page warns when Report Card Templates endpoint is missing');
-        console.log('✅ Image compression tightened to 900px / 0.6 — halves payload, prevents stuck spinner');
-        console.log('✅ Login errors differentiate 401 (bad creds) vs 403 (deactivated) vs network');
-        console.log('✅ Inline onclick with user data now runs through escJs() to prevent XSS via apostrophes');
-        console.log('✅ Audit Logs use /support/audit-logs (the real path)');
-        console.log('✅ Communications SMS uses /communications/messages with { recipients, subject, body, type }');
-        console.log('✅ Sequential fallbacks for /students/bulk and /students/promote when endpoints are 404');
+        console.log('🏫 SchoolFlow · Production-Ready Frontend (v3.2 — Feature Detection, Academic Self-Heal, Parent SMS Route, Score PUT, Fee Guards)');
+        console.log('✅ Frontend patches applied:');
+        console.log('   1. Session/Term auto-heal — healAcademicContext() runs on boot and creates docs if missing');
+        console.log('   2. Parent SMS — /communications/sms-to-parent with fallback to generic /messages');
+        console.log('   3. Score entry PUT — existing results show check icon and update in place');
+        console.log('   4. Fee structure guards — save blocked until every item has a category');
+        console.log('   5. Feature detection — detectFeatures() hides nav items whose backend is 404');
+        console.log('   6. Staff subjects removed — payload matches validator');
+        console.log('   7. Score CSV import uses PUT for existing rows');
+        console.log('   8. Academic calendar panel in Settings — shows current session/term ObjectIds');
+        console.log('✅ Plus all v3.1 fixes: money kobo math, extractErrorMessage(), real ObjectIds, escJs XSS hardening,');
+        console.log('   onboarding verbatim username, ticket-grade error messages, compressed images, RLS-safe student scope');
         console.log('🔐 Role:', Api.getRole());
+        console.log('📶 Online:', navigator.onLine);
     </script>
 </body>
 </html>
