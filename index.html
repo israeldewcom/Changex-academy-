@@ -2180,7 +2180,7 @@
                 Api.setAccountFlag(true);
 
                 if (loadSample) {
-                    showToast('Loading sample data in background...', 'info', 6000);
+                    showToast('Loading sample data...', 'info', 4000);
                     try {
                         const seedResp = await Api.post('/schools/seed-sample');
                         if (seedResp.ok) {
@@ -2859,8 +2859,6 @@
                     ((b.fees?.owed ?? (b.fees?.expected||0)-(b.fees?.paid||0)) - (a.fees?.owed ?? (a.fees?.expected||0)-(a.fees?.paid||0)))
                 );
 
-                // If the backend didn't return totalOutstanding, compute it
-                // from the live defaulter list so the hero number is honest.
                 const outstandingEl = document.getElementById('dashOutstanding');
                 if (outstandingEl && (outstandingEl.textContent === '₦0' || outstandingEl.textContent === '0')) {
                     const computedOutstanding = defList.reduce((s, d) => s + (d.fees?.owed ?? ((d.fees?.expected||0) - (d.fees?.paid||0))), 0);
@@ -3746,6 +3744,7 @@
                 if (!resp.ok) throw new Error(await parseErrorResponse(resp));
                 const list = await Api.json(resp);
                 const arr = Array.isArray(list) ? list : [];
+                window._feeStructuresCache = arr.reduce((m, s) => { m[s.id] = s; return m; }, {});
                 document.getElementById('fsCount').textContent = arr.length + ' structures';
                 const grid = document.getElementById('fsGrid');
                 if (arr.length === 0) {
@@ -3865,13 +3864,6 @@
                 <div class="d-flex gap-2 mt-4"><button class="btn-x btn-outline-x" onclick="closeModal()">Cancel</button><button class="btn-x btn-primary-x btn-block-x" onclick="saveFeeStructure('${escJs(editId || '')}', this)"><i class="bi bi-check-lg"></i> Save structure</button></div>
             `);
 
-            if (categories.length === 0) {
-                setTimeout(() => {
-                    const btn = document.querySelector('#modalBody button.btn-primary-x');
-                    if (btn) btn.disabled = true;
-                }, 0);
-            }
-
             if (editId) {
                 try {
                     const resp = await Api.get('/fees/structures/' + editId);
@@ -3930,21 +3922,17 @@
             const rows = document.querySelectorAll('#feeItemRows .fee-item-row');
             const feeItems = [];
 
-            let missingCategory = false;
             rows.forEach(r => {
                 const description = r.querySelector('.fi-name').value.trim();
                 const amountNaira = Number(r.querySelector('.fi-amount').value) || 0;
-                const categoryId = r.querySelector('.fi-category').value;
+                const categoryId = r.querySelector('.fi-category').value || undefined;
                 if (description && amountNaira >= 0) {
-                    if (!categoryId) { missingCategory = true; return; }
-                    feeItems.push({ description, name: description, amount: amountNaira * 100, categoryId });
+                    const item = { description, name: description, amount: amountNaira * 100 };
+                    if (categoryId) item.categoryId = categoryId;
+                    feeItems.push(item);
                 }
             });
 
-            if (missingCategory) {
-                showToast('Every fee item needs a category. Create one first.', 'warning', 5000);
-                return;
-            }
             if (!classId) { showToast('Pick a class', 'error'); return; }
             if (feeItems.length === 0) { showToast('Add at least one fee item', 'error'); return; }
             const totalAmount = feeItems.reduce((s, it) => s + it.amount, 0);
@@ -3967,26 +3955,41 @@
             finally { resetButton(btn); }
         };
 
-        window.viewFeeStructure = async function(id) {
-            openModal('Fee structure', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`);
-            try {
-                const resp = await Api.get('/fees/structures/' + id);
-                if (!resp.ok) { showToast('Not found', 'error'); closeModal(); return; }
-                const fs = await Api.json(resp);
-                const items = fs.feeItems || [];
-                const total = fs.totalAmount != null ? fs.totalAmount : items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
-                document.getElementById('modalBody').innerHTML = `
-                    <div class="mb-3"><strong>${escapeHtml(fs.classId?.name || fs.className || '—')}</strong> · ${escapeHtml(fs.sessionId?.name || '')} · ${escapeHtml(fs.termId?.name || '')}</div>
-                    <div class="table-wrap"><table class="tbl"><thead><tr><th>Item</th><th>Category</th><th>Amount</th></tr></thead><tbody>
-                        ${items.map(it => `<tr><td data-label="Item">${escapeHtml(it.description || it.name || '')}</td><td data-label="Category">${escapeHtml(it.categoryId?.name || '—')}</td><td data-label="Amount" class="num">${money(it.amount)}</td></tr>`).join('')}
-                    </tbody></table></div>
-                    <div class="d-flex justify-content-between align-items-center mt-3 p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);">
-                        <span class="label-caps mb-0">Total</span>
-                        <strong class="num">${money(total)}</strong>
-                    </div>
-                    <button class="btn-x btn-outline-x btn-block-x mt-3" onclick="closeModal()">Close</button>
-                `;
-            } catch (e) { showToast('Error loading', 'error'); closeModal(); }
+        window.viewFeeStructure = function(id) {
+            const fs = (window._feeStructuresCache || {})[id];
+            if (!fs) {
+                showToast('Structure not in cache — reloading list.', 'info');
+                renderPage('feestructure');
+                return;
+            }
+            const items = fs.feeItems || [];
+            const total = fs.totalAmount != null
+                ? fs.totalAmount
+                : items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
+            const className = fs.className || fs.classId?.name || '—';
+            const sessionName = fs.sessionId?.name
+                || _academicCache.sessions.find(s => (s.id || s._id) === extractId(fs.sessionId))?.name
+                || '—';
+            const termName = fs.termId?.name
+                || _academicCache.terms.find(t => (t.id || t._id) === extractId(fs.termId))?.name
+                || '—';
+
+            openModal('Fee structure', `
+                <div class="mb-3"><strong>${escapeHtml(className)}</strong> · ${escapeHtml(sessionName)} · ${escapeHtml(termName)}</div>
+                <div class="table-wrap"><table class="tbl">
+                    <thead><tr><th>Item</th><th>Category</th><th>Amount</th></tr></thead>
+                    <tbody>${items.map(it => `<tr>
+                        <td data-label="Item">${escapeHtml(it.description || it.name || '')}</td>
+                        <td data-label="Category">${escapeHtml(it.categoryId?.name || '—')}</td>
+                        <td data-label="Amount" class="num">${money(it.amount)}</td>
+                    </tr>`).join('')}</tbody>
+                </table></div>
+                <div class="d-flex justify-content-between align-items-center mt-3 p-2" style="background:var(--line-soft);border-radius:var(--radius-sm);">
+                    <span class="label-caps mb-0">Total</span>
+                    <strong class="num">${money(total)}</strong>
+                </div>
+                <button class="btn-x btn-outline-x btn-block-x mt-3" onclick="closeModal()">Close</button>
+            `);
         };
 
         window.deleteFeeStructure = async function(id) {
@@ -4080,9 +4083,17 @@
                 try {
                     const resp = await Api.get('/students');
                     if (resp.ok) {
-                        const students = await Api.json(resp);
+                        const raw = await Api.json(resp);
+                        const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.students) ? raw.students : []);
                         const sel = document.getElementById('pfStudent');
-                        sel.innerHTML = (Array.isArray(students) ? students : []).map(s =>
+                        if (arr.length === 0) {
+                            sel.innerHTML = '<option value="">No students enrolled — add one first</option>';
+                            document.getElementById('pfInvoiceHint').innerHTML =
+                                '<span style="color:var(--danger);">Add a student before recording payments. ' +
+                                '<a onclick="closeModal();openAddStudentModal()" style="cursor:pointer;text-decoration:underline;font-weight:600;">Add student</a></span>';
+                            return;
+                        }
+                        sel.innerHTML = arr.map(s =>
                             `<option value="${escJs(s.id)}" ${s.id===preselectStudentId?'selected':''}>${escapeHtml(s.fullName)} — ${escapeHtml(s.className||'')}</option>`
                         ).join('');
                         sel.onchange = () => loadInvoicesForStudent(sel.value);
@@ -4136,8 +4147,14 @@
             const studentId = document.getElementById('pfStudent').value;
             const invoiceId = document.getElementById('pfInvoice').value;
             const amountNaira = Number(document.getElementById('pfAmount').value);
-            if (!studentId) { showToast('Pick a student', 'error'); return; }
-            if (!invoiceId) { showToast('Pick an invoice — payments must be applied to a specific invoice', 'error'); return; }
+            if (!studentId || !isValidObjectId(studentId)) {
+                showToast('Please select a student first.', 'error', 5000);
+                return;
+            }
+            if (!invoiceId || !isValidObjectId(invoiceId)) {
+                showToast('Please select an invoice.', 'error', 5000);
+                return;
+            }
             if (!amountNaira || amountNaira <= 0) { showToast('Enter a valid amount', 'error'); return; }
             setButtonLoading(btn, 'Submitting...');
             try {
@@ -4288,11 +4305,6 @@
             }
         };
 
-        /**
-         * Now that /defaulters/remind-all exists and returns real counts,
-         * surface them instead of a hardcoded success message. Honest
-         * reporting of "queued X of Y" is more useful than "Sent!".
-         */
         window.sendBulkReminder = async function(btn) {
             setButtonLoading(btn, 'Sending...');
             try {
@@ -4362,83 +4374,134 @@
                 d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
                 ts.value = d.toISOString().slice(0, 16);
             }
-            try {
-                const resp = await Api.get('/classes');
-                if (resp.ok) {
-                    const classes = await Api.json(resp);
-                    const sel = document.getElementById('attClassFilter');
-                    sel.innerHTML = '<option value="">All students</option>' + (Array.isArray(classes) ? classes : []).map(c => `<option value="${escJs(c.id)}">${escapeHtml(c.name)}</option>`).join('');
-                }
-            } catch (_) {}
 
-            // Today's summary — new endpoint shape: {present, absent, late, excused, rate, ...}
-            try {
-                const resp = await Api.get('/attendance/today');
-                if (resp.ok) {
-                    const data = await Api.json(resp);
-                    document.getElementById('attPresent').textContent = data.present || 0;
-                    document.getElementById('attAbsent').textContent = data.absent || 0;
-                    document.getElementById('attLate').textContent = data.late || 0;
-                }
-            } catch (_) {}
-
-            // Weekly trend — new endpoint shape: {labels, rates, totalActiveStudents}
-            try {
-                const resp = await Api.get('/attendance/weekly');
-                if (resp.ok) {
-                    const data = await Api.json(resp);
-                    const avg = safeAvg(data.rates || []);
-                    document.getElementById('attAvg').textContent = avg + '%';
-                    destroyChart('attendanceChart');
-                    const ctx = document.getElementById('attendanceChart');
-                    if (ctx && data.labels && data.labels.length) {
-                        const styles = getComputedStyle(document.documentElement);
-                        const gold = styles.getPropertyValue('--gold').trim();
-                        _chartInstances['attendanceChart'] = new Chart(ctx, {
-                            type: 'bar',
-                            data: { labels: data.labels, datasets: [{ label: 'Attendance %', data: data.rates,
-                                backgroundColor: hexToRgba(gold, .55), borderColor: gold, borderWidth: 2, borderRadius: 5 }] },
-                            options: { responsive: true, maintainAspectRatio: false,
-                                animation: { duration: 800, easing: 'easeOutQuart' },
-                                plugins: { legend: { display: false },
-                                    tooltip: { callbacks: { label: (c) => `${Math.round(c.parsed.y)}%` } } },
-                                scales: { x: { grid: { display: false } },
-                                    y: { beginAtZero: true, max: 100, grid: { color: 'var(--line-soft)' }, ticks: { callback: v => v + '%' } } } }
-                        });
+            // Fire all three in parallel — none blocks the roster. Each helper
+            // is fully self-contained and swallows its own errors.
+            await Promise.all([
+                (async () => {
+                    try {
+                        const resp = await Api.get('/classes');
+                        if (resp.ok) {
+                            const classes = await Api.json(resp);
+                            const sel = document.getElementById('attClassFilter');
+                            sel.innerHTML = '<option value="">All students</option>' +
+                                (Array.isArray(classes) ? classes : []).map(c =>
+                                    `<option value="${escJs(c.id)}">${escapeHtml(c.name)}</option>`
+                                ).join('');
+                        }
+                    } catch (_) {}
+                })(),
+                (async () => {
+                    try {
+                        const resp = await Api.get('/attendance/today');
+                        if (resp.ok) {
+                            const data = await Api.json(resp);
+                            document.getElementById('attPresent').textContent = data.present || 0;
+                            document.getElementById('attAbsent').textContent = data.absent || 0;
+                            document.getElementById('attLate').textContent = data.late || 0;
+                        } else {
+                            document.getElementById('attPresent').textContent = '0';
+                            document.getElementById('attAbsent').textContent = '0';
+                            document.getElementById('attLate').textContent = '0';
+                        }
+                    } catch (_) {
+                        document.getElementById('attPresent').textContent = '0';
+                        document.getElementById('attAbsent').textContent = '0';
+                        document.getElementById('attLate').textContent = '0';
                     }
-                }
-            } catch (_) {}
+                })(),
+                (async () => {
+                    try {
+                        const resp = await Api.get('/attendance/weekly');
+                        if (resp.ok) {
+                            const data = await Api.json(resp);
+                            const avg = safeAvg(data.rates || []);
+                            document.getElementById('attAvg').textContent = avg + '%';
+                            destroyChart('attendanceChart');
+                            const ctx = document.getElementById('attendanceChart');
+                            if (ctx && data.labels && data.labels.length) {
+                                const styles = getComputedStyle(document.documentElement);
+                                const gold = styles.getPropertyValue('--gold').trim();
+                                _chartInstances['attendanceChart'] = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: data.labels,
+                                        datasets: [{
+                                            label: 'Attendance %',
+                                            data: data.rates,
+                                            backgroundColor: hexToRgba(gold, .55),
+                                            borderColor: gold,
+                                            borderWidth: 2,
+                                            borderRadius: 5
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true, maintainAspectRatio: false,
+                                        animation: { duration: 800, easing: 'easeOutQuart' },
+                                        plugins: {
+                                            legend: { display: false },
+                                            tooltip: { callbacks: { label: (c) => `${Math.round(c.parsed.y)}%` } }
+                                        },
+                                        scales: {
+                                            x: { grid: { display: false } },
+                                            y: { beginAtZero: true, max: 100, grid: { color: 'var(--line-soft)' }, ticks: { callback: v => v + '%' } }
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            document.getElementById('attAvg').textContent = '0%';
+                        }
+                    } catch (_) {
+                        document.getElementById('attAvg').textContent = '0%';
+                    }
+                })(),
+            ]);
+
+            // Roster ALWAYS runs, no matter what happened above.
             await loadAttendanceRoster();
         };
 
         window.loadAttendanceRoster = async function() {
             const classId = document.getElementById('attClassFilter')?.value || '';
+            const roster = document.getElementById('attRoster');
+            const countEl = document.getElementById('attStudentCount');
             try {
                 const url = classId ? `/students?classId=${classId}` : '/students';
                 const resp = await Api.get(url);
-                if (resp.ok) {
-                    const students = await Api.json(resp);
-                    const arr = Array.isArray(students) ? students : [];
-                    document.getElementById('attStudentCount').textContent = arr.length + ' students';
-                    const roster = document.getElementById('attRoster');
-                    if (arr.length === 0) {
-                        roster.innerHTML = emptyState('people', 'No students', 'Add students to track attendance.');
-                        return;
-                    }
-                    roster.innerHTML = arr.map(s => {
-                        const sid = extractId(s.classId) || classId;
-                        return `<div class="d-flex justify-content-between align-items-center p-2 mb-1" style="background:var(--line-soft);border-radius:var(--radius-sm);flex-wrap:wrap;gap:.3rem;" data-student-block="${escJs(s.id)}" data-class-id="${escJs(sid)}">
-                            <span style="font-size:.85rem;">${escapeHtml(s.fullName)}</span>
-                            <div class="d-flex gap-2">
-                                <select class="input-x" style="width:auto;padding:.25rem .5rem;font-size:.75rem;" data-student="${escJs(s.id)}">
-                                    <option value="PRESENT" selected>Present</option><option value="LATE">Late</option><option value="ABSENT">Absent</option><option value="EXCUSED">Excused</option>
-                                </select>
-                                <input class="input-x" style="width:120px;padding:.2rem .4rem;font-size:.7rem;" placeholder="Remark" data-remark="${escJs(s.id)}" />
-                            </div>
-                        </div>`;
-                    }).join('');
+                if (!resp.ok) {
+                    const msg = await parseErrorResponse(resp);
+                    countEl.textContent = '—';
+                    roster.innerHTML = `<div class="text-center py-4 text-danger">Could not load students: ${escapeHtml(msg)}</div>`;
+                    return;
                 }
-            } catch (_) {}
+                const raw = await Api.json(resp);
+                // Handle both shapes: [ ... ] and { students: [ ... ] }
+                const arr = Array.isArray(raw)
+                    ? raw
+                    : (raw && Array.isArray(raw.students) ? raw.students : []);
+                countEl.textContent = arr.length + ' students';
+                if (arr.length === 0) {
+                    roster.innerHTML = emptyState('people', 'No students', 'Add students to track attendance.',
+                        `<button class="btn-x btn-primary-x" onclick="openAddStudentModal()"><i class="bi bi-plus-lg"></i> Add student</button>`);
+                    return;
+                }
+                roster.innerHTML = arr.map(s => {
+                    const sid = extractId(s.classId) || classId;
+                    return `<div class="d-flex justify-content-between align-items-center p-2 mb-1" style="background:var(--line-soft);border-radius:var(--radius-sm);flex-wrap:wrap;gap:.3rem;" data-student-block="${escJs(s.id)}" data-class-id="${escJs(sid)}">
+                        <span style="font-size:.85rem;">${escapeHtml(s.fullName)}</span>
+                        <div class="d-flex gap-2">
+                            <select class="input-x" style="width:auto;padding:.25rem .5rem;font-size:.75rem;" data-student="${escJs(s.id)}">
+                                <option value="PRESENT" selected>Present</option><option value="LATE">Late</option><option value="ABSENT">Absent</option><option value="EXCUSED">Excused</option>
+                            </select>
+                            <input class="input-x" style="width:120px;padding:.2rem .4rem;font-size:.7rem;" placeholder="Remark" data-remark="${escJs(s.id)}" />
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                countEl.textContent = '—';
+                roster.innerHTML = `<div class="text-center py-4 text-danger">${escapeHtml(e.message || 'Network error')}</div>`;
+            }
         };
 
         window.markAllAttendance = function(status) {
@@ -4705,6 +4768,14 @@
             termSel.innerHTML = _academicCache.terms.length
                 ? _academicCache.terms.map(t => `<option value="${escJs(t.id)}" ${t.id === activeTid ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')
                 : `<option value="${escJs(activeTid||'')}">${escapeHtml(_pageData.school?.currentTerm || 'Current')}</option>`;
+
+            // After the selects are populated, fire one roster load so the user
+            // sees students immediately instead of the placeholder.
+            const classSel = document.getElementById('seClass');
+            const subjectSel = document.getElementById('seSubject');
+            if (classSel?.value && subjectSel?.value) {
+                setTimeout(() => loadScoreRoster(), 100);
+            }
         };
 
         window.openAddSubjectModal = function() {
@@ -7032,11 +7103,23 @@
                         document.getElementById('examClass').innerHTML = (Array.isArray(classes) ? classes : []).map(c => `<option value="${escJs(c.id)}">${escapeHtml(c.name)}</option>`).join('');
                     }
                     if (sResp.ok) {
-                        const subjects = await Api.json(sResp);
-                        const arr = Array.isArray(subjects) ? subjects : [];
-                        document.getElementById('examSubject').innerHTML = arr.length
-                            ? arr.map(s => `<option value="${escJs(s.id)}">${escapeHtml(s.name)}</option>`).join('')
-                            : '<option value="">No subjects — add one in Score Entry</option>';
+                        const raw = await Api.json(sResp);
+                        const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.subjects) ? raw.subjects : []);
+                        const subjSel = document.getElementById('examSubject');
+                        if (arr.length === 0) {
+                            subjSel.innerHTML = '<option value="">No subjects yet</option>';
+                            subjSel.disabled = true;
+                            subjSel.insertAdjacentHTML('afterend',
+                                `<div class="p-2 mt-1" style="background:var(--gold-light);border-radius:var(--radius-sm);font-size:.8rem;">
+                                    <i class="bi bi-info-circle me-1"></i>You need at least one subject.
+                                    <a onclick="closeModal();navigateTo('scoreentry');setTimeout(()=>openAddSubjectModal(),300)"
+                                       style="cursor:pointer;text-decoration:underline;font-weight:600;">Add a subject now</a>
+                                </div>`);
+                            const saveBtn = document.querySelector('#modalBody .btn-primary-x');
+                            if (saveBtn) saveBtn.disabled = true;
+                        } else {
+                            subjSel.innerHTML = arr.map(s => `<option value="${escJs(s.id)}">${escapeHtml(s.name)}</option>`).join('');
+                        }
                     }
                 } catch (_) {}
             })();
@@ -7046,14 +7129,19 @@
             const ctx = ensureAcademicContext();
             if (!ctx) return;
             const name = document.getElementById('examName').value.trim();
+            const subjectId = document.getElementById('examSubject').value;
             if (!name) { showToast('Please enter an exam name', 'error'); return; }
+            if (!subjectId || !isValidObjectId(subjectId)) {
+                showToast('Please create a subject first (Score Entry → Add subject).', 'warning', 6000);
+                return;
+            }
             setButtonLoading(btn, 'Saving...');
             try {
                 const resp = await Api.post('/exams', {
                     name,
                     classId: document.getElementById('examClass').value,
-                    subjectId: document.getElementById('examSubject').value || undefined,
-                    subjectName: (document.getElementById('examSubject').selectedOptions[0]?.text) || 'General',
+                    subjectId,
+                    subjectName: document.getElementById('examSubject').selectedOptions[0]?.text || 'General',
                     maxScore: Number(document.getElementById('examMax').value) || 100,
                     date: document.getElementById('examDate').value,
                     sessionId: ctx.sessionId,
@@ -7101,14 +7189,24 @@
                 const data = await Api.json(resp);
                 const status = data.status || 'unknown';
                 document.getElementById('healthStatus').textContent = status;
-                document.getElementById('healthStatus').className = 'chip ' + (status === 'ok' ? 'chip-green' : status === 'degraded' ? 'chip-gold' : 'chip-danger');
+                document.getElementById('healthStatus').className =
+                    'chip ' + (status === 'ok' ? 'chip-green' : status === 'degraded' ? 'chip-gold' : 'chip-danger');
+
                 document.getElementById('healthDb').textContent = data.checks?.db ? '✅ OK' : '❌ Error';
-                document.getElementById('healthDb').parentElement.className = 'stat ' + (data.checks?.db ? 'tone-green' : 'tone-danger') + ' text-center';
+                document.getElementById('healthDb').parentElement.className =
+                    'stat ' + (data.checks?.db ? 'tone-green' : 'tone-danger') + ' text-center';
+
                 document.getElementById('healthRedis').textContent = data.checks?.redis ? '✅ OK' : '⚠️ Down';
-                document.getElementById('healthRedis').parentElement.className = 'stat ' + (data.checks?.redis ? 'tone-green' : 'tone-gold') + ' text-center';
+                document.getElementById('healthRedis').parentElement.className =
+                    'stat ' + (data.checks?.redis ? 'tone-green' : 'tone-gold') + ' text-center';
+
                 document.getElementById('healthQueues').textContent = data.checks?.queues ? '✅ OK' : '❌ Error';
-                document.getElementById('healthQueues').parentElement.className = 'stat ' + (data.checks?.queues ? 'tone-green' : 'tone-danger') + ' text-center';
-                document.getElementById('healthTimestamp').textContent = data.timestamp ? new Date(data.timestamp).toLocaleString() : '—';
+                document.getElementById('healthQueues').parentElement.className =
+                    'stat ' + (data.checks?.queues ? 'tone-green' : 'tone-danger') + ' text-center';
+
+                document.getElementById('healthTimestamp').textContent = data.timestamp
+                    ? new Date(data.timestamp).toLocaleString()
+                    : '—';
                 document.getElementById('healthDetails').textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 document.getElementById('healthStatus').textContent = '❌ Error';
@@ -7408,11 +7506,6 @@
             if (el) { el.value = 'trial'; filterPlatformSchools(); }
         };
 
-        /**
-         * Detail endpoint is now real, so no need for the stale-data
-         * fallback. If it fails, we show a clean error instead of
-         * displaying whatever happened to be cached in the list.
-         */
         window.openPlatformSchoolDetail = async function(id) {
             openModal('School details', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading...</div>`, { wide: true });
             try {
@@ -7488,12 +7581,6 @@
             `;
         }
 
-        /**
-         * The update endpoint expects {subscriptionId, planId, autoRenew}
-         * with real Mongo ObjectIds. We fetch the school's subscription
-         * from /platform/subscriptions and the plans from
-         * /subscriptions/plans so the modal can send real IDs.
-         */
         window.changeSchoolPlan = async function(schoolId) {
             openModal('Change plan', `<div class="text-center py-4"><i class="bi bi-arrow-repeat me-2"></i>Loading plans...</div>`);
             try {
@@ -7503,10 +7590,7 @@
                 ]);
                 const plans = plansResp?.ok ? (await Api.json(plansResp)) || [] : [];
                 const subs = subsResp?.ok ? (await Api.json(subsResp)) || [] : [];
-                const sub = subs.find(s => {
-                    const sid = extractId(s.schoolId);
-                    return sid === schoolId;
-                });
+                const sub = subs.find(s => extractId(s.schoolId) === schoolId);
                 const subscriptionId = sub ? (sub.id || sub._id || '') : '';
 
                 if (!plans.length) {
@@ -7514,10 +7598,9 @@
                         <div class="empty-x">
                             <div class="empty-icon-wrap"><i class="bi bi-exclamation-triangle"></i></div>
                             <h6>No plans available</h6>
-                            <p>Subscription plans haven't been set up on this backend yet. Contact platform ops.</p>
+                            <p>Subscription plans haven't been set up on this backend yet.</p>
                             <button class="btn-x btn-outline-x" onclick="closeModal()">Close</button>
-                        </div>
-                    `;
+                        </div>`;
                     return;
                 }
                 if (!subscriptionId) {
@@ -7525,10 +7608,9 @@
                         <div class="empty-x">
                             <div class="empty-icon-wrap"><i class="bi bi-exclamation-triangle"></i></div>
                             <h6>No subscription found</h6>
-                            <p>This school has no subscription record yet. Assign one before changing plans.</p>
+                            <p>This school has no subscription record yet.</p>
                             <button class="btn-x btn-outline-x" onclick="closeModal()">Close</button>
-                        </div>
-                    `;
+                        </div>`;
                     return;
                 }
 
@@ -7560,8 +7642,7 @@
                         <h6>Network error</h6>
                         <p>${escapeHtml(e.message || 'Could not reach the server.')}</p>
                         <button class="btn-x btn-outline-x" onclick="closeModal()">Close</button>
-                    </div>
-                `;
+                    </div>`;
             }
         };
 
@@ -7587,10 +7668,6 @@
             finally { resetButton(btn); }
         };
 
-        /**
-         * The /extend route now exists — no fallback needed. If it fails
-         * for any reason, we surface the real error.
-         */
         window.extendSchoolSubscription = async function(id) {
             try {
                 const resp = await Api.post('/platform/schools/' + id + '/extend', { days: 30 });
@@ -7606,9 +7683,6 @@
             } catch (e) { showToast('Network error', 'error'); }
         };
 
-        /**
-         * The /toggle route now exists — no fallback needed.
-         */
         window.togglePlatformSchool = async function(id) {
             try {
                 const resp = await Api.put('/platform/schools/' + id + '/toggle');
